@@ -22,7 +22,7 @@ x-defaults-http: &defaults-http
     - "[CERTIFICATE_EXPIRATION] > 240h"
     - "[DOMAIN_EXPIRATION] > 720h"
     - "[STATUS] == 200"
-    - "[RESPONSE_TIME] < 3000"
+    - "[RESPONSE_TIME] < 5000"
 
 # Default container options.
 x-defaults-container: &defaults-container
