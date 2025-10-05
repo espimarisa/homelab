@@ -62,10 +62,6 @@
 	import external_proxy gatus:8080
 }
 
-{$HOMEPAGE_URL} {
-	import external_proxy homepage:3000
-}
-
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
 }
