@@ -35,7 +35,6 @@ services:
     env_file: ../../.env
     hostname: beszel-agent
     network_mode: host
-    read_only: true
     restart: unless-stopped
     devices:
       - /dev/dri/card0:/dev/dri/card0 # GPU monitoring...?
@@ -65,8 +64,6 @@ services:
       test: ["CMD", "/agent", "health"]
     security_opt:
       - no-new-privileges:true
-    tmpfs:
-      - "/tmp/beszel_health" # Required for read-only image.
 
   ###########################################################################
   # Dozzle: Docker log viewer - https://dozzle.dev/                         #
