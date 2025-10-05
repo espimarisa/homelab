@@ -48,6 +48,7 @@ storage:
 # UI configuration.
 ui:
   default-sort-by: group
+  description: "${GATUS_DESCRIPTION}"
   header: ${GATUS_HEADER}
   link: "${GATUS_URL}"
   logo: "${GATUS_LOGO_URL}"

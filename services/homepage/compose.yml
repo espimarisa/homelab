@@ -11,6 +11,7 @@ services:
     hostname: homepage
     restart: unless-stopped
     environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket-proxy.
       HOMEPAGE_ALLOWED_HOSTS: "${HOMEPAGE_URL}" # Only allow HOMEPAGE_URL.
       PGID: "${PGID}" # Local group to run as.
       PUID: "${PUID}" # Local user to run as.
@@ -21,6 +22,8 @@ services:
       - caddy
       - gluetun
       - socket-proxy
+    volumes:
+      - homepage:/app/config
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -51,6 +54,9 @@ networks:
     name: gluetun-network # $ docker network create gluetun-network
 
 volumes:
+  homepage:
+    external: true
+    name: homepage-volume
   socket-proxy:
     external: true
     name: socket-proxy-volume
