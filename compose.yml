@@ -2,6 +2,7 @@
 include:
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
+  - ./services/ddclient/compose.yml
   - ./services/downloads/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/media-management/compose.yml

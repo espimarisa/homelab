@@ -13,7 +13,6 @@ services:
     user: "0:${DOCKER_GID}"
     restart: unless-stopped
     environment:
-      DEBUG: true
       TZ: "${TZ}" # Local timezone to use.
     networks:
       - socket-proxy # Internal-only socket proxy network.

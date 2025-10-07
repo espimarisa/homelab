@@ -1,0 +1,34 @@
+---
+services:
+  ###########################################################################
+  # ddclient: Dynamic DNS client (used with Glauca HexDNS).                 #
+  ###########################################################################
+
+  ddclient:
+    image: lscr.io/linuxserver/ddclient
+    container_name: ddclient
+    env_file: ../../.env
+    hostname: ddclient
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      PGID: "${PGID}" # Local group to run as.
+      PUID: "${PUID}" # Local user to run as.
+      TZ: "${TZ}" # Configures the timezone to use.
+      UMASK: "${UMASK}" # Default umask to apply to newly created files.
+    volumes:
+      - ./config:/config
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SYS_CHROOT
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1" # Allow up to 10% of 1 vCPU.
+          memory: "32M" # Allow up to 32MB of memory usage.
+        reservations:
+          cpus: "0.05" # Reserve 5% of 1 vCPU.
+          memory: "16M" # Reserve 16MB of RAM.
+    security_opt:
+      - no-new-privileges:true

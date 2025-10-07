@@ -26,6 +26,7 @@
 *~
 *core
 $RECYCLE.BIN/
+ddclient.conf
 ehthumbs*.db
 node_modules/
 Thumbs.db*
