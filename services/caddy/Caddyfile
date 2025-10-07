@@ -1,6 +1,6 @@
 {
-	# Configures ACME to use ZeroSSL.
-	acme_ca https://acme.zerossl.com/v2/DV90
+	# # Configures ACME to use ZeroSSL.
+	# acme_ca https://acme.zerossl.com/v2/DV90
 	email {$ACME_EMAIL}
 
 	servers {
