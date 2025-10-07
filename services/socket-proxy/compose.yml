@@ -27,6 +27,14 @@ services:
       - DAC_OVERRIDE # Required for user:0:docker_gid
       - SETGID # Required to drop to GID.
       - SETUID # Required to drop to UID.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1" # Allow up to 10% of 1 vCPU.
+          memory: "64M" # Allow up to 64MB of memory usage.
+        reservations:
+          cpus: "0.05" # Reserve 5% of 1 vCPU.
+          memory: "32M" # Reserve 32MB of RAM.
     security_opt:
       - no-new-privileges:true
 
@@ -40,3 +48,4 @@ volumes:
   socket-proxy:
     external: true
     name: socket-proxy-volume # $ docker volume create socket-proxy-volume
+

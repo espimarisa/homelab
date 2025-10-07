@@ -5,7 +5,7 @@ services:
   ###########################################################################
 
   beszel:
-    image: ghcr.io/henrygd/beszel/beszel:0.12.12
+    image: ghcr.io/henrygd/beszel/beszel:0.13.1
     container_name: beszel
     env_file: ../../.env
     hostname: beszel
@@ -22,6 +22,14 @@ services:
       - beszel:/beszel_data # Beszel data.
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0" # Allow up to 100% of 1 vCPU.
+          memory: "512M" # Allow up to 512M of memory usage.
+        reservations:
+          cpus: "0.25" # Reserve 25% of 1 vCPU.
+          memory: "128M" # Reserve 128MB of RAM.
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
     security_opt:
@@ -30,7 +38,7 @@ services:
       - "/tmp" # Required for read-only image.
 
   beszel-agent:
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.12.12 # use -intel for Arc GPU support.
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.13.1 # use -intel for Arc GPU support.
     container_name: beszel-agent
     env_file: ../../.env
     hostname: beszel-agent
@@ -49,6 +57,10 @@ services:
       - beszel-agent:/var/lib/beszel-agent # Beszel agent data.
       - beszel-socket:/beszel_socket # Beszel agent socket.
       - socket-proxy:/var/run/docker.sock:ro # Socket proxy Docker socket mount.
+    cap_add:
+      - CAP_PERFMON # Required for Intel GPU monitoring apparently?
+    cap_drop:
+      - ALL
     depends_on:
       beszel:
         condition: service_healthy
@@ -56,10 +68,14 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
-    cap_add:
-      - CAP_PERFMON # Required for Intel GPU monitoring apparently?
-    cap_drop:
-      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Allow up to 50% of 1 vCPU.
+          memory: "256M" # Allow up to 256M of memory usage.
+        reservations:
+          cpus: "0.1" # Reserve 10% of 1 vCPU.
+          memory: "64M" # Reserve 64MB of RAM.
     healthcheck:
       test: ["CMD", "/agent", "health"]
     security_opt:
@@ -70,7 +86,7 @@ services:
   ###########################################################################
 
   dozzle:
-    image: ghcr.io/amir20/dozzle:v8.14.3
+    image: ghcr.io/amir20/dozzle:v8.14.4
     container_name: dozzle
     env_file: ../../.env
     hostname: dozzle
@@ -94,6 +110,14 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Allow up to 50% of 1 vCPU.
+          memory: "256M" # Allow up to 256M of memory usage.
+        reservations:
+          cpus: "0.1" # Reserve 10% of 1 vCPU.
+          memory: "64M" # Reserve 64MB of RAM.
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:
@@ -130,6 +154,14 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Allow up to 50% of 1 vCPU.
+          memory: "256M" # Allow up to 256M of memory usage.
+        reservations:
+          cpus: "0.1" # Reserve 10% of 1 vCPU.
+          memory: "64M" # Reserve 64MB of RAM.
     security_opt:
       - no-new-privileges:true
 
@@ -152,6 +184,14 @@ services:
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read-only image.
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0" # Allow up to 100% of 1 vCPU.
+          memory: "1G" # Allow up to 1GB of memory usage.
+        reservations:
+          cpus: "0.25" # Reserve 25% of 1 vCPU.
+          memory: "256M" # Reserve 256M of RAM.
     security_opt:
       - no-new-privileges:true
 

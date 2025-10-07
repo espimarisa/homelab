@@ -1,7 +1,7 @@
 ---
 services:
   ###########################################################################
-  # Vaultwarden: Bitwarden srv - https://github.com/dani-garcia/vaultwarden #
+  # Vaultwarden: BW server - https://github.com/dani-garcia/vaultwarden     #
   ###########################################################################
 
   vaultwarden:
@@ -50,6 +50,14 @@ services:
       - vaultwarden-data:/data
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25" # Allow up to 25% of 1 vCPU.
+          memory: "256M" # Allow up to 256MB of memory usage.
+        reservations:
+          cpus: "0.05" # Reserve 5% of 1 vCPU.
+          memory: "64M" # Reserve 64MB of RAM.
     healthcheck:
       test: "curl -f http://127.0.0.1:80/alive || exit 1"
     security_opt:

@@ -1,8 +1,4 @@
 ---
-include:
-  - ./downloads/compose.yml
-  - ./management/compose.yml
-
 services:
   ###########################################################################
   # Jellyfin: Media Server - https://jellyfin.org                           #
@@ -35,12 +31,12 @@ services:
       - ALL
     deploy:
       resources:
-        reservations:
-          cpus: 0.5 # Always allow 1 thread.
-          memory: 2G # Always reserve 2GB of memory.
         limits:
-          cpus: 4 # Allow up to 4 cores, 8 threads of usage.
+          cpus: 4 # Allow up to 4 vCPUs.
           memory: 8G # Allow up to 8GB of memory usage.
+        reservations:
+          cpus: 0.5 # Reserve 50% of 1 vCPU.
+          memory: 2G # Reserve 2GB of RAM.
     group_add:
       - "${RENDER_GID}" # Required for video device support.
     security_opt:

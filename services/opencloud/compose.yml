@@ -52,6 +52,14 @@ services:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
     security_opt:
       - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "4G" # Allow up to 4GB of RAM.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "1G" # Reserve 1GB of RAM.
 
 networks:
   caddy:

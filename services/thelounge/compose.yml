@@ -24,6 +24,14 @@ services:
       - thelounge:/var/opt/thelounge
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25" # Allow up to 25% of 1 vCPU.
+          memory: "512M" # Allow up to 512MB of memory usage.
+        reservations:
+          cpus: "0.05" # Reserve 5% of 1 vCPU.
+          memory: "128M" # Reserve 128MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:9000 || exit 1"
     security_opt:

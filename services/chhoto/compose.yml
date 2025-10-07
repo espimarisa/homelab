@@ -25,6 +25,14 @@ services:
       - chhoto-data:/db # Configuration and database.
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Allow up to 50% of 1 vCPU.
+          memory: "256M" # Allow up to 256M of memory usage.
+        reservations:
+          cpus: "0.1" # Reserve 10% of 1 vCPU.
+          memory: "64M" # Reserve 64MB of RAM.
     security_opt:
       - no-new-privileges:true
 

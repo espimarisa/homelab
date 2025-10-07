@@ -5,16 +5,15 @@ services:
   ###########################################################################
 
   caddy:
-    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2025.09.30
+    image: ghcr.io/11notes/caddy:2.10.0
     container_name: caddy
+    command: ["run", "--config", "/caddy/etc/Caddyfile"] # Use mounted Caddyfile.
     env_file: ../../.env
     hostname: caddy
+    read_only: true
     restart: unless-stopped
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
-      CADDY_DOCKER_CADDYFILE_PATH: "/Caddyfile"
-      CADDY_INGRESS_NETWORKS: "caddy" # Listen for traffic coming from the caddy network.
-      CLOUDFLARE_API_TOKEN: "${CLOUDFLARE_API_TOKEN}" # Cloudflare account token with DNS Zone editing to domains.
       TZ: "${TZ}" # Configures the timezone to use.
     networks:
       - caddy
@@ -22,24 +21,35 @@ services:
     ports:
       - 80:80/tcp # HTTP traffic.
       - 443:443/tcp # HTTPS traffic.
-      - 443:443/udp # HTTPS traffic.
+      - 443:443/udp # HTTPS/3 traffic.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
     volumes:
-      - ./Caddyfile:/Caddyfile
-      - caddy:/data
-    cap_add:
-      - NET_ADMIN
-      - NET_BIND_SERVICE
+      - ./Caddyfile:/caddy/etc/Caddyfile
+      - caddy-backup:/caddy/backup
+      - caddy-config:/caddy/etc
+      - caddy-data:/caddy/var
     cap_drop:
       - ALL
-    dns:
-      - 9.9.9.9
-      - 149.112.112.112
     depends_on:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Allow up to 50% of 1 vCPU.
+          memory: "512M" # Allow up to 512MB of memory usage.
+        reservations:
+          cpus: "0.25" # Reserve 25% of 1 vCPU.
+          memory: "256M" # Reserve 256MB of RAM.
+    dns: # Use Quad9 for DNS resolution; forcefully bypass system DNS in case of local DNS testing.
+      - 9.9.9.9
+      - 149.112.112.112
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevents privilege escalation.
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: 80 # Allow rootless container to access port 80 and higher.
 
 networks:
   caddy:
@@ -51,6 +61,12 @@ networks:
     name: socket-proxy-network # Internal-only network used only for Socket Proxy traffic.
 
 volumes:
-  caddy:
+  caddy-backup:
     external: true
-    name: caddy-volume # $ docker volume create caddy-volume
+    name: caddy-backup-volume # $ docker volume create caddy-backup-volume
+  caddy-config:
+    external: true
+    name: caddy-config-volume # $ docker volume create caddy-config-volume
+  caddy-data:
+    external: true
+    name: caddy-data-volume # $ docker volume create caddy-data-volume

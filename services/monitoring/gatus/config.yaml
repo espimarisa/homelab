@@ -7,7 +7,7 @@ x-defaults-alerts: &defaults-alerts
 # Default conditions.
 x-defaults-conditions: &defaults-conditions
   - "[STATUS] == 200"
-  - "[RESPONSE_TIME] < 1000"
+  - "[RESPONSE_TIME] < 5000"
 
 # Default options.
 x-defaults: &defaults
@@ -139,23 +139,11 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/byparr/json
 
-  # Cleanuparr.
-  - name: Cleanuparr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/cleanuparr/json
-
   # Gluetun.
   - name: Gluetun
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/gluetun/json
-
-  # Huntarr.
-  - name: Huntarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/huntarr/json
 
   # LazyLibrarian.
   - name: LazyLibrarian

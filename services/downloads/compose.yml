@@ -8,14 +8,18 @@ x-defaults-environment: &defaults-environment
 
 # Default container options.
 x-defaults: &defaults
-  env_file: ../../../.env
+  env_file: ../../.env
   environment: *defaults-environment
   network_mode: service:gluetun
   restart: unless-stopped
+  cap_add:
+    - CHOWN # Required for changing ownership.
+    - FOWNER # Required for changing ownership.
+    - FSETID # Required for adjusting IDs.
+    - SETGID # Required for dropping down to GID.
+    - SETUID # Required for dropping down to UID.
   cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SYS_CHROOT
+    - ALL
   depends_on:
     gluetun:
       condition: service_healthy
@@ -25,13 +29,13 @@ x-defaults: &defaults
 
 services:
   ###########################################################################
-  # Gluetun: Container VPN client - https://github.com/qdm12/gluetun        #
+  # Gluetun: VPN - https://github.com/qdm12/gluetun                         #
   ###########################################################################
 
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.40.0
+    image: ghcr.io/qdm12/gluetun:latest # Use latest for more updated servers.
     container_name: gluetun
-    env_file: ../../../.env
+    env_file: ../../.env
     hostname: gluetun
     restart: unless-stopped
     devices:
@@ -80,6 +84,14 @@ services:
       - AUDIT_WRITE
       - MKNOD
       - SYS_CHROOT
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0" # Allow up to 100% of 1 vCPU.
+          memory: "1G" # Allow up to 1GB of RAM usage.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "256M" # Reserve 256MB of RAM.
     security_opt:
       - no-new-privileges:true
 
@@ -89,14 +101,21 @@ services:
 
   qbittorrent:
     <<: *defaults
-    image: lscr.io/linuxserver/qbittorrent:5.1.2
+    image: ghcr.io/11notes/qbittorrent:5.1.2
     container_name: qbittorrent
-    environment:
-      <<: *defaults-environment
-      DOCKER_MODS: "ghcr.io/gabe565/linuxserver-mod-vuetorrent" # Auto-install Vuetorrent.
+    read_only: true
     volumes:
       - downloads:/downloads
-      - qbittorrent:/config
+      - qbittorrent-config:/etc
+      - qbittorrent-db:/var
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0" # Allow up to 4 vCPUs.
+          memory: "8G" # Allow up to 8GB of RAM.
+        reservations:
+          cpus: "1.0" # Reserve 1 vCPU.
+          memory: "1G" # Reserve 1GB of RAM.
 
   ###########################################################################
   # LazyLibrarian: Book manager and PVR - https://lazylibrarian.gitlab.io   #
@@ -104,14 +123,20 @@ services:
 
   lazylibrarian:
     <<: *defaults
-    image: lscr.io/linuxserver/lazylibrarian:version-9dfe9ad5
+    image: lscr.io/linuxserver/lazylibrarian:version-656e4558
     container_name: lazylibrarian
-    environment:
-      <<: *defaults-environment
     volumes:
       - downloads:/downloads
       - lazylibrarian:/config
       - media-library:/library
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "1G" # Allow up to 1GB of RAM.
+        reservations:
+          cpus: "0.25" # Reserve 25% of 1 vCPU.
+          memory: "256M" # Reserve 256MB of RAM.
 
   ###########################################################################
   # slskd: Soulseek client - https://github.com/slskd/slskd                 #
@@ -141,6 +166,14 @@ services:
       - media-library:/library:ro
     healthcheck:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "2G" # Allow up to 2GB of RAM.
+        reservations:
+          cpus: "0.25" # Reserve 25% of 1 vCPU.
+          memory: "512M" # Reserve 512MB of RAM.
 
   ###########################################################################
   # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
@@ -148,13 +181,22 @@ services:
 
   prowlarr:
     <<: *defaults
-    image: ghcr.io/hotio/prowlarr:release-2.0.5.5160
+    image: ghcr.io/11notes/prowlarr:2.0.5
+    read_only: true
     container_name: prowlarr
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
     volumes:
       - downloads:/downloads
-      - prowlarr:/config
-    healthcheck:
-      test: "curl -f http://127.0.0.1:9696/health || exit 1"
+      - prowlarr:/prowlarr/etc
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "2G" # Allow up to 2GB of RAM.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "512M" # Reserve 512MB of RAM.
 
   ###########################################################################
   # Byparr: Cloudflare solver - https://github.com/ThePhaseless/Byparr      #
@@ -168,6 +210,14 @@ services:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
     security_opt:
       - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "2G" # Allow up to 2GB of RAM.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "512M" # Reserve 512MB of RAM.
 
   ###########################################################################
   # MaM-IP-Helper: MyAnonaMouse seedbox IP synchronization.                 #
@@ -181,8 +231,15 @@ services:
     user: ${PUID}:${PGID}
     environment:
       <<: *defaults-environment
-      TZ: "${TZ}" # Configures the timezone to use.
       MAM_ID: "${MAM_ID}" # MyAnonaMouse session ID.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1" # Allow up to 10% of 1 vCPU.
+          memory: "32M" # Allow up to 32MB of memory usage.
+        reservations:
+          cpus: "0.05" # Reserve 5% of 1 vCPU.
+          memory: "16M" # Reserve 16MB of RAM.
 
 networks:
   caddy:
@@ -204,9 +261,12 @@ volumes:
   lazylibrarian:
     external: true
     name: lazylibrarian-volume # $ docker volume create lazylibrarian-volume
-  qbittorrent:
+  qbittorrent-config:
     external: true
-    name: qbittorrent-volume # $ docker volume create qbittorrent-volume
+    name: qbittorrent-config-volume # $ docker volume create qbittorrent-config-volume
+  qbittorrent-db:
+    external: true
+    name: qbittorrent-db-volume # $ docker volume create qbittorrent-db-volume
   prowlarr:
     external: true
     name: prowlarr-volume # $ docker volume create prowlarr-volume

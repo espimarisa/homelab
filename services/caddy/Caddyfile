@@ -1,24 +1,15 @@
 {
-	# Configures ACME to use ZeroSSL and Cloudflare.
+	# Configures ACME to use ZeroSSL.
 	acme_ca https://acme.zerossl.com/v2/DV90
-	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
 	email {$ACME_EMAIL}
 
-	# Dynamically update A/AAAA records for ${DDNS_DOMAINS}.
-	dynamic_dns {
-		provider cloudflare {$CLOUDFLARE_API_TOKEN}
-		check_interval 1h
-		versions ipv4
-		domains {
-			{$DDNS_DOMAINS}
-		}
+	servers {
+		# Trust Docker, Tailscale, and local IP ranges.
+		trusted_proxies static 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 fc00::/7
 	}
 
-	# Trust local, Docker, Tailscale, and Cloudflare IP ranges.
-	servers {
-		trusted_proxies static 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 fc00::/7
-		trusted_proxies cloudflare
-	}
+	# Store files in /caddy/var.
+	storage file_system /caddy/var
 }
 
 # Snippet for externally accessible reverse proxied services.
@@ -44,10 +35,16 @@
 
 # Snippet for internal-only reverse proxied services.
 (internal_proxy) {
-	@not_internal not remote_ip private_ranges 100.64.0.0/10
+	@not_internal not remote_ip private_ranges 100.64.0.0/10 fc00::/7
 	abort @not_internal
 	encode zstd gzip
+	tls internal
 	reverse_proxy {args[0]}
+}
+
+# Internal healthcheck endpoint.
+:3000 {
+	respond / 200
 }
 
 ###########################################################################
@@ -93,23 +90,15 @@
 }
 
 ###########################################################################
-# Internal-only services; proxied but should use internal DNS rewrites.   #
+# Internal-only services; need DNS rewrites + Caddy CA cert installed.    #
 ###########################################################################
 
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
-cleanuparr.{$INTERNAL_DOMAIN} {
-	import internal_proxy cleanuparr:11011
-}
-
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
-}
-
-huntarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy huntarr:9705
 }
 
 lazylibrarian.{$INTERNAL_DOMAIN} {

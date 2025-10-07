@@ -2,7 +2,9 @@
 include:
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
-  - ./services/media/compose.yml
+  - ./services/downloads/compose.yml
+  - ./services/jellyfin/compose.yml
+  - ./services/media-management/compose.yml
   - ./services/monitoring/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/socket-proxy/compose.yml

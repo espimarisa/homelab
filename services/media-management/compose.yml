@@ -9,12 +9,16 @@ x-defaults-environment: &defaults-environment
 # Default container options.
 x-defaults: &defaults
   restart: unless-stopped
-  env_file: ../../../.env
+  env_file: ../../.env
   environment: *defaults-environment
   cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SYS_CHROOT
+    - ALL
+  cap_add:
+    - CHOWN # Required for changing ownership.
+    - FOWNER # Required for changing ownership.
+    - FSETID # Required for adjusting IDs.
+    - SETGID # Required for dropping down to GID.
+    - SETUID # Required for dropping down to UID.
   security_opt:
     - no-new-privileges:true
 
@@ -25,7 +29,7 @@ services:
 
   lidarr:
     <<: *defaults
-    image: ghcr.io/hotio/lidarr:pr-plugins-2.14.2.4786
+    image: ghcr.io/hotio/lidarr:pr-plugins-2.14.4.4810
     container_name: lidarr
     hostname: lidarr
     expose:
@@ -40,6 +44,14 @@ services:
       - media-library:/library
     healthcheck:
       test: "curl -f http://127.0.0.1:8686/health || exit 1"
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "4G" # Allow up to 4GB of RAM.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "512M" # Reserve 512MB of RAM.
 
   ###########################################################################
   # Radarr: Movie manager, organizer, and PVR - https://radarr.video        #
@@ -47,9 +59,10 @@ services:
 
   radarr:
     <<: *defaults
-    image: ghcr.io/hotio/radarr:release-5.27.5.10198
+    image: ghcr.io/11notes/radarr:5.27.5
     container_name: radarr
     hostname: radarr
+    read_only: true
     restart: unless-stopped
     expose:
       - 7878/tcp # Web interface.
@@ -57,13 +70,21 @@ services:
       caddy:
       gluetun:
         ipv4_address: 172.19.0.4 # Use static container IP address.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
     volumes:
-      - ./scripts:/scripts
+      - ./scripts:/radarr/etc/scripts
       - downloads:/downloads
       - media-library:/library
-      - radarr:/config
-    healthcheck:
-      test: "curl -f http://127.0.0.1:7878/health || exit 1"
+      - radarr:/radarr/etc
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "4G" # Allow up to 4GB of RAM.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "512M" # Reserve 512MB of RAM.
 
   ###########################################################################
   # Sonarr: Music manager, organizer, and PVR - https://sonarr.tv           #
@@ -71,21 +92,30 @@ services:
 
   sonarr:
     <<: *defaults
-    image: ghcr.io/hotio/sonarr:release-4.0.15.2941
+    image: ghcr.io/11notes/sonarr:4.0.15
     container_name: sonarr
     hostname: sonarr
+    read_only: true
     expose:
       - 8989/tcp
     networks:
       caddy:
       gluetun:
         ipv4_address: 172.19.0.5 # Use static container IP address.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
     volumes:
       - downloads:/downloads
       - media-library:/library
-      - sonarr:/config
-    healthcheck:
-      test: "curl -f http://127.0.0.1:8989/health || exit 1"
+      - sonarr:/etc/sonarr
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "4G" # Allow up to 4GB of RAM.
+        reservations:
+          cpus: "0.5" # Reserve 50% of 1 vCPU.
+          memory: "512M" # Reserve 512MB of RAM.
 
   ###########################################################################
   # Profilarr: Config management for 'ARR apps - https://dictionarry.dev    #
@@ -104,47 +134,14 @@ services:
       - 6868/tcp
     volumes:
       - profilarr:/config
-
-  ###########################################################################
-  # Huntarr: Automated media upgrade tool - http://huntarr.io/              #
-  ###########################################################################
-
-  huntarr:
-    <<: *defaults
-    image: ghcr.io/plexguide/huntarr:8.2.10
-    container_name: huntarr
-    hostname: huntarr
-    read_only: true
-    expose:
-      - 9705/tcp
-    networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.7 # Use static container IP address.
-    volumes:
-      - huntarr:/config
-    tmpfs:
-      - "/tmp" # Required for read-only image.
-
-  ###########################################################################
-  # Cleanuparr: PVR cleanup tool - https://cleanuparr.github.io/Cleanuparr  #
-  ###########################################################################
-
-  cleanuparr:
-    <<: *defaults
-    image: ghcr.io/cleanuparr/cleanuparr:2.3.3
-    container_name: cleanuparr
-    hostname: cleanuparr
-    expose:
-      - 11011/tcp
-    networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.8 # Use static container IP address.
-    volumes:
-      - cleanuparr:/config
-    healthcheck:
-      test: "curl -f http://127.0.0.1:11011/health || exit 1"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0" # Allow up to 1 vCPU.
+          memory: "512M" # Allow up to 512MB of RAM.
+        reservations:
+          cpus: "0.1" # Reserve 10% of 1 vCPU.
+          memory: "128M" # Reserve 128MB of RAM.
 
   ###########################################################################
   # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip   #
@@ -172,6 +169,14 @@ services:
       - "/tmp" # Required for read-only image.
     volumes:
       - downloads:/downloads
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0" # Allow up to 2 vCPUs.
+          memory: "1G" # Allow up to 1GB of RAM.
+        reservations:
+          cpus: "0.25" # Reserve 25% of 1 vCPU.
+          memory: "128M" # Reserve 128MB of RAM.
 
 networks:
   caddy:
@@ -187,12 +192,6 @@ networks:
     name: gluetun-network # $ docker network create gluetun-network
 
 volumes:
-  cleanuparr:
-    external: true
-    name: cleanuparr-volume # $ docker volume create cleanuparr-volume
-  huntarr:
-    external: true
-    name: huntarr-volume # $ docker volume create huntarr-volume
   lidarr:
     external: true
     name: lidarr-volume # $ docker volume create lidarr-volume
