@@ -67,6 +67,7 @@ volumes:
     external: true
   readarr-db-backups:
     name: readarr-db-backups-volume
+    external: true
   caddy-backups:
     external: true
     name: caddy-backups-volume
