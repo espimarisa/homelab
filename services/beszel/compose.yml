@@ -56,10 +56,10 @@ services:
       TOKEN: "${BESZEL_TOKEN}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
       - ${STORAGE_PATH}:/extra-filesystems/storage:ro
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
-      - socket-proxy:/var/run/docker.sock:ro
     cap_add:
       - CAP_PERFMON
     cap_drop:

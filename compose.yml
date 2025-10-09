@@ -142,9 +142,6 @@ volumes:
   slskd:
     name: slskd-volume
     external: true
-  socket-proxy:
-    name: socket-proxy-volume
-    external: true
   sonarr:
     name: sonarr-volume
     external: true

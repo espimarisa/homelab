@@ -111,7 +111,6 @@ VOLUMES_TO_BACKUP=(
 	"radarr-db-data-volume"
 	"radarr-volume"
 	"slskd-volume"
-	"socket-proxy-volume"
 	"sonarr-db-backups-volume"
 	"sonarr-db-config-volume"
 	"sonarr-db-data-volume"
