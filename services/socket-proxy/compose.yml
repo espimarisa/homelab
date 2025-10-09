@@ -18,13 +18,13 @@ services:
     volumes:
       - /var/run/docker.sock:/run/docker.sock:ro
       - socket-proxy:/run/proxy
-    cap_add:
-      - CHOWN
-      - DAC_OVERRIDE
-      - SETGID
-      - SETUID
     cap_drop:
-      - ALL
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     deploy:
       resources:
         limits:
