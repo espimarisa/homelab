@@ -16,10 +16,9 @@ services:
     expose:
       - 8787/tcp
     networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.6
-      internal-only:
+      - caddy
+      - gluetun
+      - internal-only
     volumes:
       - downloads:/downloads
       - readarr:/config
