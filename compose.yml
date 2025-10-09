@@ -1,4 +1,3 @@
----
 include:
   - ./services/beszel/compose.yml
   - ./services/readarr/compose.yml
