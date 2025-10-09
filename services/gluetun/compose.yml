@@ -43,7 +43,6 @@ services:
     expose:
       - "${SOULSEEK_PORT:-50300}/tcp"
       - 5030/tcp
-      - 5299/tcp
       - 8080/tcp
       - 8191/tcp
       - 9696/tcp

@@ -19,7 +19,7 @@ services:
     networks:
       caddy:
       gluetun:
-        ipv4_address: 172.19.0.3
+        ipv4_address: 172.19.0.7
       internal-only:
     volumes:
       - downloads:/downloads
