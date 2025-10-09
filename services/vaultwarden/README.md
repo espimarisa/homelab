@@ -2,6 +2,13 @@
 
 Vaultwarden is an unofficial Bitwarden-compatible server. It's very lightweight and fully compatible with all of the lovely Bitwarden apps.
 
+Before starting Vaultwarden, you will need to take ownership of the volume properly.
+
+```sh
+# replace 1000:1000 with your puid/pgid and /var/bla to wherever you have docker
+sudo chown -R 1000:1000 /var/lib/docker/volumes/vaultwarden-volume
+```
+
 ## Admin portal access
 
 After deploying Vaultwarden, head on over to `https://${VAULTWARDEN_URL}/admin` and enter your admin token. Note that this is the _raw_ token, not the argon2-encrypted token.

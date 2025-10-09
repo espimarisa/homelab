@@ -20,7 +20,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - thelounge-data:/var/opt/thelounge
+      - thelounge:/var/opt/thelounge
     cap_drop:
       - ALL
     deploy:

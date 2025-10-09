@@ -2,10 +2,13 @@
 
 The Lounge is a web-based IRC client. I primarily use it to keep up with private trackers.
 
-Before using The Lounge, you will need to create a user.
+Before using The Lounge, you will need to take ownership of the volume, and then create a user.
 
 ```sh
+# replace 1000:1000 with your puid/pgid and /var/bla to wherever you have docker
+sudo chown -R 1000:1000 /var/lib/docker/volumes/thelounge-volume
 
+# after doing so, start thelounge
 # be sure thelounge is running! docker compose up -d thelounge
 docker exec -it thelounge thelounge add exampleUsername
 ```

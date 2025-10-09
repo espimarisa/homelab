@@ -43,7 +43,7 @@ alerting:
 # Storage configuration.
 storage:
   type: postgres
-  path: "postgres://postgres:postgres@gatus-db:5432/postgres?sslmode=disable"
+  path: "postgres://postgres:${GATUS_DB_PASSWORD}@gatus-db:5432/postgres"
 
 # UI configuration.
 ui:
@@ -133,11 +133,11 @@ endpoints:
   # Media management.                                                       #
   ###########################################################################
 
-  # Bookshelf.
-  - name: Bookshelf
+  # Readarr.
+  - name: Readarr
     <<: *defaults-container
     group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/bookshelf/json
+    url: ${SOCKET_PROXY_URL}/containers/readarr/json
 
   # Byparr.
   - name: Byparr

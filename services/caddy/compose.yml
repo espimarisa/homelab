@@ -24,7 +24,7 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - ./Caddyfile:/caddy/etc/Caddyfile
-      - caddy-backup:/caddy/backup
+      - caddy-backups:/caddy/backup
       - caddy-config:/caddy/etc
       - caddy-data:/caddy/var
     cap_drop:

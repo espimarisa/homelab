@@ -20,6 +20,7 @@ services:
       caddy:
       gluetun:
         ipv4_address: 172.19.0.3
+      internal-only:
     volumes:
       - downloads:/downloads
       - lidarr:/config
@@ -32,6 +33,10 @@ services:
       - SETUID
     cap_drop:
       - ALL
+    depends_on:
+      lidarr-db:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
@@ -40,5 +45,38 @@ services:
         reservations:
           cpus: "0.5"
           memory: 2G
+    security_opt:
+      - no-new-privileges:true
+
+  lidarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: lidarr-db
+    env_file: ../../.env
+    hostname: lidarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - lidarr-db-backups:/postgres/backup
+      - lidarr-db-config:/postgres/etc
+      - lidarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 512M
     security_opt:
       - no-new-privileges:true

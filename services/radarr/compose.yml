@@ -1,6 +1,6 @@
 services:
   ###########################################################################
-  # Radarr: Movie manager, organizer, and PVR - https://radarr.tv        #
+  # Radarr: Movie manager, organizer, and PVR - https://radarr.tv           #
   ###########################################################################
 
   radarr:
@@ -18,6 +18,7 @@ services:
       caddy:
       gluetun:
         ipv4_address: 172.19.0.4
+      internal-only:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
@@ -29,6 +30,10 @@ services:
       - CHOWN
     cap_drop:
       - ALL
+    depends_on:
+      radarr-db:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
@@ -37,5 +42,38 @@ services:
         reservations:
           cpus: "0.5"
           memory: 2G
+    security_opt:
+      - no-new-privileges:true
+
+  radarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: radarr-db
+    env_file: ../../.env
+    hostname: radarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${RADARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - radarr-db-backups:/postgres/backup
+      - radarr-db-config:/postgres/etc
+      - radarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 512M
     security_opt:
       - no-new-privileges:true

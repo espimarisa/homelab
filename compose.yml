@@ -1,7 +1,7 @@
 ---
 include:
   - ./services/beszel/compose.yml
-  - ./services/bookshelf/compose.yml
+  - ./services/readarr/compose.yml
   - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
@@ -36,6 +36,11 @@ networks:
         - subnet: 172.19.0.0/16 # Use 172.19.0.0/16 as a static subnet.
           gateway: 172.19.0.1 # Use 172.19.0.1 as the default gateway.
     name: gluetun-network # $ docker network create gluetun-network
+  internal-only:
+    driver: bridge
+    external: true
+    internal: true # Isolates the network from the outside.
+    name: internal-only-network # Internal-only network used only for internal traffic.
   socket-proxy:
     external: true # $ docker network create --internal=true socket-proxy-network
     internal: true # Isolates the network from the outside.
@@ -51,9 +56,20 @@ volumes:
   beszel-socket:
     name: beszel-socket-volume
     external: true
-  caddy-backup:
+  readarr:
+    name: readarr-volume
     external: true
-    name: caddy-backup-volume
+  readarr-db-data:
+    name: readarr-db-data-volume
+    external: true
+  readarr-db-config:
+    name: readarr-db-config-volume
+    external: true
+  readarr-db-backups:
+    name: readarr-db-backups-volume
+  caddy-backups:
+    external: true
+    name: caddy-backups-volume
   caddy-config:
     external: true
     name: caddy-config-volume
@@ -69,8 +85,14 @@ volumes:
   dozzle:
     name: dozzle-volume
     external: true
-  gatus-db:
-    name: gatus-db-volume
+  gatus-db-data:
+    name: gatus-db-data-volume
+    external: true
+  gatus-db-config:
+    name: gatus-db-config-volume
+    external: true
+  gatus-db-backups:
+    name: gatus-db-backups-volume
     external: true
   gluetun:
     name: gluetun-volume
@@ -81,11 +103,20 @@ volumes:
   jellyfin-config:
     external: true
     name: jellyfin-config-volume
-  bookshelf:
-    name: bookshelf-volume
-    external: true
   lidarr:
     name: lidarr-volume
+    external: true
+  lidarr-db-data:
+    name: lidarr-db-data-volume
+    external: true
+  lidarr-db-config:
+    name: lidarr-db-config-volume
+    external: true
+  lidarr-db-backups:
+    name: lidarr-db-backups-volume
+    external: true
+  opencloud-config:
+    name: opencloud-config-volume
     external: true
   prowlarr:
     name: prowlarr-volume
@@ -99,6 +130,15 @@ volumes:
   radarr:
     name: radarr-volume
     external: true
+  radarr-db-data:
+    name: radarr-db-data-volume
+    external: true
+  radarr-db-config:
+    name: radarr-db-config-volume
+    external: true
+  radarr-db-backups:
+    name: radarr-db-backups-volume
+    external: true
   slskd:
     name: slskd-volume
     external: true
@@ -107,6 +147,30 @@ volumes:
     external: true
   sonarr:
     name: sonarr-volume
+    external: true
+  sonarr-db-data:
+    name: sonarr-db-data-volume
+    external: true
+  sonarr-db-config:
+    name: sonarr-db-config-volume
+    external: true
+  sonarr-db-backups:
+    name: sonarr-db-backups-volume
+    external: true
+  vaultwarden:
+    name: vaultwarden-volume
+    external: true
+  thelounge:
+    name: thelounge-volume
+    external: true
+  vaultwarden-db-data:
+    name: vaultwarden-db-data-volume
+    external: true
+  vaultwarden-db-config:
+    name: vaultwarden-db-config-volume
+    external: true
+  vaultwarden-db-backups:
+    name: vaultwarden-db-backups-volume
     external: true
 
   downloads:
@@ -121,34 +185,9 @@ volumes:
       device: "${MEDIA_LIBRARY_PATH}"
       o: bind
       type: none
-
-  chhoto-data:
-    name: chhoto-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/chhoto"
-      o: bind
-      type: none
-  opencloud-config:
-    name: opencloud-config-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/opencloud/config"
-      o: bind
-      type: none
   opencloud-data:
     name: opencloud-data-bind
     driver_opts:
-      device: "${APPDATA_PATH}/opencloud/data"
-      o: bind
-      type: none
-  thelounge-data:
-    name: thelounge-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/thelounge"
-      o: bind
-      type: none
-  vaultwarden-data:
-    name: vaultwarden-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/vaultwarden"
+      device: "${APPDATA_PATH}/opencloud"
       o: bind
       type: none

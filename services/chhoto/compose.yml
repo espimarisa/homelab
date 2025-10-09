@@ -23,7 +23,7 @@ services:
     networks:
       - caddy
     volumes:
-      - chhoto-data:/db
+      - chhoto:/db
     cap_drop:
       - ALL
     deploy:

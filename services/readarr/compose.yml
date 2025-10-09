@@ -1,36 +1,39 @@
 services:
   ###########################################################################
-  # Sonarr: Series manager, organizer, and PVR - https://sonarr.tv          #
+  # readarr: Readarr fork - https://github.com/pennydreadful/readarr    #
   ###########################################################################
 
-  sonarr:
-    image: ghcr.io/11notes/sonarr:4.0.15
-    container_name: sonarr
+  readarr:
+    image: ghcr.io/pennydreadful/readarr:softcover-v0.4.20.91
+    container_name: readarr
     env_file: ../../.env
-    hostname: sonarr
-    read_only: true
     restart: unless-stopped
     environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
       TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
-      - 8989/tcp
+      - 8787/tcp
     networks:
       caddy:
       gluetun:
-        ipv4_address: 172.19.0.5
+        ipv4_address: 172.19.0.6
       internal-only:
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - downloads:/downloads
+      - readarr:/config
       - media-library:/library
-      - sonarr:/etc/sonarr
     cap_add:
       - CHOWN
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETUID
     cap_drop:
       - ALL
     depends_on:
-      sonarr-db:
+      readarr-db:
         condition: service_healthy
         restart: true
     deploy:
@@ -44,16 +47,16 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  sonarr-db:
+  readarr-db:
     image: ghcr.io/11notes/postgres:17
-    container_name: sonarr-db
+    container_name: readarr-db
     env_file: ../../.env
-    hostname: sonarr-db
+    hostname: readarr-db
     read_only: true
     restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}"
+      POSTGRES_PASSWORD: "${READARR_DB_PASSWORD}"
       TZ: "${TZ}"
     networks:
       - internal-only
@@ -61,9 +64,9 @@ services:
       - "/postgres/log:uid=${PUID},gid=${PGID}"
       - "/postgres/run:uid=${PUID},gid=${PGID}"
     volumes:
-      - sonarr-db-backups:/postgres/backup
-      - sonarr-db-config:/postgres/etc
-      - sonarr-db-data:/postgres/var
+      - readarr-db-backups:/postgres/backup
+      - readarr-db-config:/postgres/etc
+      - readarr-db-data:/postgres/var
     cap_drop:
       - ALL
     deploy:

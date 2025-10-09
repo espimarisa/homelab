@@ -17,6 +17,7 @@ services:
       ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
       DOMAIN: "https://${VAULTWARDEN_URL}"
       EMAIL_CHANGE_ALLOWED: "true"
+      DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres"
       EMERGENCY_ACCESS_ALLOWED: "true"
       EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments"
       IP_HEADER: "X-Forwarded-For"
@@ -39,25 +40,63 @@ services:
       TZ: "${TZ}"
       WEB_VAULT_ENABLED: "true"
       WEBSOCKET_ENABLED: "true"
-    expose:
+    ports:
       - 80/tcp
     networks:
       - caddy
+      - internal-only
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - vaultwarden-data:/data
+      - vaultwarden:/data
+    cap_drop:
+      - ALL
+    depends_on:
+      vaultwarden-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:80/alive || exit 1"
+    security_opt:
+      - no-new-privileges:true
+
+  vaultwarden-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: vaultwarden-db
+    env_file: ../../.env
+    hostname: vaultwarden-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - vaultwarden-db-backups:/postgres/backup
+      - vaultwarden-db-config:/postgres/etc
+      - vaultwarden-db-data:/postgres/var
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
-          cpus: "0.75"
-          memory: 768M
+          cpus: "1.0"
+          memory: 1G
         reservations:
           cpus: "0.25"
-          memory: 256M
-    healthcheck:
-      test: "wget --spider http://127.0.0.1:80/alive || exit 1"
+          memory: 512M
     security_opt:
       - no-new-privileges:true

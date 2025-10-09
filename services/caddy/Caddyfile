@@ -96,10 +96,6 @@ beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
-bookshelf.{$INTERNAL_DOMAIN} {
-	import internal_proxy bookshelf:8787
-}
-
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
 }
@@ -118,6 +114,10 @@ qbittorrent.{$INTERNAL_DOMAIN} {
 
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
+}
+
+readarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy readarr:8787
 }
 
 slskd.{$INTERNAL_DOMAIN} {
