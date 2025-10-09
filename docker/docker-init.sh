@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # List of downloads directories to create.
-DOWNLOADS_DIRECTORIES=("deezer" "lazylibrarian" "soulseek" "torrents")
+DOWNLOADS_DIRECTORIES=("deezer" "bookshelf" "soulseek" "torrents")
 TORRENTS_DIRECTORIES=(
 	".incomplete"
 	".torrent-files"
-	"lazylibrarian"
+	"bookshelf"
 	"lidarr"
 	"radarr"
 	"sonarr"
@@ -26,8 +26,9 @@ MEDIA_LIBRARY_DIRECTORIES=(
 # List of volumes to create.
 VOLUMES=(
 	"beszel-agent-volume"
+	"beszel-data-volume"
 	"beszel-socket-volume"
-	"beszel-volume"
+	"bookshelf-volume"
 	"caddy-backup-volume"
 	"caddy-config-volume"
 	"caddy-data-volume"
@@ -36,12 +37,11 @@ VOLUMES=(
 	"gluetun-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"lazylibrarian-volume"
 	"lidarr-volume"
 	"profilarr-volume"
 	"prowlarr-volume"
 	"qbittorrent-config-volume"
-	"qbittorrent-db-volume"
+	"qbittorrent-data-volume"
 	"radarr-volume"
 	"slskd-volume"
 	"socket-proxy-volume"
@@ -108,17 +108,10 @@ echo "Creating application data structure..."
 mkdir -p "${APPDATA_PATH}"/{chhoto,opencloud,thelounge,vaultwarden}
 mkdir -p "${APPDATA_PATH}"/opencloud/{config,data}
 
-# Sets ownership for all created data directories.
-echo "Setting ownership..."
-$SUDO chown -R "${PUID}:${PGID}" \
-	"${APPDATA_PATH}" \
-	"${DOWNLOADS_PATH}" \
-	"${MEDIA_LIBRARY_PATH}"
-
 # Docker network setup.
+docker network create --driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1 "gluetun-network" || true
 echo "Creating Docker networks..."
 docker network create --internal "socket-proxy-network" || true
-docker network create "--driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1 gluetun-network" || true
 docker network create "caddy-network" || true
 
 # Docker volume setup.
@@ -126,5 +119,12 @@ echo "Creating Docker volumes..."
 for volume in "${VOLUMES[@]}"; do
 	docker volume create "$volume" || true
 done
+
+# Sets ownership for all created data directories.
+echo "Setting ownership..."
+$SUDO chown -R "${PUID}:${PGID}" \
+	"${APPDATA_PATH}" \
+	"${DOWNLOADS_PATH}" \
+	"${MEDIA_LIBRARY_PATH}"
 
 echo "Initial setup complete."

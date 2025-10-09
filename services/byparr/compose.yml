@@ -1,32 +1,30 @@
 services:
   ###########################################################################
-  # ddclient: Dynamic DNS client (used with Glauca HexDNS).                 #
+  # Byparr: Cloudflare solver - https://github.com/ThePhaseless/Byparr      #
   ###########################################################################
 
-  ddclient:
-    image: matthewhuie/ddclient:cad54d2
-    container_name: ddclient
+  byparr:
+    image: ghcr.io/thephaseless/byparr:2.0.1
+    container_name: byparr
     env_file: ../../.env
-    hostname: ddclient
-    network_mode: host
+    network_mode: service:gluetun
     read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
-      - "/var/cache:uid=${PUID},gid=${PGID}"
     volumes:
-      - ./config/ddclient.conf:/etc/ddclient/ddclient.conf:ro
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
       - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
           cpus: "0.10"
-          memory: 64M
+          memory: 1G
         reservations:
           cpus: "0.05"
-          memory: 32M
+          memory: 512M
     security_opt:
       - no-new-privileges:true

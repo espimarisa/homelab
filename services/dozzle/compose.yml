@@ -1,32 +1,28 @@
 services:
   ###########################################################################
-  # Caddy: Reverse proxy and web server - https://caddyserver.com/          #
+  # Dozzle: Docker log viewer - https://dozzle.dev/                         #
   ###########################################################################
 
-  caddy:
-    image: ghcr.io/11notes/caddy:2.10.0
-    container_name: caddy
-    command: ["run", "--config", "/caddy/etc/Caddyfile"]
+  dozzle:
+    image: ghcr.io/amir20/dozzle:v8.14.4
+    container_name: dozzle
     env_file: ../../.env
-    hostname: caddy
+    hostname: dozzle
     read_only: true
     restart: unless-stopped
+    user: "${PUID}:${PGID}"
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375"
-      TZ: "${TZ}"
+      DOZZLE_ENABLE_ACTIONS: "true"
+      DOZZLE_ENABLE_SHELL: "true"
+    expose:
+      - 8080/tcp
     networks:
       - caddy
       - socket-proxy
-    ports:
-      - 80:80/tcp
-      - 443:443/tcp
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - ./Caddyfile:/caddy/etc/Caddyfile
-      - caddy-backup:/caddy/backup
-      - caddy-config:/caddy/etc
-      - caddy-data:/caddy/var
+      - /etc/localtime:/etc/localtime:ro
+      - dozzle:/data
     cap_drop:
       - ALL
     depends_on:
@@ -36,12 +32,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.50"
+          cpus: "0.25"
           memory: 256M
         reservations:
-          cpus: "0.25"
+          cpus: "0.10"
           memory: 128M
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:
       - no-new-privileges:true
-    sysctls:
-      net.ipv4.ip_unprivileged_port_start: 80

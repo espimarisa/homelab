@@ -1,0 +1,44 @@
+services:
+  ###########################################################################
+  # Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
+  ###########################################################################
+
+  lidarr:
+    image: ghcr.io/hotio/lidarr:pr-plugins-2.14.4.4810
+    container_name: lidarr
+    env_file: ../../.env
+    hostname: lidarr
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 8686/tcp
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.3
+    volumes:
+      - downloads:/downloads
+      - lidarr:/config
+      - media-library:/library
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETUID
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 4G
+        reservations:
+          cpus: "0.5"
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true

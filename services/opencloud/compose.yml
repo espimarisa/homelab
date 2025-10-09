@@ -1,4 +1,3 @@
----
 services:
   ###########################################################################
   # OpenCloud: Self-hosted cloud storage service - https://opencloud.eu/en  #
@@ -6,6 +5,7 @@ services:
 
   opencloud:
     image: opencloudeu/opencloud-rolling:3.5.0
+    command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh
     env_file: ../../.env
@@ -13,69 +13,49 @@ services:
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
-    command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     environment:
-      FRONTEND_ARCHIVER_MAX_SIZE: "10000000000" # Max size of 10GB for web archives.
-      IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}" # Configures the initial admin password.
-      IDM_CREATE_DEMO_USERS: "false" # Do not create demo users.
-      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}" # Type of encryption to use or something idk.
-      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}" # External SMTP host URL to connect to.
-      NOTIFICATIONS_SMTP_INSECURE: "${SMTP_INSECURE}" # If enabled, allows insecure connections to the external SMTP server.
-      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}" # External SMTP email account password to login with.
-      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}" # External SMTP port to connect to.
-      NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>" # External SMTP address for sending email notifications.
-      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}" # External SMTP email account username to login with.
-      OC_ADD_RUN_SERVICES: "notifications" # Additional services to start.
-      OC_INSECURE: "false" # Do not run in insecure mode.
-      OC_LOG_COLOR: "true" # Log in color.
-      OC_LOG_LEVEL: "info" # Log at the info level.
-      OC_LOG_PRETTY: "false" # Do not use pretty logs; machine readable logs >>>> smfh
-      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false" # Allow public shares without passwords.
-      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true" # Writable public shares must have passwords.
-      OC_URL: "https://${OPENCLOUD_URL}" # Configures the OpenCloud URL.
-      PROXY_TLS: "false" # Do not use SSL between the reverse proxy and OpenCloud.
-      TZ: "${TZ}" # Configures the timezone to use.
+      FRONTEND_ARCHIVER_MAX_SIZE: "10000000000"
+      IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}"
+      IDM_CREATE_DEMO_USERS: "false"
+      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}"
+      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}"
+      NOTIFICATIONS_SMTP_INSECURE: "${SMTP_INSECURE}"
+      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}"
+      NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>"
+      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}"
+      OC_ADD_RUN_SERVICES: "notifications"
+      OC_INSECURE: "false"
+      OC_LOG_COLOR: "true"
+      OC_LOG_LEVEL: "info"
+      OC_LOG_PRETTY: "false"
+      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false"
+      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true"
+      OC_URL: "https://${OPENCLOUD_URL}"
+      PROXY_TLS: "false"
+      TZ: "${TZ}"
     expose:
-      - 9200/tcp # Web interface.
+      - 9200/tcp
+    extra_hosts:
+      - "${OPENCLOUD_URL}:host-gateway"
     networks:
       - caddy
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - opencloud-config:/etc/opencloud
       - opencloud-data:/var/lib/opencloud
     cap_drop:
       - ALL
-    extra_hosts:
-      - "${OPENCLOUD_URL}:host-gateway" # Required for resolving the external URL.
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+        reservations:
+          cpus: "0.75"
+          memory: 2G
     healthcheck:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
     security_opt:
       - no-new-privileges:true
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0" # Allow up to 2 vCPUs.
-          memory: "4G" # Allow up to 4GB of RAM.
-        reservations:
-          cpus: "0.5" # Reserve 50% of 1 vCPU.
-          memory: "1G" # Reserve 1GB of RAM.
-
-networks:
-  caddy:
-    external: true
-    name: caddy-network # $ docker network create caddy-network
-
-volumes:
-  opencloud-config:
-    name: opencloud-config-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/opencloud/config" # Root path to store OpenCloud config data.
-      o: bind
-      type: none
-  opencloud-data:
-    name: opencloud-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/opencloud/data" # Root path to store OpenCloud user data.
-      o: bind
-      type: none

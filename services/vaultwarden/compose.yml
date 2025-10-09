@@ -1,11 +1,10 @@
----
 services:
   ###########################################################################
   # Vaultwarden: BW server - https://github.com/dani-garcia/vaultwarden     #
   ###########################################################################
 
   vaultwarden:
-    image: ghcr.io/dani-garcia/vaultwarden:1.34.3
+    image: ghcr.io/dani-garcia/vaultwarden:1.34.3-alpine
     container_name: vaultwarden
     env_file: ../../.env
     hostname: vaultwarden
@@ -13,65 +12,52 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      ADMIN_RATELIMIT_MAX_BURST: "3" # Configures the admin ratelimit.
-      ADMIN_RATELIMIT_SECONDS: "300" # Configures the admin ratelimit cooldown.
-      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN} # Sets the admin encryption token.
-      DOMAIN: "https://${VAULTWARDEN_URL}" # Configures the domain to use.
-      EMAIL_CHANGE_ALLOWED: "true" # Allows changing emails.
-      EMERGENCY_ACCESS_ALLOWED: "true" # Allows emergency access.
-      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments" # Flags to enable.
-      IP_HEADER: "X-Forwarded-For" # Use X-Forwarded-For.
-      LOGIN_RATELIMIT_MAX_BURST: "10" # Configures ratelimit bursts.
-      LOGIN_RATELIMIT_SECONDS: "60" # Configures ratelimit cooldown.
-      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles notification support.
-      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # https://bitwarden.com/host/
-      PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # https://bitwarden.com/host/
-      REQUIRE_DEVICE_EMAIL: "true" # Require new device emails.
-      SENDS_ALLOWED: "true" # Enables Bitwarden sends.
-      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Configures if signups should be enabled.
-      SIGNUPS_VERIFY: "true" # Require signed up accounts to verify their email.
-      SMTP_FROM: "${SMTP_SENDER}" # External email server sender.
-      SMTP_HOST: "${SMTP_HOST}" # External email server host.
-      SMTP_PASSWORD: "${SMTP_PASSWORD}" # External email server password.
-      SMTP_PORT: "${SMTP_PORT}" # External email server port.
-      SMTP_SECURITY: "${SMTP_SECURITY}" # External email server encryption method.
-      SMTP_TIMEOUT: "${SMTP_TIMEOUT}" # 15s timeout.
-      SMTP_USERNAME: "${SMTP_USERNAME}" # External email server username.
-      WEB_VAULT_ENABLED: "true" # Enables the web vault.
-      WEBSOCKET_ENABLED: "true" # Enable WS support.
+      ADMIN_RATELIMIT_MAX_BURST: "3"
+      ADMIN_RATELIMIT_SECONDS: "300"
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+      DOMAIN: "https://${VAULTWARDEN_URL}"
+      EMAIL_CHANGE_ALLOWED: "true"
+      EMERGENCY_ACCESS_ALLOWED: "true"
+      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments"
+      IP_HEADER: "X-Forwarded-For"
+      LOGIN_RATELIMIT_MAX_BURST: "10"
+      LOGIN_RATELIMIT_SECONDS: "60"
+      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}"
+      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}"
+      PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}"
+      REQUIRE_DEVICE_EMAIL: "true"
+      SENDS_ALLOWED: "true"
+      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}"
+      SIGNUPS_VERIFY: "true"
+      SMTP_FROM: "${SMTP_SENDER}"
+      SMTP_HOST: "${SMTP_HOST}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_PORT: "${SMTP_PORT}"
+      SMTP_SECURITY: "${SMTP_SECURITY}"
+      SMTP_TIMEOUT: "${SMTP_TIMEOUT}"
+      SMTP_USERNAME: "${SMTP_USERNAME}"
+      TZ: "${TZ}"
+      WEB_VAULT_ENABLED: "true"
+      WEBSOCKET_ENABLED: "true"
     expose:
-      - 80/tcp # Web interface.
+      - 80/tcp
     networks:
       - caddy
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
       - vaultwarden-data:/data
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
-          cpus: "0.25" # Allow up to 25% of 1 vCPU.
-          memory: "256M" # Allow up to 256MB of memory usage.
+          cpus: "0.75"
+          memory: 768M
         reservations:
-          cpus: "0.05" # Reserve 5% of 1 vCPU.
-          memory: "64M" # Reserve 64MB of RAM.
+          cpus: "0.25"
+          memory: 256M
     healthcheck:
-      test: "curl -f http://127.0.0.1:80/alive || exit 1"
+      test: "wget --spider http://127.0.0.1:80/alive || exit 1"
     security_opt:
       - no-new-privileges:true
-
-networks:
-  caddy:
-    external: true
-    name: caddy-network # $ docker network create caddy-network
-
-volumes:
-  vaultwarden-data:
-    name: vaultwarden-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/vaultwarden" # Root path to store Vaultwarden data.
-      o: bind
-      type: none

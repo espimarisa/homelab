@@ -1,0 +1,48 @@
+services:
+  ###########################################################################
+  # slskd: Soulseek client - https://github.com/slskd/slskd                 #
+  ###########################################################################
+
+  slskd:
+    image: ghcr.io/slskd/slskd:0.23.2
+    container_name: slskd
+    env_file: ../../.env
+    network_mode: service:gluetun
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
+      SLSKD_INCOMPLETE_DIR: "/downloads/soulseek/.incomplete"
+      SLSKD_REMOTE_CONFIGURATION: "true"
+      SLSKD_SHARED_DIR: "/library/music"
+      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
+      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
+      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
+      SLSKD_UMASK: "${UMASK}"
+      SLSKD_USERNAME: "${SLSKD_USERNAME}"
+      SOULSEEK_PASSWORD: "${SOULSEEK_PASSWORD}"
+      TZ: "${TZ}"
+    volumes:
+      - slskd:/app
+      - downloads:/downloads
+      - media-library:/library:ro
+    cap_add:
+      - CHOWN
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:5030/health || exit 1"
+    security_opt:
+      - no-new-privileges:true

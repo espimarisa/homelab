@@ -1,37 +1,35 @@
 services:
   ###########################################################################
-  # The Lounge: IRC Client - https://thelounge.chat                         #
+  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
   ###########################################################################
 
-  thelounge:
-    image: ghcr.io/thelounge/thelounge:4.4.3
-    container_name: thelounge
+  prowlarr:
+    image: ghcr.io/11notes/prowlarr:2.0.5
+    container_name: prowlarr
     env_file: ../../.env
-    hostname: thelounge
+    network_mode: service:gluetun
     read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
     environment:
       TZ: "${TZ}"
-    expose:
-      - 9000/tcp
-    networks:
-      - caddy
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - thelounge-data:/var/opt/thelounge
+      - downloads:/downloads
+      - prowlarr:/prowlarr/etc
     cap_drop:
       - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 512M
+          cpus: "1.0"
+          memory: 1G
         reservations:
           cpus: "0.25"
-          memory: 256M
-    healthcheck:
-      test: "wget --spider http://127.0.0.1:9000 || exit 1"
+          memory: 512M
     security_opt:
       - no-new-privileges:true

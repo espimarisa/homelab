@@ -1,4 +1,3 @@
----
 services:
   ###########################################################################
   # Jellyfin: Media Server - https://jellyfin.org                           #
@@ -13,52 +12,33 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri:/dev/dri # Video device passthrough; /dev/dri/renderD128 is GPU0.
+      - /dev/dri/renderD128:/dev/dri/renderD128:ro
     environment:
-      JELLYFIN_PublishedServerUrl: "${JELLYFIN_URL}" # Configures the published server URL.
+      JELLYFIN_PublishedServerUrl: "${JELLYFIN_URL}"
     expose:
-      - 8096/tcp # Jellyfin web interface.
-    healthcheck:
-      test: "curl -f http://127.0.0.1:8096/health || exit 1"
+      - 8096/tcp
     networks:
       - caddy
+    group_add:
+      - "${RENDER_GID}"
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - jellyfin-cache:/cache # Jellyfin cache.
-      - jellyfin-config:/config # Jellyfin configuration and user data,
-      - media-library:/library:ro # Read-only media library mount.
+      - /etc/localtime:/etc/localtime:ro
+      - jellyfin-cache:/cache
+      - jellyfin-config:/config
+      - media-library:/library:ro
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow up to 4 vCPUs.
-          memory: 8G # Allow up to 8GB of memory usage.
+          cpus: "3.0"
+          memory: 4G
         reservations:
-          cpus: 0.5 # Reserve 50% of 1 vCPU.
-          memory: 2G # Reserve 2GB of RAM.
-    group_add:
-      - "${RENDER_GID}" # Required for video device support.
+          cpus: "1.0"
+          memory: 2G
+    healthcheck:
+      test: "curl -f http://127.0.0.1:8096/health || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
-
-networks:
-  caddy:
-    external: true
-    name: caddy-network
-
-volumes:
-  jellyfin-config:
-    external: true
-    name: jellyfin-config-volume
-  jellyfin-cache:
-    external: true
-    name: jellyfin-cache-volume
-  media-library:
-    name: media-library-bind
-    driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}"
-      o: bind
-      type: none
+      - no-new-privileges:true

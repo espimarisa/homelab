@@ -1,37 +1,41 @@
 services:
   ###########################################################################
-  # The Lounge: IRC Client - https://thelounge.chat                         #
+  # Radarr: Movie manager, organizer, and PVR - https://radarr.tv        #
   ###########################################################################
 
-  thelounge:
-    image: ghcr.io/thelounge/thelounge:4.4.3
-    container_name: thelounge
+  radarr:
+    image: ghcr.io/11notes/radarr:5.28.0
+    container_name: radarr
     env_file: ../../.env
-    hostname: thelounge
+    hostname: radarr
     read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
     environment:
       TZ: "${TZ}"
     expose:
-      - 9000/tcp
+      - 7878/tcp
     networks:
-      - caddy
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.4
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - thelounge-data:/var/opt/thelounge
+      - ./scripts:/radarr/etc/scripts
+      - downloads:/downloads
+      - media-library:/library
+      - radarr:/radarr/etc
+    cap_add:
+      - CHOWN
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 512M
+          cpus: "1.5"
+          memory: 4G
         reservations:
-          cpus: "0.25"
-          memory: 256M
-    healthcheck:
-      test: "wget --spider http://127.0.0.1:9000 || exit 1"
+          cpus: "0.5"
+          memory: 2G
     security_opt:
       - no-new-privileges:true

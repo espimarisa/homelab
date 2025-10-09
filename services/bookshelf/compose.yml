@@ -1,0 +1,47 @@
+services:
+  ###########################################################################
+  # bookshelf: Readarr fork - https://github.com/pennydreadful/bookshelf    #
+  ###########################################################################
+
+  bookshelf:
+    image: ghcr.io/pennydreadful/bookshelf:softcover-v0.4.20.91
+    container_name: bookshelf
+    env_file: ../../.env
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 8787/tcp
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.6
+    volumes:
+      - downloads:/downloads
+      - bookshelf:/config
+      - media-library:/library
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETUID
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 4G
+        reservations:
+          cpus: "0.5"
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true

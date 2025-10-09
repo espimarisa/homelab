@@ -1,0 +1,72 @@
+services:
+  ###########################################################################
+  # Gatus: Status and uptime monitoring - https://gatus.io                  #
+  ###########################################################################
+
+  gatus:
+    image: ghcr.io/twin/gatus:v5.26.0
+    container_name: gatus
+    env_file: ../../.env
+    hostname: gatus
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.45"
+      TZ: "${TZ}"
+    expose:
+      - 8080/tcp
+    networks:
+      - caddy
+      - socket-proxy
+    volumes:
+      - ./config:/config
+    cap_drop:
+      - ALL
+    depends_on:
+      gatus-db:
+        condition: service_healthy
+        restart: true
+      socket-proxy:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+
+  gatus-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: gatus-db
+    env_file: ../../.env
+    hostname: gatus-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      TZ: "${TZ}"
+    networks:
+      - socket-proxy
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - gatus-db:/postgres
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true

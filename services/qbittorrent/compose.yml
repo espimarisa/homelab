@@ -1,0 +1,36 @@
+services:
+  ###########################################################################
+  # qBittorrent: BitTorrent client - https://www.qbittorrent.org/           #
+  ###########################################################################
+
+  qbittorrent:
+    image: ghcr.io/11notes/qbittorrent:5.1.2
+    container_name: qbittorrent
+    env_file: ../../.env
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    volumes:
+      - downloads:/downloads
+      - qbittorrent-config:/etc
+      - qbittorrent-data:/var
+    cap_add:
+      - CHOWN
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "3.0"
+          memory: 8G
+        reservations:
+          cpus: "1.0"
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true

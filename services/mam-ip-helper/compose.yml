@@ -1,25 +1,25 @@
 services:
   ###########################################################################
-  # ddclient: Dynamic DNS client (used with Glauca HexDNS).                 #
+  # MaM-IP-Helper: MyAnonaMouse seedbox IP synchronization.                 #
   ###########################################################################
 
-  ddclient:
-    image: matthewhuie/ddclient:cad54d2
-    container_name: ddclient
+  mam-ip-helper:
+    image: tyzen9/myanonamouse-ip-helper:1.0.0
+    container_name: mam-ip-helper
     env_file: ../../.env
-    hostname: ddclient
-    network_mode: host
+    network_mode: service:gluetun
     read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
-      - "/var/cache:uid=${PUID},gid=${PGID}"
-    volumes:
-      - ./config/ddclient.conf:/etc/ddclient/ddclient.conf:ro
-      - /etc/localtime:/etc/localtime:ro
+    user: ${PUID}:${PGID}
+    environment:
+      TZ: "${TZ}"
+      MAM_ID: "${MAM_ID}"
     cap_drop:
       - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:

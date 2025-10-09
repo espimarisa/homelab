@@ -1,0 +1,85 @@
+services:
+  ###########################################################################
+  # Beszel: Server monitoring hub - https://beszel.dev/                     #
+  ###########################################################################
+
+  beszel:
+    image: ghcr.io/henrygd/beszel/beszel:0.13.1
+    container_name: beszel
+    env_file: ../../.env
+    hostname: beszel
+    restart: unless-stopped
+    environment:
+      APP_URL: "https://beszel.${INTERNAL_DOMAIN}"
+    ports:
+      - 127.0.0.1:8090:8090/tcp
+    networks:
+      - caddy
+    tmpfs:
+      - "/tmp"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - beszel-socket:/beszel_socket
+      - beszel-data:/beszel_data
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Beszel Agent: Beszel agent for server monitoring.                       #
+  ###########################################################################
+
+  beszel-agent:
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.13.1
+    container_name: beszel-agent
+    env_file: ../../.env
+    hostname: beszel-agent
+    network_mode: host
+    restart: unless-stopped
+    devices:
+      - /dev/dri/card0:/dev/dri/card0
+    environment:
+      HUB_URL: "http://127.0.0.1:8090"
+      KEY: "${BESZEL_KEY}"
+      LISTEN: "0.0.0.0:45876"
+      TOKEN: "${BESZEL_TOKEN}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${STORAGE_PATH}:/extra-filesystems/storage:ro
+      - beszel-agent:/var/lib/beszel-agent
+      - beszel-socket:/beszel_socket
+      - socket-proxy:/var/run/docker.sock:ro
+    cap_add:
+      - CAP_PERFMON
+    cap_drop:
+      - ALL
+    depends_on:
+      beszel:
+        condition: service_healthy
+        restart: true
+      socket-proxy:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: 64M
+        reservations:
+          cpus: "0.05"
+          memory: 32M
+    healthcheck:
+      test: ["CMD", "/agent", "health"]
+    security_opt:
+      - no-new-privileges:true

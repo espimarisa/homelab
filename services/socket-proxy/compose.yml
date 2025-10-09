@@ -1,4 +1,3 @@
----
 services:
   ###########################################################################
   # Socket Proxy: Proxy wrapper for the Docker socket for secure access.    #
@@ -13,38 +12,26 @@ services:
     user: "0:${DOCKER_GID}"
     restart: unless-stopped
     environment:
-      TZ: "${TZ}" # Local timezone to use.
+      TZ: "${TZ}"
     networks:
-      - socket-proxy # Internal-only socket proxy network.
+      - socket-proxy
     volumes:
-      - /var/run/docker.sock:/run/docker.sock:ro # Host Docker socket mount.
-      - socket-proxy:/run/proxy # Docker socket proxy volume.
+      - /var/run/docker.sock:/run/docker.sock:ro
+      - socket-proxy:/run/proxy
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
     cap_drop:
       - ALL
-    cap_add:
-      - CHOWN # Required to change ownership.
-      - DAC_OVERRIDE # Required for user:0:docker_gid
-      - SETGID # Required to drop to GID.
-      - SETUID # Required to drop to UID.
     deploy:
       resources:
         limits:
-          cpus: "0.1" # Allow up to 10% of 1 vCPU.
-          memory: "64M" # Allow up to 64MB of memory usage.
+          cpus: "0.10"
+          memory: 64M
         reservations:
-          cpus: "0.05" # Reserve 5% of 1 vCPU.
-          memory: "32M" # Reserve 32MB of RAM.
+          cpus: "0.05"
+          memory: 32M
     security_opt:
       - no-new-privileges:true
-
-networks:
-  socket-proxy:
-    external: true # $ docker network create --internal=true socket-proxy-network
-    internal: true # Isolates the network from the outside.
-    name: socket-proxy-network # Internal-only network used only for Socket Proxy traffic.
-
-volumes:
-  socket-proxy:
-    external: true
-    name: socket-proxy-volume # $ docker volume create socket-proxy-volume
-

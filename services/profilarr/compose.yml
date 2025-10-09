@@ -1,38 +1,39 @@
 services:
   ###########################################################################
-  # Chhoto URL: URL shortener - https://github.com/sintan1729/chhoto-url    #
+  # Profilarr: Config management for 'ARR apps - https://dictionarry.dev/   #
   ###########################################################################
 
-  chhoto:
-    image: ghcr.io/sintan1729/chhoto-url:6.3.2-alpine
-    container_name: chhoto
+  profilarr:
+    image: santiagosayshey/profilarr:v1.1.3
+    container_name: profilarr
     env_file: ../../.env
-    hostname: chhoto
-    read_only: true
+    hostname: profilarr
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
     environment:
-      api_key: "${CHHOTO_API_KEY}"
-      db_url: "/db/urls.sqlite"
-      password: "${CHHOTO_PASSWORD}"
-      site_url: "https://${CHHOTO_URL}"
-      slug_style: "Pair"
+      PGID: "${PGID}"
+      PUID: "${PUID}"
       TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
-      - 4567/tcp
+      - 6868/tcp
     networks:
       - caddy
+      - gluetun
     volumes:
-      - chhoto-data:/db
+      - profilarr:/config
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
           cpus: "0.10"
-          memory: 128M
+          memory: 256M
         reservations:
           cpus: "0.05"
-          memory: 64M
+          memory: 128M
     security_opt:
       - no-new-privileges:true

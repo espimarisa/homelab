@@ -38,7 +38,7 @@ x-defaults-container: &defaults-container
 alerting:
   discord:
     title: "🚨 Status Update"
-    webhook-url: "${ALERTS_DISCORD_WEBHOOK_URL}"
+    webhook-url: "${GATUS_DISCORD_WEBHOOK_URL}"
 
 # Storage configuration.
 storage:
@@ -133,6 +133,12 @@ endpoints:
   # Media management.                                                       #
   ###########################################################################
 
+  # Bookshelf.
+  - name: Bookshelf
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/containers/bookshelf/json
+
   # Byparr.
   - name: Byparr
     <<: *defaults-container
@@ -145,12 +151,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/gluetun/json
 
-  # LazyLibrarian.
-  - name: LazyLibrarian
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/lazylibrarian/json
-
   # Lidarr.
   - name: Lidarr
     <<: *defaults-container
@@ -158,7 +158,7 @@ endpoints:
     url: ${SOCKET_PROXY_URL}/containers/lidarr/json
 
   # mam-ip-helper
-  - name: MyAnonaMouse IP
+  - name: MyAnonaMouse IP Helper
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/mam-ip-helper/json
