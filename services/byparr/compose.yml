@@ -8,7 +8,6 @@ services:
     container_name: byparr
     env_file: ../../.env
     network_mode: service:gluetun
-    read_only: true
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
