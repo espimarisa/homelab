@@ -14,8 +14,8 @@ services:
       TZ: "${TZ}"
     volumes:
       - downloads:/downloads
-      - qbittorrent-config:/etc
-      - qbittorrent-data:/var
+      - qbittorrent-config:/qbittorrent/etc
+      - qbittorrent-data:/qbittorrent/var
     cap_add:
       - CHOWN
     cap_drop:
