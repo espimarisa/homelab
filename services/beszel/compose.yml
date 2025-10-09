@@ -63,7 +63,12 @@ services:
     cap_add:
       - CAP_PERFMON
     cap_drop:
-      - ALL
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       beszel:
         condition: service_healthy
