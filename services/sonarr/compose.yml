@@ -23,7 +23,7 @@ services:
     volumes:
       - downloads:/downloads
       - media-library:/library
-      - sonarr:/etc/sonarr
+      - sonarr:/sonarr/etc
     cap_add:
       - CHOWN
     cap_drop:
