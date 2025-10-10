@@ -31,14 +31,6 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.50"
-          memory: 512M
-        reservations:
-          cpus: "0.25"
-          memory: 256M
     security_opt:
       - no-new-privileges:true
 
@@ -64,13 +56,5 @@ services:
       - gatus-db-data:/postgres/var
     cap_drop:
       - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 1G
-        reservations:
-          cpus: "0.25"
-          memory: 512M
     security_opt:
       - no-new-privileges:true

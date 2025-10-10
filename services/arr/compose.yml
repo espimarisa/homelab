@@ -1,0 +1,181 @@
+services:
+  ###########################################################################
+  # arr-db: PostgreSQL database used for primary 'ARR apps.                 #
+  ###########################################################################
+
+  arr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: arr-db
+    env_file: ../../.env
+    hostname: arr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - arr-db-backups:/postgres/backup
+      - arr-db-config:/postgres/etc
+      - arr-db-data:/postgres/var
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
+  ###########################################################################
+
+  lidarr:
+    image: ghcr.io/hotio/lidarr:pr-plugins-2.14.4.4810
+    container_name: lidarr
+    env_file: ../../.env
+    hostname: lidarr
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 8686/tcp
+    networks:
+      - caddy
+      - gluetun
+      - internal-only
+    volumes:
+      - downloads:/downloads
+      - lidarr:/config
+      - media-library:/library
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETUID
+    cap_drop:
+      - ALL
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Radarr: Movie manager, organizer, and PVR - https://radarr.tv           #
+  ###########################################################################
+
+  radarr:
+    image: ghcr.io/11notes/radarr:5.28.0
+    container_name: radarr
+    env_file: ../../.env
+    hostname: radarr
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    expose:
+      - 7878/tcp
+    networks:
+      - caddy
+      - gluetun
+      - internal-only
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - ./scripts:/radarr/etc/scripts
+      - downloads:/downloads
+      - media-library:/library
+      - radarr:/radarr/etc
+    cap_add:
+      - CHOWN
+    cap_drop:
+      - ALL
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Readarr: Book manager - https://github.com/pennydreadful/readarr        #
+  ###########################################################################
+
+  readarr:
+    image: ghcr.io/pennydreadful/bookshelf:softcover-v0.4.20.91
+    container_name: readarr
+    env_file: ../../.env
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 8787/tcp
+    networks:
+      - caddy
+      - gluetun
+      - internal-only
+    volumes:
+      - downloads:/downloads
+      - readarr:/config
+      - media-library:/library
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETUID
+    cap_drop:
+      - ALL
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Sonarr: Series manager, organizer, and PVR - https://sonarr.tv          #
+  ###########################################################################
+
+  sonarr:
+    image: ghcr.io/11notes/sonarr:4.0.15
+    container_name: sonarr
+    env_file: ../../.env
+    hostname: sonarr
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    expose:
+      - 8989/tcp
+    networks:
+      - caddy
+      - gluetun
+      - internal-only
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - downloads:/downloads
+      - media-library:/library
+      - sonarr:/sonarr/etc
+    cap_add:
+      - CHOWN
+    cap_drop:
+      - ALL
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true

@@ -47,14 +47,6 @@ services:
       - opencloud-data:/var/lib/opencloud
     cap_drop:
       - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: 4G
-        reservations:
-          cpus: "0.75"
-          memory: 2G
     healthcheck:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
     security_opt:

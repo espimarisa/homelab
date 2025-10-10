@@ -1,6 +1,6 @@
 include:
+  - ./services/arr/compose.yml
   - ./services/beszel/compose.yml
-  - ./services/readarr/compose.yml
   - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
@@ -9,16 +9,13 @@ include:
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
   - ./services/jellyfin/compose.yml
-  - ./services/lidarr/compose.yml
   - ./services/mam-ip-helper/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/profilarr/compose.yml
   - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
-  - ./services/radarr/compose.yml
   - ./services/slskd/compose.yml
   - ./services/socket-proxy/compose.yml
-  - ./services/sonarr/compose.yml
   - ./services/thelounge/compose.yml
   - ./services/unpackerr/compose.yml
   - ./services/vaultwarden/compose.yml
@@ -46,6 +43,15 @@ networks:
     name: socket-proxy-network # Internal-only network used only for Socket Proxy traffic.
 
 volumes:
+  arr-db-data:
+    name: arr-db-data-volume
+    external: true
+  arr-db-config:
+    name: arr-db-config-volume
+    external: true
+  arr-db-backups:
+    name: arr-db-backups-volume
+    external: true
   beszel-data:
     name: beszel-data-volume
     external: true
@@ -57,15 +63,6 @@ volumes:
     external: true
   readarr:
     name: readarr-volume
-    external: true
-  readarr-db-data:
-    name: readarr-db-data-volume
-    external: true
-  readarr-db-config:
-    name: readarr-db-config-volume
-    external: true
-  readarr-db-backups:
-    name: readarr-db-backups-volume
     external: true
   caddy-backups:
     external: true
@@ -106,15 +103,6 @@ volumes:
   lidarr:
     name: lidarr-volume
     external: true
-  lidarr-db-data:
-    name: lidarr-db-data-volume
-    external: true
-  lidarr-db-config:
-    name: lidarr-db-config-volume
-    external: true
-  lidarr-db-backups:
-    name: lidarr-db-backups-volume
-    external: true
   opencloud-config:
     name: opencloud-config-volume
     external: true
@@ -130,29 +118,11 @@ volumes:
   radarr:
     name: radarr-volume
     external: true
-  radarr-db-data:
-    name: radarr-db-data-volume
-    external: true
-  radarr-db-config:
-    name: radarr-db-config-volume
-    external: true
-  radarr-db-backups:
-    name: radarr-db-backups-volume
-    external: true
   slskd:
     name: slskd-volume
     external: true
   sonarr:
     name: sonarr-volume
-    external: true
-  sonarr-db-data:
-    name: sonarr-db-data-volume
-    external: true
-  sonarr-db-config:
-    name: sonarr-db-config-volume
-    external: true
-  sonarr-db-backups:
-    name: sonarr-db-backups-volume
     external: true
   vaultwarden:
     name: vaultwarden-volume

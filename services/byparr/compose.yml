@@ -9,6 +9,7 @@ services:
     env_file: ../../.env
     network_mode: service:gluetun
     restart: unless-stopped
+    user: "${PUID}:${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
@@ -17,13 +18,5 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.10"
-          memory: 1G
-        reservations:
-          cpus: "0.05"
-          memory: 512M
     security_opt:
       - no-new-privileges:true

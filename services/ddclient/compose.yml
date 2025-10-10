@@ -20,13 +20,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
       - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: "0.10"
-          memory: 64M
-        reservations:
-          cpus: "0.05"
-          memory: 32M
+    dns: # Use Quad9 to bypass system DNS fuckery.
+      - 9.9.9.9
+      - 149.112.112.112
     security_opt:
       - no-new-privileges:true

@@ -55,14 +55,6 @@ services:
       vaultwarden-db:
         condition: service_healthy
         restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.75"
-          memory: 1G
-        reservations:
-          cpus: "0.25"
-          memory: 512M
     healthcheck:
       test: "wget --spider http://127.0.0.1:80/alive || exit 1"
     security_opt:
@@ -90,13 +82,5 @@ services:
       - vaultwarden-db-data:/postgres/var
     cap_drop:
       - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 1G
-        reservations:
-          cpus: "0.25"
-          memory: 512M
     security_opt:
       - no-new-privileges:true

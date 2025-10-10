@@ -34,14 +34,6 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.75"
-          memory: 1G
-        reservations:
-          cpus: "0.25"
-          memory: 256M
     healthcheck:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:

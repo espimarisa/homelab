@@ -26,13 +26,5 @@ services:
       - chhoto:/db
     cap_drop:
       - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: "0.10"
-          memory: 128M
-        reservations:
-          cpus: "0.05"
-          memory: 64M
     security_opt:
       - no-new-privileges:true

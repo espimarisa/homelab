@@ -23,14 +23,6 @@ services:
       - beszel-data:/beszel_data
     cap_drop:
       - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 128M
-        reservations:
-          cpus: "0.10"
-          memory: 64M
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
     security_opt:
@@ -76,14 +68,6 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: "0.10"
-          memory: 64M
-        reservations:
-          cpus: "0.05"
-          memory: 32M
     healthcheck:
       test: ["CMD", "/agent", "health"]
     security_opt:
