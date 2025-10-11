@@ -49,6 +49,7 @@ services:
     networks:
       - caddy
       - gluetun
+      - internal-only
     volumes:
       - gluetun:/gluetun
     cap_add:
