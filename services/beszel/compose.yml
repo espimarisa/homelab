@@ -40,7 +40,7 @@ services:
     network_mode: host
     restart: unless-stopped
     devices:
-      - /dev/dri/card0:/dev/dri/card0
+      - /dev/dri/renderD128:/dev/dri/renderD128:ro # ngl idk how this works
     environment:
       HUB_URL: "http://127.0.0.1:8090"
       KEY: "${BESZEL_KEY}"

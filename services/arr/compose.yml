@@ -179,3 +179,33 @@ services:
         restart: true
     security_opt:
       - no-new-privileges:true
+
+  ###########################################################################
+  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
+  ###########################################################################
+
+  prowlarr:
+    image: ghcr.io/11notes/prowlarr:2.0.5
+    container_name: prowlarr
+    env_file: ../../.env
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - downloads:/downloads
+      - prowlarr:/prowlarr/etc
+    cap_drop:
+      - ALL
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+      gluetun:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true

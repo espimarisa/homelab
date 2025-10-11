@@ -96,6 +96,7 @@ done
 for directory in "${TORRENTS_DIRECTORIES[@]}"; do
 	mkdir -p "$DOWNLOADS_PATH/torrents/$directory"
 done
+mkdir -p "$DOWNLOADS_PATH/soulseek/.incomplete"
 
 for directory in "${MEDIA_LIBRARY_DIRECTORIES[@]}"; do
 	mkdir -p "$MEDIA_LIBRARY_PATH/$directory"
@@ -114,10 +115,6 @@ done
 
 # initialize chhoto
 $SUDO touch "${DOCKER_PATH}/volumes/chhoto-volume/_data/urls.sqlite"
-
-# todo: i need to dynamically get the configured docker volume path
-# i could use an env var but tbh i'm just gonna hardcode it.
-# fuck it, we ball. bitch.
 for volume in "${CHOWN_VOLUMES[@]}"; do
 	$SUDO chown -R "${PUID}:${PGID}" "${DOCKER_PATH}/volumes/$volume"
 done
