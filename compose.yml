@@ -12,7 +12,6 @@ include:
   - ./services/mam-ip-helper/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/profilarr/compose.yml
-  - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
   - ./services/slskd/compose.yml
   - ./services/socket-proxy/compose.yml
