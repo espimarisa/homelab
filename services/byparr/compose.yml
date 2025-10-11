@@ -13,7 +13,12 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
-      - ALL
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       gluetun:
         condition: service_healthy
