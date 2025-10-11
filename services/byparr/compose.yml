@@ -9,7 +9,6 @@ services:
     env_file: ../../.env
     network_mode: service:gluetun
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
