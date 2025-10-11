@@ -113,13 +113,13 @@ for volume in "${VOLUMES[@]}"; do
 done
 
 # initialize chhoto
-$SUDO touch "/var/lib/docker/volumes/chhoto-volume/_data/urls.sqlite"
+$SUDO touch "${DOCKER_PATH}/volumes/chhoto-volume/_data/urls.sqlite"
 
 # todo: i need to dynamically get the configured docker volume path
 # i could use an env var but tbh i'm just gonna hardcode it.
 # fuck it, we ball. bitch.
 for volume in "${CHOWN_VOLUMES[@]}"; do
-	$SUDO chown -R "${PUID}:${PGID}" "/var/lib/docker/volumes/$volume"
+	$SUDO chown -R "${PUID}:${PGID}" "${DOCKER_PATH}/volumes/$volume"
 done
 
 $SUDO chown -R "${PUID}:${PGID}" \

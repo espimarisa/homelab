@@ -110,7 +110,7 @@ services:
   ###########################################################################
 
   readarr:
-    image: ghcr.io/pennydreadful/bookshelf:softcover-v0.4.20.91
+    image: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.20.91
     container_name: readarr
     env_file: ../../.env
     restart: unless-stopped
