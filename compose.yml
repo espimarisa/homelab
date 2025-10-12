@@ -118,10 +118,10 @@ volumes:
     name: readarr-db-backups-volume
     external: true
   prowlarr-db-data:
-    name: readarr-db-data-volume
+    name: prowlarr-db-data-volume
     external: true
   prowlarr-db-config:
-    name: readarr-db-config-volume
+    name: prowlarr-db-config-volume
     external: true
   prowlarr-db-backups:
     name: prowlarr-db-backups-volume
