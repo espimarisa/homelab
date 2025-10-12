@@ -42,15 +42,6 @@ networks:
     name: socket-proxy-network # Internal-only network used only for Socket Proxy traffic.
 
 volumes:
-  arr-db-data:
-    name: arr-db-data-volume
-    external: true
-  arr-db-config:
-    name: arr-db-config-volume
-    external: true
-  arr-db-backups:
-    name: arr-db-backups-volume
-    external: true
   beszel-data:
     name: beszel-data-volume
     external: true
@@ -89,6 +80,51 @@ volumes:
     external: true
   gatus-db-backups:
     name: gatus-db-backups-volume
+    external: true
+  sonarr-db-data:
+    name: sonarr-db-data-volume
+    external: true
+  sonarr-db-config:
+    name: sonarr-db-config-volume
+    external: true
+  sonarr-db-backups:
+    name: sonarr-db-backups-volume
+    external: true
+  lidarr-db-data:
+    name: lidarr-db-data-volume
+    external: true
+  lidarr-db-config:
+    name: lidarr-db-config-volume
+    external: true
+  lidarr-db-backups:
+    name: lidarr-db-backups-volume
+    external: true
+  radarr-db-data:
+    name: radarr-db-data-volume
+    external: true
+  radarr-db-config:
+    name: radarr-db-config-volume
+    external: true
+  radarr-db-backups:
+    name: radarr-db-backups-volume
+    external: true
+  readarr-db-data:
+    name: readarr-db-data-volume
+    external: true
+  readarr-db-config:
+    name: readarr-db-config-volume
+    external: true
+  readarr-db-backups:
+    name: readarr-db-backups-volume
+    external: true
+  prowlarr-db-data:
+    name: readarr-db-data-volume
+    external: true
+  prowlarr-db-config:
+    name: readarr-db-config-volume
+    external: true
+  prowlarr-db-backups:
+    name: prowlarr-db-backups-volume
     external: true
   gluetun:
     name: gluetun-volume
