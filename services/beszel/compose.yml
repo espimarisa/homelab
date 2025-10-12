@@ -15,12 +15,10 @@ services:
       - 127.0.0.1:8090:8090/tcp
     networks:
       - caddy
-    tmpfs:
-      - "/tmp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - beszel-socket:/beszel_socket
       - beszel-data:/beszel_data
+      - beszel-socket:/beszel_socket
     cap_drop:
       - ALL
     healthcheck:
@@ -40,7 +38,7 @@ services:
     network_mode: host
     restart: unless-stopped
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:ro # ngl idk how this works
+      - /dev/dri/renderD128:/dev/dri/renderD128:ro # Not working currently.
     environment:
       HUB_URL: "http://127.0.0.1:8090"
       KEY: "${BESZEL_KEY}"
@@ -49,7 +47,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
-      - ${STORAGE_PATH}:/extra-filesystems/storage:ro
+      - ${STORAGE_PATH}/appdata:/extra-filesystems/storage/appdata:ro # ZFS mount for appdata.
+      - ${STORAGE_PATH}/downloads:/extra-filesystems/storage/downloads:ro # ZFS mount for downloads.
+      - ${STORAGE_PATH}/media-library:/extra-filesystems/storage/media-library:ro # ZFS mount for media-library.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:

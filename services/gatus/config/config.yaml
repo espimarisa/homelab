@@ -116,6 +116,12 @@ endpoints:
     group: Internal Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/beszel-agent/json
 
+  # ddclient.
+  - name: ddclient
+    <<: *defaults-container
+    group: Internal Infrastructure
+    url: ${SOCKET_PROXY_URL}/containers/ddclient/json
+
   # Dozzle.
   - name: Dozzle
     <<: *defaults-container
@@ -203,3 +209,49 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/unpackerr/json
+
+  ###########################################################################
+  # Databases.                                                              #
+  ###########################################################################
+
+  # Gatus DB.
+  - name: Gatus Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/gatus-db/json
+
+  # Lidarr DB.
+  - name: Lidarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/lidarr-db/json
+
+  # Prowlarr DB.
+  - name: Prowlarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/prowlarr-db/json
+
+  # Radarr DB.
+  - name: Radarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/radarr-db/json
+
+  # Readarr DB.
+  - name: Readarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/readarr-db/json
+
+  # Sonarr DB.
+  - name: Sonarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/sonarr-db/json
+
+  # Vaultwarden DB.
+  - name: Vaultwarden Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/vaultwarden-db/json

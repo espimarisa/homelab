@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   gluetun:
-    image: ghcr.io/qdm12/gluetun:latest
+    image: ghcr.io/qdm12/gluetun:v3.39.1 # Held back due to occasional hiccups on v3.40 and up.
     container_name: gluetun
     env_file: ../../.env
     hostname: gluetun
@@ -15,11 +15,11 @@ services:
       BLOCK_ADS: "off"
       BLOCK_MALICIOUS: "off"
       BLOCK_SURVEILLANCE: "off"
-      DOT_PROVIDERS: "quad9"
+      DOT: "off" # Disable due to some weird DOT issues.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}"
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443"
-      HEALTH_VPN_DURATION_INITIAL: "30s"
+      HEALTH_VPN_DURATION_INITIAL: "60s"
       HTTPPROXY: "off"
       PGID: "${PGID}"
       PUID: "${PUID}"
@@ -35,7 +35,7 @@ services:
       VPN_TYPE: "wireguard"
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}"
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}"
-      WIREGUARD_MTU: "1380"
+      WIREGUARD_MTU: "1280"
       WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "25s"
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}"
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}"

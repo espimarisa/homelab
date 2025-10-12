@@ -1,34 +1,5 @@
 services:
   ###########################################################################
-  # arr-db: PostgreSQL database used for primary 'ARR apps.                 #
-  ###########################################################################
-
-  arr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: arr-db
-    env_file: ../../.env
-    hostname: arr-db
-    read_only: true
-    restart: unless-stopped
-    environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
-      TZ: "${TZ}"
-    networks:
-      - internal-only
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
-    volumes:
-      - arr-db-backups:/postgres/backup
-      - arr-db-config:/postgres/etc
-      - arr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-
-  ###########################################################################
   # Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
   ###########################################################################
 
@@ -62,9 +33,34 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
+      lidarr-db:
         condition: service_healthy
         restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  lidarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: lidarr-db
+    env_file: ../../.env
+    hostname: lidarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - lidarr-db-backups:/postgres/backup
+      - lidarr-db-config:/postgres/etc
+      - lidarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
 
@@ -99,9 +95,34 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
+      lidarr-db:
         condition: service_healthy
         restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  radarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: radarr-db
+    env_file: ../../.env
+    hostname: radarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${RADARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - radarr-db-backups:/postgres/backup
+      - radarr-db-config:/postgres/etc
+      - radarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
 
@@ -138,9 +159,34 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
+      readarr-db:
         condition: service_healthy
         restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  readarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: readarr-db
+    env_file: ../../.env
+    hostname: readarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${READARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - readarr-db-backups:/postgres/backup
+      - readarr-db-config:/postgres/etc
+      - readarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
 
@@ -174,9 +220,34 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
+      sonarr-db:
         condition: service_healthy
         restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  sonarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: sonarr-db
+    env_file: ../../.env
+    hostname: sonarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - sonarr-db-backups:/postgres/backup
+      - sonarr-db-config:/postgres/etc
+      - sonarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true
 
@@ -201,11 +272,34 @@ services:
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
-        condition: service_healthy
-        restart: true
       gluetun:
         condition: service_healthy
         restart: true
+      prowlarr-db:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  prowlarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: prowlarr-db
+    env_file: ../../.env
+    read_only: true
+    restart: unless-stopped
+    network_mode: service:gluetun
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - prowlarr-db-backups:/postgres/backup
+      - prowlarr-db-config:/postgres/etc
+      - prowlarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
     security_opt:
       - no-new-privileges:true

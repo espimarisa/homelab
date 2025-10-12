@@ -16,7 +16,7 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}"
       - "/var/cache:uid=${PUID},gid=${PGID}"
     volumes:
-      - ./config/ddclient.conf:/etc/ddclient/ddclient.conf:ro
+      - ./config:/etc/ddclient:ro
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
       - ALL
