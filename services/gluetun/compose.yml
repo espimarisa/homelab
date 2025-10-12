@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.39.1 # Held back due to occasional hiccups on v3.40 and up.
+    image: ghcr.io/qdm12/gluetun:v3.40.0 # Held back due to occasional hiccups on v3.40 and up.
     container_name: gluetun
     env_file: ../../.env
     hostname: gluetun
@@ -15,7 +15,6 @@ services:
       BLOCK_ADS: "off"
       BLOCK_MALICIOUS: "off"
       BLOCK_SURVEILLANCE: "off"
-      DOT: "off" # Disable due to some weird DOT issues.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}"
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443"
