@@ -203,7 +203,7 @@ echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${APPDATA_PATH}" \
 	"${DOWNLOADS_PATH}" \
-	"${DOWNLOADS_INCOMPLETE_DIRECTORY}" \
+	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
 echo -e "\nInitial setup complete!"
