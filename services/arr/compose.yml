@@ -24,14 +24,6 @@ services:
       - downloads:/downloads
       - lidarr:/config
       - media-library:/library
-    cap_add:
-      - CHOWN
-      - FOWNER
-      - FSETID
-      - SETGID
-      - SETUID
-    cap_drop:
-      - ALL
     depends_on:
       lidarr-db:
         condition: service_healthy
@@ -59,6 +51,59 @@ services:
       - lidarr-db-backups:/postgres/backup
       - lidarr-db-config:/postgres/etc
       - lidarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
+  ###########################################################################
+
+  prowlarr:
+    image: ghcr.io/11notes/prowlarr:2.0.5
+    container_name: prowlarr
+    env_file: ../../.env
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - downloads:/downloads
+      - prowlarr:/prowlarr/etc
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      prowlarr-db:
+        condition: service_healthy
+        restart: true
+    security_opt:
+      - no-new-privileges:true
+
+  prowlarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: prowlarr-db
+    env_file: ../../.env
+    read_only: true
+    restart: unless-stopped
+    network_mode: service:gluetun
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - prowlarr-db-backups:/postgres/backup
+      - prowlarr-db-config:/postgres/etc
+      - prowlarr-db-data:/postgres/var
     cap_drop:
       - ALL
     security_opt:
@@ -251,55 +296,94 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  ###########################################################################
-  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
-  ###########################################################################
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  gluetun:
+    driver: bridge
+    external: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+    name: gluetun-network
+  internal-only:
+    driver: bridge
+    external: true
+    internal: true
+    name: internal-only-network
 
+volumes:
+  lidarr:
+    name: lidarr-volume
+    external: true
+  lidarr-db-data:
+    name: lidarr-db-data-volume
+    external: true
+  lidarr-db-config:
+    name: lidarr-db-config-volume
+    external: true
+  lidarr-db-backups:
+    name: lidarr-db-backups-volume
+    external: true
   prowlarr:
-    image: ghcr.io/11notes/prowlarr:2.0.5
-    container_name: prowlarr
-    env_file: ../../.env
-    network_mode: service:gluetun
-    read_only: true
-    restart: unless-stopped
-    environment:
-      TZ: "${TZ}"
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
-    volumes:
-      - downloads:/downloads
-      - prowlarr:/prowlarr/etc
-    cap_drop:
-      - ALL
-    depends_on:
-      gluetun:
-        condition: service_healthy
-        restart: true
-      prowlarr-db:
-        condition: service_healthy
-        restart: true
-    security_opt:
-      - no-new-privileges:true
-
-  prowlarr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: prowlarr-db
-    env_file: ../../.env
-    read_only: true
-    restart: unless-stopped
-    network_mode: service:gluetun
-    environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}"
-      TZ: "${TZ}"
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
-    volumes:
-      - prowlarr-db-backups:/postgres/backup
-      - prowlarr-db-config:/postgres/etc
-      - prowlarr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
+    name: prowlarr-volume
+    external: true
+  prowlarr-db-data:
+    name: prowlarr-db-data-volume
+    external: true
+  prowlarr-db-config:
+    name: prowlarr-db-config-volume
+    external: true
+  prowlarr-db-backups:
+    name: prowlarr-db-backups-volume
+    external: true
+  radarr:
+    name: radarr-volume
+    external: true
+  radarr-db-data:
+    name: radarr-db-data-volume
+    external: true
+  radarr-db-config:
+    name: radarr-db-config-volume
+    external: true
+  radarr-db-backups:
+    name: radarr-db-backups-volume
+    external: true
+  readarr:
+    name: readarr-volume
+    external: true
+  readarr-db-data:
+    name: readarr-db-data-volume
+    external: true
+  readarr-db-config:
+    name: readarr-db-config-volume
+    external: true
+  readarr-db-backups:
+    name: readarr-db-backups-volume
+    external: true
+  sonarr:
+    name: sonarr-volume
+    external: true
+  sonarr-db-data:
+    name: sonarr-db-data-volume
+    external: true
+  sonarr-db-config:
+    name: sonarr-db-config-volume
+    external: true
+  sonarr-db-backups:
+    name: sonarr-db-backups-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

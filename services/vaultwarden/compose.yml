@@ -84,3 +84,27 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  internal-only:
+    driver: bridge
+    external: true
+    internal: true
+    name: internal-only-network
+
+volumes:
+  vaultwarden:
+    name: vaultwarden-volume
+    external: true
+  vaultwarden-db-backups:
+    name: vaultwarden-db-backups-volume
+    external: true
+  vaultwarden-db-config:
+    name: vaultwarden-db-config-volume
+    external: true
+  vaultwarden-db-data:
+    name: vaultwarden-db-data-volume
+    external: true

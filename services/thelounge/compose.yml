@@ -27,3 +27,13 @@ services:
       test: "wget --spider http://127.0.0.1:9000 || exit 1"
     security_opt:
       - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+
+volumes:
+  thelounge:
+    name: thelounge-volume
+    external: true

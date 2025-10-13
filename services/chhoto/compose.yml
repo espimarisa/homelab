@@ -28,3 +28,13 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+
+volumes:
+  chhoto:
+    external: true
+    name: chhoto-volume

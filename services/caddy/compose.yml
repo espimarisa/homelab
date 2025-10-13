@@ -33,10 +33,27 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
-    dns: # Use Quad9 to bypass system DNS fuckery.
-      - 9.9.9.9
-      - 149.112.112.112
     security_opt:
       - no-new-privileges:true
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 80
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  socket-proxy:
+    external: true
+    internal: true
+    name: socket-proxy-network
+
+volumes:
+  caddy-backups:
+    external: true
+    name: caddy-backups-volume
+  caddy-config:
+    external: true
+    name: caddy-config-volume
+  caddy-data:
+    external: true
+    name: caddy-data-volume

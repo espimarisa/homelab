@@ -12,7 +12,7 @@ services:
     user: "${PUID}:${PGID}"
     environment:
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
-      SLSKD_INCOMPLETE_DIR: "/downloads/soulseek/.incomplete"
+      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
       SLSKD_REMOTE_CONFIGURATION: "true"
       SLSKD_SHARED_DIR: "/library/music"
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
@@ -24,6 +24,7 @@ services:
       TZ: "${TZ}"
     volumes:
       - slskd:/app
+      - downloads-incomplete:/downloads-incomplete
       - downloads:/downloads
       - media-library:/library:ro
     cap_add:
@@ -38,3 +39,26 @@ services:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:
       - no-new-privileges:true
+
+volumes:
+  slskd:
+    name: slskd-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  downloads-incomplete:
+    name: downloads-incomplete
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

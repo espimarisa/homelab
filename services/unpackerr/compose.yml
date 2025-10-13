@@ -31,3 +31,27 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+
+networks:
+  gluetun:
+    driver: bridge
+    external: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+    name: gluetun-network
+
+volumes:
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

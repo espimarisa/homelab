@@ -19,7 +19,7 @@ x-defaults-http: &defaults-http
   <<: *defaults
   conditions:
     - "[CERTIFICATE_EXPIRATION] > 240h"
-    - "[DOMAIN_EXPIRATION] > 720h"
+    # - "[DOMAIN_EXPIRATION] > 720h" # I need to renew lmao
     - "[STATUS] == 200"
     - "[RESPONSE_TIME] < 5000"
 
@@ -101,37 +101,37 @@ endpoints:
   # Caddy.
   - name: Caddy
     <<: *defaults-container
-    group: Internal Infrastructure
+    group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/caddy/json
 
   # Beszel.
   - name: Beszel
     <<: *defaults-container
-    group: Internal Infrastructure
+    group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/beszel/json
 
   # Beszel Agent.
   - name: Beszel Agent
     <<: *defaults-container
-    group: Internal Infrastructure
+    group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/beszel-agent/json
 
   # ddclient.
   - name: ddclient
     <<: *defaults-container
-    group: Internal Infrastructure
+    group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/ddclient/json
 
   # Dozzle.
   - name: Dozzle
     <<: *defaults-container
-    group: Internal Infrastructure
+    group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/dozzle/json
 
   # Socket Proxy.
   - name: Socket Proxy
     <<: *defaults-container
-    group: Internal Infrastructure
+    group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/socket-proxy/json
 
   ###########################################################################

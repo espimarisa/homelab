@@ -69,3 +69,23 @@ services:
       test: ["CMD", "/agent", "health"]
     security_opt:
       - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  socket-proxy:
+    external: true
+    internal: true
+    name: socket-proxy-network
+
+volumes:
+  beszel-agent:
+    name: beszel-agent-volume
+    external: true
+  beszel-data:
+    name: beszel-data-volume
+    external: true
+  beszel-socket:
+    name: beszel-socket-volume
+    external: true

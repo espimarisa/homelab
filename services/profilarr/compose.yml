@@ -29,3 +29,21 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  gluetun:
+    driver: bridge
+    external: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+    name: gluetun-network
+
+volumes:
+  profilarr:
+    external: true
+    name: profilarr-volume

@@ -58,3 +58,28 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  internal-only:
+    driver: bridge
+    external: true
+    internal: true
+    name: internal-only-network
+  socket-proxy:
+    external: true
+    internal: true
+    name: socket-proxy-network
+
+volumes:
+  gatus-db-config:
+    name: gatus-db-config-volume
+    external: true
+  gatus-db-data:
+    name: gatus-db-data-volume
+    external: true
+  gatus-db-backups:
+    name: gatus-db-backups-volume
+    external: true

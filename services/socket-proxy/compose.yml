@@ -36,3 +36,9 @@ services:
       test: "wget --spider http://127.0.0.1:2375/_ping || exit 1"
     security_opt:
       - no-new-privileges:true
+
+networks:
+  socket-proxy:
+    external: true
+    internal: true
+    name: socket-proxy-network

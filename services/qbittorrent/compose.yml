@@ -14,6 +14,7 @@ services:
       TZ: "${TZ}"
     volumes:
       - downloads:/downloads
+      - downloads-incomplete:/downloads-incomplete
       - qbittorrent-config:/qbittorrent/etc
       - qbittorrent-data:/qbittorrent/var
     cap_add:
@@ -26,3 +27,23 @@ services:
         restart: true
     security_opt:
       - no-new-privileges:true
+
+volumes:
+  qbittorrent-config:
+    name: qbittorrent-config-volume
+    external: true
+  qbittorrent-data:
+    name: qbittorrent-data-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  downloads-incomplete:
+    name: downloads-incomplete
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
+      o: bind
+      type: none

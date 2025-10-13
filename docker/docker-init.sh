@@ -12,9 +12,7 @@ readonly APPDATA_DIRECTORIES=(
 readonly DOWNLOADS_DIRECTORIES=(
 	"deezer"
 	"soulseek"
-	"soulseek/.incomplete"
 	"torrents"
-	"torrents/.incomplete"
 	"torrents/.torrent-files"
 	"torrents/lidarr"
 	"torrents/prowlarr"
@@ -22,6 +20,12 @@ readonly DOWNLOADS_DIRECTORIES=(
 	"torrents/readarr"
 	"torrents/sonarr"
 	"torrents/uncategorized"
+)
+
+# Incomplete download directories to create.
+readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
+	"soulseek"
+	"torrents"
 )
 
 # Media library directories to create.
@@ -148,7 +152,7 @@ else
 fi
 
 # Validate that required environment variables are set.
-readonly REQUIRED_VARS=("APPDATA_PATH" "DOWNLOADS_PATH" "MEDIA_LIBRARY_PATH" "PUID" "PGID")
+readonly REQUIRED_VARS=("APPDATA_PATH" "DOWNLOADS_PATH" "DOWNLOADS_INCOMPLETE_PATH" "MEDIA_LIBRARY_PATH" "PUID" "PGID")
 for var in "${REQUIRED_VARS[@]}"; do
 	if [ -z "${!var-}" ]; then
 		echo "Error: Required environment variable '$var' is not set in ${ENV_FILE}." >&2
@@ -161,6 +165,7 @@ echo -e "\nCreating bind mount directories..."
 create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
@@ -198,6 +203,7 @@ echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${APPDATA_PATH}" \
 	"${DOWNLOADS_PATH}" \
+	"${DOWNLOADS_INCOMPLETE_DIRECTORY}" \
 	"${MEDIA_LIBRARY_PATH}"
 
 echo -e "\nInitial setup complete!"

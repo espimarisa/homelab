@@ -20,8 +20,5 @@ services:
       - /etc/localtime:/etc/localtime:ro
     cap_drop:
       - ALL
-    dns: # Use Quad9 to bypass system DNS fuckery.
-      - 9.9.9.9
-      - 149.112.112.112
     security_opt:
       - no-new-privileges:true
