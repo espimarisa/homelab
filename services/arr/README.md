@@ -6,6 +6,8 @@ This stack contains the primary 'ARR apps (Lidarr, Prowlarr, Readarr, Radarr, an
 
 `chmod +x ./scripts/*.sh`
 
+In Docker, go to Connect -> Custom Script and add `radarr-featurettes.sh`. This script will handle importing extras.
+
 ## PostgreSQL Setup
 
 To use PostgreSQL with an 'ARR app, you simply need to edit the configuration in both `appname-volume` and `appname-db-config-volume*`.
@@ -17,6 +19,7 @@ sudo nano /path/to/docker/volumes/appname-volume/_data/config.xml
 ```xml
 <!-- if you are using readarr, add the following -->
 <!-- <PostgresCacheDb>appname-cache</PostgresCacheDb> -->
+<!-- if you're using prowlarr, set host to 127.0.0.1 -->
 <PostgresHost>appname-db</PostgresHost>
 <PostgresLogDb>appname-log</PostgresLogDb>
 <PostgresMainDb>appname-main</PostgresMainDb>

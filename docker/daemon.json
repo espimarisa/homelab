@@ -1,5 +1,5 @@
 {
-	"data-root": "/mnt/docker-data",
+	"data-root": "/docker",
 	"dns": ["9.9.9.9", "149.112.112.112"],
 	"ipv6": false
 }

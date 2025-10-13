@@ -47,9 +47,10 @@ services:
       - 8191/tcp
       - 9696/tcp
     networks:
-      - caddy
-      - gluetun
-      - internal-only
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.2
+      internal-only:
     volumes:
       - gluetun:/gluetun
     cap_add:
