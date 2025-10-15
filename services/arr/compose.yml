@@ -17,9 +17,10 @@ services:
     expose:
       - 8686/tcp
     networks:
-      - caddy
-      - gluetun
-      - internal-only
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.20
+      internal-only:
     volumes:
       - downloads:/downloads
       - lidarr:/config
@@ -133,9 +134,10 @@ services:
     expose:
       - 7878/tcp
     networks:
-      - caddy
-      - gluetun
-      - internal-only
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.21
+      internal-only:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
@@ -196,9 +198,10 @@ services:
     expose:
       - 8787/tcp
     networks:
-      - caddy
-      - gluetun
-      - internal-only
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.22
+      internal-only:
     volumes:
       - downloads:/downloads
       - readarr:/config
@@ -259,9 +262,10 @@ services:
     expose:
       - 8989/tcp
     networks:
-      - caddy
-      - gluetun
-      - internal-only
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.23
+      internal-only:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:

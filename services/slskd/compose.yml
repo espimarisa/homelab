@@ -12,7 +12,7 @@ services:
     user: "${PUID}:${PGID}"
     environment:
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
-      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
+      SLSKD_INCOMPLETE_DIR: "/dl-cache/soulseek"
       SLSKD_REMOTE_CONFIGURATION: "true"
       SLSKD_SHARED_DIR: "/library/music"
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
@@ -24,7 +24,7 @@ services:
       TZ: "${TZ}"
     volumes:
       - slskd:/app
-      - downloads-incomplete:/downloads-incomplete
+      - dl-cache:/dl-cache
       - downloads:/downloads
       - media-library:/library:ro
     cap_add:
@@ -44,16 +44,16 @@ volumes:
   slskd:
     name: slskd-volume
     external: true
+  dl-cache:
+    name: dl-cache
+    driver_opts:
+      device: "${DOWNLOADS_CACHE_PATH}"
+      o: bind
+      type: none
   downloads:
     name: downloads-bind
     driver_opts:
       device: "${DOWNLOADS_PATH}"
-      o: bind
-      type: none
-  downloads-incomplete:
-    name: downloads-incomplete
-    driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none
   media-library:

@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   jellyfin:
-    image: ghcr.io/jellyfin/jellyfin:10.11.0-rc8
+    image: ghcr.io/jellyfin/jellyfin:10.11.0-rc9
     container_name: jellyfin
     env_file: ../../.env
     hostname: jellyfin

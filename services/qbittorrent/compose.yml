@@ -14,7 +14,7 @@ services:
       TZ: "${TZ}"
     volumes:
       - downloads:/downloads
-      - downloads-incomplete:/downloads-incomplete
+      - dl-cache:/dl-cache
       - qbittorrent-config:/qbittorrent/etc
       - qbittorrent-data:/qbittorrent/var
     cap_add:
@@ -35,15 +35,15 @@ volumes:
   qbittorrent-data:
     name: qbittorrent-data-volume
     external: true
+  dl-cache:
+    name: dl-cache
+    driver_opts:
+      device: "${DOWNLOADS_CACHE_PATH}"
+      o: bind
+      type: none
   downloads:
     name: downloads-bind
     driver_opts:
       device: "${DOWNLOADS_PATH}"
-      o: bind
-      type: none
-  downloads-incomplete:
-    name: downloads-incomplete
-    driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none

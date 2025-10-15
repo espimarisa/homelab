@@ -48,18 +48,11 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
       - ${STORAGE_PATH}:/extra-filesystems/storage:ro # Storage path.
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/dl-cache:ro # DL cache; RO.
+      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # DL cache; RO.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:
       - CAP_PERFMON
-    cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
     depends_on:
       beszel:
         condition: service_healthy
