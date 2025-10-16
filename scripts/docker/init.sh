@@ -91,6 +91,8 @@ readonly VOLUMES=(
 	"readarr-db-config-volume"
 	"readarr-db-data-volume"
 	"readarr-volume"
+	"scrutiny-config-volume"
+	"scrutiny-db-volume"
 	"slskd-volume"
 	"sonarr-db-backups-volume"
 	"sonarr-db-config-volume"

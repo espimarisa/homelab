@@ -18,6 +18,7 @@ include:
   - ./services/profilarr/compose.yml
   - ./services/qbittorrent/compose.yml
   - ./services/slskd/compose.yml
+  - ./services/scrutiny/compose.yml
   - ./services/socket-proxy/compose.yml
   - ./services/thelounge/compose.yml
   - ./services/unpackerr/compose.yml

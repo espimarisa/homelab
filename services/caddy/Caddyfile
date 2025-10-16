@@ -147,6 +147,10 @@ readarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy readarr:8787
 }
 
+scrutiny.{$INTERNAL_DOMAIN} {
+	import internal_proxy scrutiny:8080
+}
+
 slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
 }

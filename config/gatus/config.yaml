@@ -140,11 +140,11 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/dozzle/json
 
-  # mam-ip-helper
-  - name: Seedbox Dynamic IPs
+  # Scrutiny.
+  - name: Scrutiny
     <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/mam-ip-helper/json
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/containers/scrutiny/json
 
   # Socket Proxy.
   - name: Socket Proxy
@@ -179,6 +179,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/lidarr/json
+
+  # mam-ip-helper
+  - name: MyAnonaMouse IP Helper
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/containers/mam-ip-helper/json
 
   # Profilarr.
   - name: Profilarr
