@@ -31,6 +31,11 @@ services:
       - /run # Required for read-only image.
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 64M
     healthcheck:
       interval: 10s
       test: "wget --spider http://127.0.0.1:2375/_ping || exit 1"

@@ -28,7 +28,7 @@ services:
       OC_INSECURE: "false"
       OC_LOG_COLOR: "true"
       OC_LOG_LEVEL: "info"
-      OC_LOG_PRETTY: "false"
+      OC_LOG_PRETTY: "true"
       OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false"
       OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true"
       OC_URL: "https://${OPENCLOUD_URL}"
@@ -47,6 +47,11 @@ services:
       - opencloud-data:/var/lib/opencloud
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 4
+          memory: 4096M
     healthcheck:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
     security_opt:

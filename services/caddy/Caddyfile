@@ -2,11 +2,6 @@
 	# Configures the ACME email.
 	email {$ACME_EMAIL}
 
-	servers {
-		# Trust Docker, Tailscale, and local IP ranges.
-		trusted_proxies static 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 fc00::/7
-	}
-
 	# Store files in /caddy/var.
 	storage file_system /caddy/var
 }
@@ -14,7 +9,11 @@
 # Snippet for externally accessible reverse proxied services.
 (external_proxy) {
 	encode zstd gzip
-	reverse_proxy {args[0]}
+
+	reverse_proxy {args[0]} {
+		# Trust local, static, Docker, and Tailscale IP addresses.
+		trusted_proxies private_ranges 100.64.0.0/10
+	}
 
 	# Enables HSTS and configures security headers.
 	header {
@@ -25,16 +24,20 @@
 		X-Frame-Options "DENY"
 	}
 
-	# Enables logging a-la access.log.
+	# Enables logging to log files.
 	log {
 		format json
-		output stdout
+		output file /caddy/logs/access.log {
+			roll_size 10mb # Rotate the log file after it reaches 10 MB.
+			roll_keep 5 # Keep the 5 most recent log files.
+			roll_keep_for 720h # Keep logs for 30 days.
+		}
 	}
 }
 
 # Snippet for internal-only reverse proxied services.
 (internal_proxy) {
-	@not_internal not remote_ip private_ranges 100.64.0.0/10 fc00::/7
+	@not_internal not remote_ip private_ranges 100.64.0.0/10
 	abort @not_internal
 	encode zstd gzip
 	tls internal
@@ -91,6 +94,10 @@
 ###########################################################################
 # Internal-only services; need DNS rewrites + Caddy CA cert installed.    #
 ###########################################################################
+
+bazarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy bazarr:6767
+}
 
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090

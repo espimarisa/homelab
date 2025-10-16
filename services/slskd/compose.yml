@@ -11,10 +11,14 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
+      SLSKD_DISK_LOGGER: "true"
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
       SLSKD_INCOMPLETE_DIR: "/dl-cache/soulseek"
+      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
+      SLSKD_JWT_TTL: "604800000"
       SLSKD_REMOTE_CONFIGURATION: "true"
       SLSKD_SHARED_DIR: "/library/music"
+      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_DESCRIPTION}"
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
       SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
       SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
@@ -35,6 +39,11 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
     healthcheck:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:

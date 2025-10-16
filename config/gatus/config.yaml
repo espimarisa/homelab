@@ -128,6 +128,12 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/dozzle/json
 
+  # mam-ip-helper
+  - name: Seedbox Dynamic IPs
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/containers/mam-ip-helper/json
+
   # Socket Proxy.
   - name: Socket Proxy
     <<: *defaults-container
@@ -138,11 +144,11 @@ endpoints:
   # Media management.                                                       #
   ###########################################################################
 
-  # Readarr.
-  - name: Readarr
+  # Bazarr.
+  - name: Bazarr
     <<: *defaults-container
     group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/readarr/json
+    url: ${SOCKET_PROXY_URL}/containers/bazarr/json
 
   # Byparr.
   - name: Byparr
@@ -161,12 +167,6 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/lidarr/json
-
-  # mam-ip-helper
-  - name: MyAnonaMouse IP Helper
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/mam-ip-helper/json
 
   # Profilarr.
   - name: Profilarr
@@ -191,6 +191,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/radarr/json
+
+  # Readarr.
+  - name: Readarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/containers/readarr/json
 
   # slskd.
   - name: slskd

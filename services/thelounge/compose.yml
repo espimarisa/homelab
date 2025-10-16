@@ -23,6 +23,11 @@ services:
       - thelounge:/var/opt/thelounge
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 256M
     healthcheck:
       test: "wget --spider http://127.0.0.1:9000 || exit 1"
     security_opt:

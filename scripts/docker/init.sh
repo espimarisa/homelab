@@ -23,7 +23,7 @@ readonly DOWNLOADS_DIRECTORIES=(
 )
 
 # Incomplete download directories to create.
-readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
+readonly DOWNLOADS_CACHE_DIRECTORIES=(
 	"soulseek"
 	"torrents"
 )
@@ -42,12 +42,17 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
+	"bazarr-db-backups-volume"
+	"bazarr-db-config-volume"
+	"bazarr-db-data-volume"
+	"bazarr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"beszel-socket-volume"
 	"caddy-backups-volume"
 	"caddy-config-volume"
 	"caddy-data-volume"
+	"caddy-logs-volume"
 	"chhoto-volume"
 	"dozzle-volume"
 	"gatus-db-backups-volume"
@@ -90,6 +95,7 @@ readonly VOLUMES=(
 
 # Docker volumes to take ownership of.
 readonly CHOWN_VOLUMES=(
+	"caddy-logs-volume"
 	"chhoto-volume"
 	"opencloud-config-volume"
 	"thelounge-volume"
@@ -165,7 +171,7 @@ echo -e "\nCreating bind mount directories..."
 create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
-create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."

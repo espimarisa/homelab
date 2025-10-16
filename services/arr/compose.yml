@@ -37,6 +37,11 @@ services:
       lidarr-db:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
     security_opt:
       - no-new-privileges:true
 
@@ -62,6 +67,11 @@ services:
       - lidarr-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 
@@ -92,6 +102,11 @@ services:
       prowlarr-db:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
     security_opt:
       - no-new-privileges:true
 
@@ -115,6 +130,11 @@ services:
       - prowlarr-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 
@@ -141,7 +161,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - ./scripts:/radarr/etc/scripts
+      - ../../scripts/radarr:/scripts
       - downloads:/downloads
       - media-library:/library
       - radarr:/radarr/etc
@@ -153,6 +173,11 @@ services:
       lidarr-db:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
     security_opt:
       - no-new-privileges:true
 
@@ -178,6 +203,11 @@ services:
       - radarr-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 
@@ -218,6 +248,11 @@ services:
       readarr-db:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
     security_opt:
       - no-new-privileges:true
 
@@ -243,6 +278,11 @@ services:
       - readarr-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 
@@ -280,6 +320,11 @@ services:
       sonarr-db:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
     security_opt:
       - no-new-privileges:true
 
@@ -305,6 +350,91 @@ services:
       - sonarr-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
+    security_opt:
+      - no-new-privileges:true
+
+  ###########################################################################
+  # Bazarr: Subtitle manager - https://wiki.bazarr.media                    #
+  ###########################################################################
+
+  bazarr:
+    image: ghcr.io/hotio/bazarr:release-1.5.3
+    container_name: bazarr
+    env_file: ../../.env
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      POSTGRES_DATABASE: "postgres"
+      POSTGRES_ENABLED: "true"
+      POSTGRES_HOST: "bazarr-db"
+      POSTGRES_PASSWORD: "${BAZARR_DB_PASSWORD}"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: "postgres"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 6767/tcp
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.23
+      internal-only:
+    volumes:
+      - bazarr:/config
+      - media-library:/library
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - FSETID
+      - SETGID
+      - SETUID
+    cap_drop:
+      - ALL
+    depends_on:
+      bazarr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2048M
+    security_opt:
+      - no-new-privileges:true
+
+  bazarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: bazarr-db
+    env_file: ../../.env
+    hostname: bazarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${BAZARR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal-only
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - bazarr-db-backups:/postgres/backup
+      - bazarr-db-config:/postgres/etc
+      - bazarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 
@@ -327,6 +457,18 @@ networks:
     name: internal-only-network
 
 volumes:
+  bazarr:
+    name: bazarr-volume
+    external: true
+  bazarr-db-data:
+    name: bazarr-db-data-volume
+    external: true
+  bazarr-db-config:
+    name: bazarr-db-config-volume
+    external: true
+  bazarr-db-backups:
+    name: bazarr-db-backups-volume
+    external: true
   lidarr:
     name: lidarr-volume
     external: true

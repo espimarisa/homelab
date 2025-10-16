@@ -29,6 +29,11 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:

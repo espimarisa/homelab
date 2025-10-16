@@ -21,6 +21,11 @@ services:
       - beszel-socket:/beszel_socket
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
     security_opt:
@@ -31,28 +36,36 @@ services:
   ###########################################################################
 
   beszel-agent:
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.13.2
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.13.2 # Use -intel for future Intel GPU monitoring.
     container_name: beszel-agent
     env_file: ../../.env
     hostname: beszel-agent
     network_mode: host
     restart: unless-stopped
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:ro # Not working currently.
+      - /dev/dri/renderD128:/dev/dri/renderD128:ro # Not working for Arc currently, but here for the future!
     environment:
       HUB_URL: "http://127.0.0.1:8090"
       KEY: "${BESZEL_KEY}"
       LISTEN: "0.0.0.0:45876"
       TOKEN: "${BESZEL_TOKEN}"
     volumes:
+      - /:/extra-filesystems/root:ro # Root system FS partition. Uncomment if Docker is not on another drive.
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
-      - ${STORAGE_PATH}:/extra-filesystems/storage:ro # Storage path.
-      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # DL cache; RO.
+      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # Downloads cache drive.
+      - ${STORAGE_PATH}:/extra-filesystems/storage:ro # Storage drive.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:
-      - CAP_PERFMON
+      - PERFMON # Required for GPU monitoring.
+      - SYS_ADMIN # Required for GPU monitoring.
+      - DAC_OVERRIDE # Required for GPU monitoring.
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     depends_on:
       beszel:
         condition: service_healthy

@@ -20,6 +20,7 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
+      - 443:443/udp
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
@@ -27,12 +28,18 @@ services:
       - caddy-backups:/caddy/backup
       - caddy-config:/caddy/etc
       - caddy-data:/caddy/var
+      - caddy-logs:/caddy/logs
     cap_drop:
       - ALL
     depends_on:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     sysctls:
@@ -57,3 +64,6 @@ volumes:
   caddy-data:
     external: true
     name: caddy-data-volume
+  caddy-logs:
+    external: true
+    name: caddy-logs-volume

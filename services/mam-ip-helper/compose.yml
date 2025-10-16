@@ -20,5 +20,10 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 64M
     security_opt:
       - no-new-privileges:true

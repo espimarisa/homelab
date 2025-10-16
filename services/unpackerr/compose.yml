@@ -1,6 +1,6 @@
 services:
   ###########################################################################
-  # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip   #
+  # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip    #
   ###########################################################################
 
   unpackerr:
@@ -29,6 +29,11 @@ services:
       - CHOWN
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+          cpus: 4
     security_opt:
       - no-new-privileges:true
 

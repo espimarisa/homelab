@@ -21,7 +21,7 @@ services:
       - internal-only
       - socket-proxy
     volumes:
-      - ./config:/config
+      - ../../config/gatus:/config
     cap_drop:
       - ALL
     depends_on:
@@ -31,6 +31,11 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
     security_opt:
       - no-new-privileges:true
 
@@ -56,6 +61,11 @@ services:
       - gatus-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 

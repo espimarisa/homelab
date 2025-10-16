@@ -51,6 +51,11 @@ services:
       - vaultwarden:/data
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 256M
     depends_on:
       vaultwarden-db:
         condition: service_healthy
@@ -82,6 +87,11 @@ services:
       - vaultwarden-db-data:/postgres/var
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 

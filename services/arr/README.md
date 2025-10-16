@@ -4,9 +4,9 @@ This stack contains the primary 'ARR apps (Lidarr, Prowlarr, Readarr, Radarr, an
 
 ## Scripts
 
-`chmod +x ./scripts/*.sh`
+`chmod +x ../../scripts/radarr/*.sh`
 
-In Docker, go to Connect -> Custom Script and add `radarr-featurettes.sh`. This script will handle importing extras.
+In Docker, go to Connect -> Custom Script and add `/scripts/featurettes.sh`. This script will handle importing extras.
 
 ## PostgreSQL Setup
 
