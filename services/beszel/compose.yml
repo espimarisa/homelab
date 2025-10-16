@@ -48,7 +48,7 @@ services:
       LISTEN: "0.0.0.0:45876"
       TOKEN: "${BESZEL_TOKEN}"
     volumes:
-      - /:/extra-filesystems/root:ro # Root system FS partition. Uncomment if Docker is not on another drive.
+      - /home:/extra-filesystems/home:ro # Root system FS partition. Uncomment if Docker is not on another drive.
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
       - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # Downloads cache drive.
