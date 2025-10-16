@@ -103,6 +103,10 @@ beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
+cleanuparr.{$INTERNAL_DOMAIN} {
+	import internal_proxy cleanuparr:11011
+}
+
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
 }
