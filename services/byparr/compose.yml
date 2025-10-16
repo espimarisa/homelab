@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   byparr:
-    image: ghcr.io/thephaseless/byparr:main
+    image: ghcr.io/thephaseless/byparr:c6b50596e21c6a5c7b4886b82dff913dc120d0f8-amd64
     container_name: byparr
     network_mode: service:gluetun
     restart: unless-stopped
