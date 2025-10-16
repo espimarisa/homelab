@@ -1,24 +1,29 @@
-x-seagate-args: &seagate_args
-  info_args: "-xv 188,raw16 --info --json -n standby"
-  scan_args: "-xv 188,raw16 --scan --json -n standby"
-  smart_args: "-xv 188,raw16 --xall --json -n standby"
-
 devices:
   - device: /dev/sda
-    smartctl_args: -d scsi # Fix for wonky MX500
+    smartctl_args: -d scsi
 
-  # Fix for Seagate drives.
   - device: /dev/sdc
-    <<: *seagate_args
-  - device: /dev/sdd
-    <<: *seagate_args
-  - device: /dev/sde
-    <<: *seagate_args
-  - device: /dev/sdf
-    <<: *seagate_args
+    info_args: "-xv 188,raw16 --info --json -n standby"
+    scan_args: "-xv 188,raw16 --scan --json -n standby"
+    smart_args: "-xv 188,raw16 --xall --json -n standby"
 
-  # Fix for NVMe drives
+  - device: /dev/sdd
+    info_args: "-xv 188,raw16 --info --json -n standby"
+    scan_args: "-xv 188,raw16 --scan --json -n standby"
+    smart_args: "-xv 188,raw16 --xall --json -n standby"
+
+  - device: /dev/sde
+    info_args: "-xv 188,raw16 --info --json -n standby"
+    scan_args: "-xv 188,raw16 --scan --json -n standby"
+    smart_args: "-xv 188,raw16 --xall --json -n standby"
+
+  - device: /dev/sdf
+    info_args: "-xv 188,raw16 --info --json -n standby"
+    scan_args: "-xv 188,raw16 --scan --json -n standby"
+    smart_args: "-xv 188,raw16 --xall --json -n standby"
+
   - device: /dev/nvme0n1
     type: nvme
+
   - device: /dev/nvme1n1
     type: nvme
