@@ -34,7 +34,7 @@ services:
       VPN_TYPE: "wireguard"
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}"
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}"
-      WIREGUARD_MTU: "1420"
+      WIREGUARD_MTU: "1380"
       WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "25s"
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}"
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}"
@@ -64,8 +64,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 1024M
+          cpus: 4
+          memory: 2048M
     security_opt:
       - no-new-privileges:true
 

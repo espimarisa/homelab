@@ -28,7 +28,7 @@ services:
       resources:
         limits:
           memory: 8192M
-          cpus: 8
+          cpus: 6
     security_opt:
       - no-new-privileges:true
 

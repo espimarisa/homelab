@@ -32,7 +32,7 @@ services:
       resources:
         limits:
           memory: 2048M
-          cpus: 4
+          cpus: 2
     security_opt:
       - no-new-privileges:true
 
