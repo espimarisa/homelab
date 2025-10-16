@@ -1,6 +1,6 @@
 devices:
   - device: /dev/sda
-    type: sat,0 # What the fuck is a megaraid?
+    type: scsi # oh right, it's technically SCSI.
   - device: /dev/nvme0n1
     type: nvme
   - device: /dev/nvme1n1
