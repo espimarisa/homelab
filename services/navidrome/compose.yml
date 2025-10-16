@@ -24,8 +24,8 @@ services:
       ND_LASTFM_APIKEY: "${LASTFM_API_KEY}"
       ND_LASTFM_ENABLED: "true"
       ND_LASTFM_LANGUAGE: "en"
-      ND_LOGLEVEL: "debug"
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}"
+      ND_LOGLEVEL: "debug"
       ND_MUSICFOLDER: "/library/music"
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}"
       ND_SCANNER_SCHEDULE: "0 6 * * *"
@@ -33,6 +33,7 @@ services:
       ND_SPOTIFY_SECRET: "${SPOTIFY_SECRET}"
       ND_UILOGINBACKGROUNDURL: ""
       ND_UIWELCOMEMESSAGE: "${NAVIDROME_WELCOME_MESSAGE}"
+      SQLITE_TMPDIR: "/data"
     expose:
       - 4533/tcp
     networks:
@@ -43,12 +44,7 @@ services:
       - navidrome-cache:/cache
       - navidrome-data:/data
     cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
+      - ALL
     deploy:
       resources:
         limits:
