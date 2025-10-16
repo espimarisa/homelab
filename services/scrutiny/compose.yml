@@ -21,6 +21,7 @@ services:
     networks:
       - caddy
     volumes:
+      - ./collector.yaml:/opt/scrutiny/config/collector.yaml:ro
       - ./drivedb.h:/usr/share/smartmontools/drivedb.h # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
       - ./drivedb.h:/var/lib/smartmontools/drivedb/drivedb.h # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
       - /run/udev:/run/udev:ro
@@ -44,7 +45,7 @@ services:
       - /dev/sde
       - /dev/sdf
     healthcheck:
-      test: "wget --spider http://127.0.0.1:8080/web/dashboard || exit 1"
+      test: "curl -f http://127.0.0.1:8080/web/dashboard || exit 1"
     security_opt:
       - no-new-privileges:true
 
