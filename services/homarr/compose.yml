@@ -50,7 +50,7 @@ services:
           cpus: 1
           memory: 2048M
     healthcheck:
-      test: "wget --spider http://127.0.0.1:7575/api/info --header='ApiKey: ${HOMARR_API_KEY} || exit 1"
+      test: 'wget --spider http://127.0.0.1:7575/api/info --header=''ApiKey: "${HOMARR_API_KEY}" || exit 1'
     security_opt:
       - no-new-privileges:true
 
