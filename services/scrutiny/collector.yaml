@@ -1,6 +1,6 @@
 devices:
   - device: /dev/sda
-    type: megaraid,0 # What the fuck is a megaraid?
+    type: sat,0 # What the fuck is a megaraid?
   - device: /dev/nvme0n1
     type: nvme
   - device: /dev/nvme1n1
