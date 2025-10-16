@@ -15,7 +15,6 @@ services:
       ND_BACKUP_COUNT: "7"
       ND_BACKUP_PATH: "/backups"
       ND_BACKUP_SCHEDULE: "0 6 * * *"
-      ND_BASEURL: "https://${NAVIDROME_URL}"
       ND_CACHEFOLDER: "/cache"
       ND_DEFAULTDOWNLOADABLESHARE: "true"
       ND_ENABLEGRAVATAR: "true"
