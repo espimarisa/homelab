@@ -17,6 +17,7 @@ services:
       DB_USER: "postgres"
       DOCKER_HOSTNAMES: "socket-proxy"
       DOCKER_PORTS: "2375"
+      HOMARR_API_KEY: "${HOMARR_API_KEY}"
       PGID: ${PGID}
       PUID: ${PUID}
       SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}"
