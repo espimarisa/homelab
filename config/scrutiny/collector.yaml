@@ -1,16 +1,14 @@
 devices:
   - device: /dev/sda
     smartctl_args: -d scsi
-
   - device: /dev/sdc
-    smartctl_args: -d sat -xv 188,raw16 -n standby
+    metrics_smart_args: "-xv 188,raw16 --xall --json -T permissive"
   - device: /dev/sdd
-    smartctl_args: -d sat -xv 188,raw16 -n standby
+    metrics_smart_args: "-xv 188,raw16 --xall --json -T permissive"
   - device: /dev/sde
-    smartctl_args: -d sat -xv 188,raw16 -n standby
+    metrics_smart_args: "-xv 188,raw16 --xall --json -T permissive"
   - device: /dev/sdf
-    smartctl_args: -d sat -xv 188,raw16 -n standby
-
+    metrics_smart_args: "-xv 188,raw16 --xall --json -T permissive"
   - device: /dev/nvme0n1
     type: nvme
   - device: /dev/nvme1n1
