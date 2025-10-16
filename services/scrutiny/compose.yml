@@ -8,9 +8,6 @@ services:
     container_name: scrutiny
     restart: unless-stopped
     environment:
-      COLLECTOR_COMMANDS_METRICS_INFO_ARGS: "-xv 188,raw16 --info --json -n standby" # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
-      COLLECTOR_COMMANDS_METRICS_SCAN_ARGS: "-xv 188,raw16 --scan --json -n standby" # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
-      COLLECTOR_COMMANDS_METRICS_SMART_ARGS: "-xv 188,raw16 --xall --json -n standby" # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
       COLLECTOR_CRON_SCHEDULE: "0 6 * * *"
       SCRUTINY_WEB_INFLUXDB_INIT_PASSWORD: ${SCRUTINY_INFLUXDB_PASSWORD}
       SCRUTINY_WEB_INFLUXDB_INIT_USERNAME: "admin"
