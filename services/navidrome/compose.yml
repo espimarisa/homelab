@@ -1,0 +1,77 @@
+---
+services:
+  ###########################################################################
+  # Navidrome: Music media server - https://www.navidrome.org/              #
+  ###########################################################################
+
+  navidrome:
+    image: ghcr.io/navidrome/navidrome:0.58.0
+    container_name: navidrome
+    hostname: navidrome
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      ND_BACKUP_COUNT: "7"
+      ND_BACKUP_PATH: "/backups"
+      ND_BACKUP_SCHEDULE: "0 6 * * *"
+      ND_BASEURL: "https://${NAVIDROME_URL}"
+      ND_CACHEFOLDER: "/cache"
+      ND_DEFAULTDOWNLOADABLESHARE: "true"
+      ND_ENABLEGRAVATAR: "true"
+      ND_ENABLEINSIGHTSCOLLECTOR: "false"
+      ND_ENABLESHARING: "true"
+      ND_LASTFM_APIKEY: "${LASTFM_API_KEY}"
+      ND_LASTFM_ENABLED: "true"
+      ND_LASTFM_LANGUAGE: "en"
+      ND_LOGLEVEL: "debug"
+      ND_LASTFM_SECRET: "${LASTFM_API_SECRET}"
+      ND_MUSICFOLDER: "/library/music"
+      ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}"
+      ND_SCANNER_SCHEDULE: "0 6 * * *"
+      ND_SPOTIFY_ID: "${SPOTIFY_ID}"
+      ND_SPOTIFY_SECRET: "${SPOTIFY_SECRET}"
+      ND_UILOGINBACKGROUNDURL: ""
+      ND_UIWELCOMEMESSAGE: "${NAVIDROME_WELCOME_MESSAGE}"
+    expose:
+      - 4533/tcp
+    networks:
+      - caddy
+    volumes:
+      - media-library:/library:ro
+      - navidrome-backups:/backups
+      - navidrome-cache:/cache
+      - navidrome-data:/data
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 8192M
+          cpus: 4
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:4533/ping || exit 1"
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+
+volumes:
+  navidrome-backups:
+    external: true
+    name: navidrome-backups-volume
+  navidrome-cache:
+    external: true
+    name: navidrome-cache-volume
+  navidrome-data:
+    external: true
+    name: navidrome-data-volume
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

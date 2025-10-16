@@ -13,6 +13,7 @@ include:
   - ./services/homarr/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/mam-ip-helper/compose.yml
+  - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/profilarr/compose.yml
   - ./services/qbittorrent/compose.yml

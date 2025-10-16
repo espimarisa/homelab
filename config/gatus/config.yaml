@@ -76,6 +76,12 @@ endpoints:
     group: External
     url: https://${JELLYFIN_URL}/health
 
+  # Navidrome.
+  - name: Navidrome
+    <<: *defaults
+    group: External
+    url: https://${NAVIDROME_URL}/ping
+
   # OpenCloud.
   - name: OpenCloud
     <<: *defaults

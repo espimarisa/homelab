@@ -69,6 +69,10 @@
 	import external_proxy jellyfin:8096
 }
 
+{$NAVIDROME_URL} {
+	import external_proxy navidrome:4533
+}
+
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
 }
