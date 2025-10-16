@@ -6,7 +6,6 @@ services:
   profilarr:
     image: santiagosayshey/profilarr:v1.1.3
     container_name: profilarr
-    env_file: ../../.env
     hostname: profilarr
     restart: unless-stopped
     environment:

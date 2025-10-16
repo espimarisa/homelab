@@ -1,5 +1,6 @@
 include:
   - ./services/arr/compose.yml
+  - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
   - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
@@ -9,6 +10,7 @@ include:
   - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
+  - ./services/homarr/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/mam-ip-helper/compose.yml
   - ./services/opencloud/compose.yml

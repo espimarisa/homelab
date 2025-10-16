@@ -8,7 +8,6 @@ services:
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh
-    env_file: ../../.env
     hostname: opencloud
     read_only: true
     restart: unless-stopped

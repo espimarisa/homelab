@@ -6,7 +6,6 @@ services:
   qbittorrent:
     image: ghcr.io/11notes/qbittorrent:5.1.2
     container_name: qbittorrent
-    env_file: ../../.env
     network_mode: service:gluetun
     read_only: true
     restart: unless-stopped

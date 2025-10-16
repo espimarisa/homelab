@@ -64,6 +64,12 @@ endpoints:
     group: External
     url: https://${CHHOTO_URL}
 
+  # Homarr.
+  - name: Homarr
+    <<: *defaults
+    group: External
+    url: https://${HOMARR_URL}
+
   # Jellyfin.
   - name: Jellyfin
     <<: *defaults
@@ -220,11 +226,23 @@ endpoints:
   # Databases.                                                              #
   ###########################################################################
 
+  # Bazarr DB.
+  - name: Bazarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/bazarr-db/json
+
   # Gatus DB.
   - name: Gatus Database
     <<: *defaults-container
     group: PostgreSQL Databases
     url: ${SOCKET_PROXY_URL}/containers/gatus-db/json
+
+  # Homarr DB.
+  - name: Homarr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/containers/homarr-db/json
 
   # Lidarr DB.
   - name: Lidarr Database

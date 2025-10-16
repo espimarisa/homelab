@@ -6,7 +6,6 @@ services:
   byparr:
     image: ghcr.io/thephaseless/byparr:main
     container_name: byparr
-    env_file: ../../.env
     network_mode: service:gluetun
     restart: unless-stopped
     volumes:

@@ -6,7 +6,6 @@ services:
   vaultwarden:
     image: ghcr.io/dani-garcia/vaultwarden:1.34.3-alpine
     container_name: vaultwarden
-    env_file: ../../.env
     hostname: vaultwarden
     read_only: true
     restart: unless-stopped
@@ -68,7 +67,6 @@ services:
   vaultwarden-db:
     image: ghcr.io/11notes/postgres:17
     container_name: vaultwarden-db
-    env_file: ../../.env
     hostname: vaultwarden-db
     read_only: true
     restart: unless-stopped

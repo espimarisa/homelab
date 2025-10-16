@@ -6,7 +6,6 @@ services:
   beszel:
     image: ghcr.io/henrygd/beszel/beszel:0.13.2
     container_name: beszel
-    env_file: ../../.env
     hostname: beszel
     restart: unless-stopped
     environment:
@@ -38,7 +37,6 @@ services:
   beszel-agent:
     image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.13.2 # Use -intel for future Intel GPU monitoring.
     container_name: beszel-agent
-    env_file: ../../.env
     hostname: beszel-agent
     network_mode: host
     restart: unless-stopped

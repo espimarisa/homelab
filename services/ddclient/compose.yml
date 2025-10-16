@@ -6,7 +6,6 @@ services:
   ddclient:
     image: matthewhuie/ddclient:cad54d2
     container_name: ddclient
-    env_file: ../../.env
     hostname: ddclient
     network_mode: host
     read_only: true

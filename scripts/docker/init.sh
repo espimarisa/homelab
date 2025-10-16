@@ -60,6 +60,10 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"
+	"homarr-db-backups-volume"
+	"homarr-db-config-volume"
+	"homarr-db-data-volume"
+	"homarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"lidarr-db-backups-volume"
@@ -98,6 +102,7 @@ readonly VOLUMES=(
 readonly CHOWN_VOLUMES=(
 	"caddy-logs-volume"
 	"chhoto-volume"
+	"homarr-volume"
 	"opencloud-config-volume"
 	"thelounge-volume"
 	"vaultwarden-volume"
@@ -146,7 +151,7 @@ fi
 
 # Source environment variables from .env file.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="${SCRIPT_DIR}/../.env"
+ENV_FILE="${SCRIPT_DIR}/../../.env"
 if [ -f "$ENV_FILE" ]; then
 	echo "Sourcing environment variables from ${ENV_FILE}."
 	set -a

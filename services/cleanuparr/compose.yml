@@ -6,7 +6,6 @@ services:
   cleanuparr:
     image: ghcr.io/cleanuparr/cleanuparr:2.3.3
     container_name: cleanuparr
-    env_file: ../../.env
     hostname: cleanuparr
     restart: unless-stopped
     environment:

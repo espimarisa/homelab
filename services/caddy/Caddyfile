@@ -61,6 +61,10 @@
 	import external_proxy gatus:8080
 }
 
+{$HOMARR_URL} {
+	import external_proxy homarr:7575
+}
+
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
 }
