@@ -48,13 +48,11 @@ services:
       LISTEN: "0.0.0.0:45876"
       TOKEN: "${BESZEL_TOKEN}"
     volumes:
-      - /:/extra-filesystems/nvme0n1p3:ro # Root FS is on partition nvme0n1p3
+      - /home:/extra-filesystems/home:ro # Root system FS partition. Uncomment if Docker is not on another drive.
       - /etc/localtime:/etc/localtime:ro
-      - /proc:/proc:ro
-      - /sys:/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/sda1:ro # /dl-cache is on partition sda1
-      - ${STORAGE_PATH}:/extra-filesystems/storage:ro # /storage is the ZFS pool named storage
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
+      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # Downloads cache drive.
+      - ${STORAGE_PATH}:/extra-filesystems/storage:ro # Storage drive.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:
