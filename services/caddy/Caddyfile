@@ -131,6 +131,10 @@ qbittorrent.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:8080
 }
 
+qui.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:7476
+}
+
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
 }

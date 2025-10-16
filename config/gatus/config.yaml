@@ -192,6 +192,12 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/qbittorrent/json
 
+  # qui.
+  - name: qui
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/containers/qui/json
+
   # Radarr.
   - name: Radarr
     <<: *defaults-container

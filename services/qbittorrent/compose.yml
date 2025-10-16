@@ -32,12 +32,58 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  ###########################################################################
+  # qui: Alternate web UI for qBittorrent - https://github.com/autobrr/qui  #
+  ###########################################################################
+
+  qui:
+    image: ghcr.io/autobrr/qui:v1.4.0
+    container_name: qui
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    environment:
+      QUI__PORT: "7476"
+      QUI__LOG_PATH: "/config/logs/qui.log"
+      QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}"
+      TZ: "${TZ}"
+    volumes:
+      - qui-config:/config
+      - qui-logs:/config/logs
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      qbittorrent:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+          cpus: 1
+    security_opt:
+      - no-new-privileges:true
+
 volumes:
   qbittorrent-config:
     name: qbittorrent-config-volume
     external: true
   qbittorrent-data:
     name: qbittorrent-data-volume
+    external: true
+  qui-config:
+    name: qui-config-volume
+    external: true
+  qui-logs:
+    name: qui-logs-volume
     external: true
   dl-cache:
     name: dl-cache

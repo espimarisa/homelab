@@ -78,6 +78,8 @@ readonly VOLUMES=(
 	"prowlarr-volume"
 	"qbittorrent-config-volume"
 	"qbittorrent-data-volume"
+	"qui-config-volume"
+	"qui-logs-volume"
 	"radarr-db-backups-volume"
 	"radarr-db-config-volume"
 	"radarr-db-data-volume"
