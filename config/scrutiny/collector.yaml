@@ -3,27 +3,15 @@ devices:
     smartctl_args: -d scsi
 
   - device: /dev/sdc
-    info_args: "-xv 188,raw16 --info --json -n standby"
-    scan_args: "-xv 188,raw16 --scan --json -n standby"
-    smart_args: "-xv 188,raw16 --xall --json -n standby"
-
+    smartctl_args: -d sat -xv 188,raw16 -n standby
   - device: /dev/sdd
-    info_args: "-xv 188,raw16 --info --json -n standby"
-    scan_args: "-xv 188,raw16 --scan --json -n standby"
-    smart_args: "-xv 188,raw16 --xall --json -n standby"
-
+    smartctl_args: -d sat -xv 188,raw16 -n standby
   - device: /dev/sde
-    info_args: "-xv 188,raw16 --info --json -n standby"
-    scan_args: "-xv 188,raw16 --scan --json -n standby"
-    smart_args: "-xv 188,raw16 --xall --json -n standby"
-
+    smartctl_args: -d sat -xv 188,raw16 -n standby
   - device: /dev/sdf
-    info_args: "-xv 188,raw16 --info --json -n standby"
-    scan_args: "-xv 188,raw16 --scan --json -n standby"
-    smart_args: "-xv 188,raw16 --xall --json -n standby"
+    smartctl_args: -d sat -xv 188,raw16 -n standby
 
   - device: /dev/nvme0n1
     type: nvme
-
   - device: /dev/nvme1n1
     type: nvme
