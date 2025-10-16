@@ -29,11 +29,6 @@ services:
     cap_add:
       - SYS_RAWIO
       - SYS_ADMIN
-    cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SYS_CHROOT
-      - SYS_PTRACE
     deploy:
       resources:
         limits:
