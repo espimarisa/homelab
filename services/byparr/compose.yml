@@ -13,7 +13,7 @@ services:
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
-      - SETFCAP
+      - SETFCAP 
       - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE

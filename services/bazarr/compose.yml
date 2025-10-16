@@ -44,6 +44,8 @@ services:
         limits:
           cpus: 2
           memory: 2048M
+    healthcheck:
+      test: "curl -f http://127.0.0.1:6767/api/system/health -H 'X-Api-Key: ${BAZARR_API_KEY}'"
     security_opt:
       - no-new-privileges:true
 

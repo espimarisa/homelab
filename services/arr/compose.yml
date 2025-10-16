@@ -41,6 +41,8 @@ services:
         limits:
           cpus: 2
           memory: 2048M
+    healthcheck:
+      test: "curl -f http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
 
@@ -173,6 +175,8 @@ services:
         limits:
           cpus: 2
           memory: 2048M
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
 
@@ -246,6 +250,8 @@ services:
         limits:
           cpus: 2
           memory: 2048M
+    healthcheck:
+      test: "curl -f http://127.0.0.1:8787/api/v1/system/status?apikey=${READARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
 
@@ -316,6 +322,8 @@ services:
         limits:
           cpus: 2
           memory: 2048M
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
 
