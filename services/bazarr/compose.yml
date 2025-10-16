@@ -21,10 +21,9 @@ services:
     expose:
       - 6767/tcp
     networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.23
-      internal-only:
+      - caddy
+      - gluetun
+      - internal-only
     volumes:
       - bazarr:/config
       - media-library:/library
