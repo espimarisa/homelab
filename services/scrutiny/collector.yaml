@@ -1,0 +1,7 @@
+devices:
+  - device: /dev/sda
+    smartctl_args: -d scsi
+  - device: /dev/nvme0n1
+    type: nvme
+  - device: /dev/nvme1n1
+    type: nvme
