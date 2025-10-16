@@ -1,14 +1,23 @@
+x-seagate-args: &seagate_args
+  info_args: "-xv 188,raw16 --info --json -n standby"
+  scan_args: "-xv 188,raw16 --scan --json -n standby"
+  smart_args: "-xv 188,raw16 --xall --json -n standby"
+
 devices:
   - device: /dev/sda
-    smartctl_args: -d scsi
+    smartctl_args: -d scsi # Fix for wonky MX500
+
+  # Fix for Seagate drives.
   - device: /dev/sdc
-    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+    <<: *seagate_args
   - device: /dev/sdd
-    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+    <<: *seagate_args
   - device: /dev/sde
-    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+    <<: *seagate_args
   - device: /dev/sdf
-    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+    <<: *seagate_args
+
+  # Fix for NVMe drives
   - device: /dev/nvme0n1
     type: nvme
   - device: /dev/nvme1n1
