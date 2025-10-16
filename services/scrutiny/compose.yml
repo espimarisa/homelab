@@ -8,6 +8,9 @@ services:
     container_name: scrutiny
     restart: unless-stopped
     environment:
+      COLLECTOR_COMMANDS_METRICS_INFO_ARGS: "-xv 188,raw16 --info --json -n standby"
+      COLLECTOR_COMMANDS_METRICS_SCAN_ARGS: "-xv 188,raw16 --scan --json -n standby"
+      COLLECTOR_COMMANDS_METRICS_SMART_ARGS: "-xv 188,raw16 --xall --json -n standby"
       COLLECTOR_CRON_SCHEDULE: "0 6 * * *"
       SCRUTINY_WEB_INFLUXDB_INIT_PASSWORD: ${SCRUTINY_INFLUXDB_PASSWORD}
       SCRUTINY_WEB_INFLUXDB_INIT_USERNAME: "admin"
@@ -19,8 +22,6 @@ services:
       - caddy
     volumes:
       - /run/udev:/run/udev:ro
-      - ./drivedb.h:/usr/share/smartmontools/drivedb.h # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
-      - ./drivedb.h:/var/lib/smartmontools/drivedb/drivedb.h # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
       - scrutiny-config:/opt/scrutiny/config
       - scrutiny-db:/opt/scrutiny/influxdb
     cap_add:
