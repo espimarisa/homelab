@@ -1,6 +1,14 @@
 devices:
   - device: /dev/sda
     smartctl_args: -d scsi
+  - device: /dev/sdc
+    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+  - device: /dev/sdd
+    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+  - device: /dev/sde
+    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
+  - device: /dev/sdf
+    smartctl_args: -xv 188,raw16 -n standby # https://github.com/AnalogJ/scrutiny/issues/522#issuecomment-2807689281
   - device: /dev/nvme0n1
     type: nvme
   - device: /dev/nvme1n1
