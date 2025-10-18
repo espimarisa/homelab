@@ -50,7 +50,7 @@ services:
     volumes:
       - /home:/extra-filesystems/home:ro # Root system FS partition. Uncomment if Docker is not on another drive.
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
+      - socket-proxy:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
       - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # Downloads cache drive.
       - ${STORAGE_PATH}:/extra-filesystems/storage:ro # Storage drive.
       - beszel-agent:/var/lib/beszel-agent
@@ -59,6 +59,8 @@ services:
       - PERFMON # Required for GPU monitoring.
       - SYS_ADMIN # Required for GPU monitoring.
       - DAC_OVERRIDE # Required for GPU monitoring.
+    cap_drop:
+      - ALL
     deploy:
       resources:
         limits:
@@ -66,6 +68,9 @@ services:
           memory: 512M
     depends_on:
       beszel:
+        condition: service_healthy
+        restart: true
+      socket-proxy:
         condition: service_healthy
         restart: true
     healthcheck:
@@ -91,4 +96,7 @@ volumes:
     external: true
   beszel-socket:
     name: beszel-socket-volume
+    external: true
+  socket-proxy:
+    name: socket-proxy-volume
     external: true

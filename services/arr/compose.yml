@@ -212,81 +212,6 @@ services:
       - no-new-privileges:true
 
   ###########################################################################
-  # Readarr: Book manager - https://github.com/pennydreadful/readarr        #
-  ###########################################################################
-
-  readarr:
-    image: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.20.91
-    container_name: readarr
-    restart: unless-stopped
-    environment:
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      TZ: "${TZ}"
-      UMASK: "${UMASK}"
-    expose:
-      - 8787/tcp
-    networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.22
-      internal-only:
-    volumes:
-      - downloads:/downloads
-      - readarr:/config
-      - media-library:/library
-    cap_add:
-      - CHOWN
-      - FOWNER
-      - FSETID
-      - SETGID
-      - SETUID
-    cap_drop:
-      - ALL
-    depends_on:
-      readarr-db:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 2
-          memory: 1024M
-    healthcheck:
-      test: "curl -f http://127.0.0.1:8787/api/v1/system/status?apikey=${READARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true
-
-  readarr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: readarr-db
-    hostname: readarr-db
-    read_only: true
-    restart: unless-stopped
-    environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${READARR_DB_PASSWORD}"
-      TZ: "${TZ}"
-    networks:
-      - internal-only
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
-    volumes:
-      - readarr-db-backups:/postgres/backup
-      - readarr-db-config:/postgres/etc
-      - readarr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: 1
-          memory: 512M
-    security_opt:
-      - no-new-privileges:true
-
-  ###########################################################################
   # Sonarr: Series manager, organizer, and PVR - https://sonarr.tv          #
   ###########################################################################
 
@@ -412,18 +337,6 @@ volumes:
     external: true
   radarr-db-backups:
     name: radarr-db-backups-volume
-    external: true
-  readarr:
-    name: readarr-volume
-    external: true
-  readarr-db-data:
-    name: readarr-db-data-volume
-    external: true
-  readarr-db-config:
-    name: readarr-db-config-volume
-    external: true
-  readarr-db-backups:
-    name: readarr-db-backups-volume
     external: true
   sonarr:
     name: sonarr-volume

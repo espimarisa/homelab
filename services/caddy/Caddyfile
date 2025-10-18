@@ -42,6 +42,15 @@
 	encode zstd gzip
 	tls internal
 	reverse_proxy {args[0]}
+
+	log {
+		format json
+		output file /caddy/logs/internal-access.log {
+			roll_size 10mb # Rotate the log file after it reaches 10 MB.
+			roll_keep 5 # Keep the 5 most recent log files.
+			roll_keep_for 720h # Keep logs for 30 days.
+		}
+	}
 }
 
 # Internal healthcheck endpoint.
@@ -86,7 +95,11 @@
 	encode zstd gzip
 	log {
 		format json
-		output stdout
+		output file /caddy/logs/access.log {
+			roll_size 10mb # Rotate the log file after it reaches 10 MB.
+			roll_keep 5 # Keep the 5 most recent log files.
+			roll_keep_for 720h # Keep logs for 30 days.
+		}
 	}
 
 	# Let Vaultwarden manage its own security headers; enable HSTS.
@@ -141,14 +154,6 @@ qui.{$INTERNAL_DOMAIN} {
 
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
-}
-
-readarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy readarr:8787
-}
-
-scrutiny.{$INTERNAL_DOMAIN} {
-	import internal_proxy scrutiny:8080
 }
 
 slskd.{$INTERNAL_DOMAIN} {

@@ -1,6 +1,6 @@
 # 'ARR Stack
 
-This stack contains the primary 'ARR apps (Lidarr, Prowlarr, Readarr, Radarr, and Sonarr).
+This stack contains the primary 'ARR apps (Lidarr, Prowlarr, Radarr, and Sonarr).
 
 ## Scripts
 
@@ -17,8 +17,6 @@ sudo nano /path/to/docker/volumes/appname-volume/_data/config.xml
 ```
 
 ```xml
-<!-- if you are using readarr, add the following -->
-<!-- <PostgresCacheDb>appname-cache</PostgresCacheDb> -->
 <!-- if you're using prowlarr, set host to 127.0.0.1 -->
 <PostgresHost>appname-db</PostgresHost>
 <PostgresLogDb>appname-log</PostgresLogDb>
@@ -42,9 +40,6 @@ psql --user=postgres
 ```SQL
 CREATE DATABASE "appname-main";
 CREATE DATABASE "appname-log";
-
--- if you are using readarr, do this
--- CREATE DATABASE "appname-cache";
 \q
 ```
 
@@ -55,7 +50,4 @@ exit
 sudo nano /path/to/docker/volumes/appname-db-config-data/_data/pg_hba.conf
 host appname-main postgres 0.0.0.0/0 password
 host appname-log postgres 0.0.0.0/0 password
-
-# if you are using readarr, add this
-# host appname-cache postgres 0.0.0.0/0 password
 ```

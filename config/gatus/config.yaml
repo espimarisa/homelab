@@ -140,12 +140,6 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/dozzle/json
 
-  # Scrutiny.
-  - name: Scrutiny
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/containers/scrutiny/json
-
   # Socket Proxy.
   - name: Socket Proxy
     <<: *defaults-container
@@ -216,12 +210,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/containers/radarr/json
 
-  # Readarr.
-  - name: Readarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/containers/readarr/json
-
   # slskd.
   - name: slskd
     <<: *defaults-container
@@ -279,12 +267,6 @@ endpoints:
     <<: *defaults-container
     group: PostgreSQL Databases
     url: ${SOCKET_PROXY_URL}/containers/radarr-db/json
-
-  # Readarr DB.
-  - name: Readarr Database
-    <<: *defaults-container
-    group: PostgreSQL Databases
-    url: ${SOCKET_PROXY_URL}/containers/readarr-db/json
 
   # Sonarr DB.
   - name: Sonarr Database

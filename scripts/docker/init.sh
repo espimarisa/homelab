@@ -10,16 +10,15 @@ readonly APPDATA_DIRECTORIES=(
 
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
+	".torrent-files"
 	"deezer"
+	"lidarr"
+	"prowlarr"
+	"radarr"
+	"sonarr"
 	"soulseek"
 	"torrents"
-	"torrents/.torrent-files"
-	"torrents/lidarr"
-	"torrents/prowlarr"
-	"torrents/radarr"
-	"torrents/readarr"
-	"torrents/sonarr"
-	"torrents/uncategorized"
+	"uncategorized"
 )
 
 # Incomplete download directories to create.
@@ -87,13 +86,8 @@ readonly VOLUMES=(
 	"radarr-db-config-volume"
 	"radarr-db-data-volume"
 	"radarr-volume"
-	"readarr-db-backups-volume"
-	"readarr-db-config-volume"
-	"readarr-db-data-volume"
-	"readarr-volume"
-	"scrutiny-config-volume"
-	"scrutiny-db-volume"
 	"slskd-volume"
+	"socket-proxy-volume"
 	"sonarr-db-backups-volume"
 	"sonarr-db-config-volume"
 	"sonarr-db-data-volume"
