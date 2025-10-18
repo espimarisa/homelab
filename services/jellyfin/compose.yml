@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri:/dev/dri:ro
+      - /dev/dri/renderD128:/dev/dri/renderD128:ro
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}"
     expose:
