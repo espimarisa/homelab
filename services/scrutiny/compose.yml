@@ -32,8 +32,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 1024M
+          cpus: 0.5
+          memory: 512M
     devices:
       - /dev/nvme0n1
       - /dev/nvme1n1

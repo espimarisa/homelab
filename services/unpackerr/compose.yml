@@ -32,8 +32,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2048M
           cpus: 2
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 

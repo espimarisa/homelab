@@ -42,7 +42,7 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 2048M
+          memory: 1024M
     healthcheck:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:

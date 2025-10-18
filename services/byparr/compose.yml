@@ -24,6 +24,6 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 2048M
+          memory: 1024M
     security_opt:
       - no-new-privileges:true

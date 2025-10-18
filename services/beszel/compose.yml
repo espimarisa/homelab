@@ -62,8 +62,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 1024M
+          cpus: 0.5
+          memory: 512M
     depends_on:
       beszel:
         condition: service_healthy

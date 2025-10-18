@@ -40,7 +40,7 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 2048M
+          memory: 1024M
     healthcheck:
       test: "curl -f http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
     security_opt:
@@ -71,7 +71,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1024M
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 
@@ -105,7 +105,7 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 2048M
+          memory: 1024M
     healthcheck:
       test: "wget --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
     security_opt:
@@ -134,7 +134,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1024M
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 
@@ -176,7 +176,7 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 2048M
+          memory: 1024M
     healthcheck:
       test: "wget --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
     security_opt:
@@ -207,7 +207,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1024M
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 
@@ -251,7 +251,7 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 2048M
+          memory: 1024M
     healthcheck:
       test: "curl -f http://127.0.0.1:8787/api/v1/system/status?apikey=${READARR_API_KEY} || exit 1"
     security_opt:
@@ -282,7 +282,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1024M
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 
@@ -323,7 +323,7 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 2048M
+          memory: 1024M
     healthcheck:
       test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
     security_opt:
@@ -354,7 +354,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1024M
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 

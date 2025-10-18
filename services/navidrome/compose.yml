@@ -47,8 +47,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 8192M
-          cpus: 4
+          cpus: 2
+          memory: 4096M
     healthcheck:
       test: "wget --spider http://127.0.0.1:4533/ping || exit 1"
     security_opt:
