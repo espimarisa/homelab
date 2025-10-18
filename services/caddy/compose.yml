@@ -39,7 +39,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 128M
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     sysctls:
