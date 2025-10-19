@@ -20,6 +20,7 @@ services:
       NODES: "1" # Allow nodes endpoint.
       IMAGES: "1" # Allows images endpoint.
       PING: "1" # Allow ping endpoint.
+      POST: "1" # Allow post endpoint (BAD BUT IM LAZY).
       SERVICES: "1" # Allow services endpoint.
       SWARM: "1" # Allow swarm checking.
       TZ: "${TZ}" # Local timezone to use.
