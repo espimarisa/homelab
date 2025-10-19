@@ -31,10 +31,10 @@ services:
       resources:
         limits:
           cpus: 0.5
-          memory: 256M
+          memory: 512M
         reservations:
           cpus: 0.125
-          memory: 128M
+          memory: 256M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:11011/health"]
     security_opt:
