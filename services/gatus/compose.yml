@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   gatus:
-    image: ghcr.io/twin/gatus:v5.26.0
+    image: ghcr.io/twin/gatus:stable
     container_name: gatus
     env_file: ../../.env
     hostname: gatus
@@ -79,9 +79,7 @@ networks:
     external: true
     name: caddy-network
   internal-only:
-    driver: bridge
     external: true
-    internal: true
     name: internal-only-network
   socket-proxy:
     external: true

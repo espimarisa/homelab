@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   bazarr:
-    image: ghcr.io/hotio/bazarr:release-1.5.3
+    image: ghcr.io/hotio/bazarr:release
     container_name: bazarr
     restart: unless-stopped
     environment:
@@ -89,7 +89,6 @@ networks:
     external: true
     name: caddy-network
   gluetun:
-    driver: bridge
     external: true
     ipam:
       config:
@@ -97,9 +96,7 @@ networks:
           gateway: 172.19.0.1
     name: gluetun-network
   internal-only:
-    driver: bridge
     external: true
-    internal: true
     name: internal-only-network
 
 volumes:

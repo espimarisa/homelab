@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   unpackerr:
-    image: ghcr.io/unpackerr/unpackerr:0.14.5
+    image: ghcr.io/unpackerr/unpackerr:0
     container_name: unpackerr
     hostname: unpackerr
     read_only: true
@@ -43,7 +43,6 @@ services:
 
 networks:
   gluetun:
-    driver: bridge
     external: true
     ipam:
       config:

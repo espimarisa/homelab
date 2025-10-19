@@ -4,26 +4,33 @@ services:
   ###########################################################################
 
   socket-proxy:
-    image: ghcr.io/11notes/socket-proxy:2.1.6
+    image: lscr.io/linuxserver/socket-proxy:latest
     container_name: socket-proxy
     hostname: socket-proxy
     read_only: true
     restart: unless-stopped
-    user: "0:${DOCKER_GID}"
     environment:
+      ALLOW_RESTARTS: "1" # Allow restarting containers.
+      ALLOW_START: "1" # Allow starting containers.
+      ALLOW_STOP: "1" # Allow stopping containers.
+      CONTAINERS: "1" # Allow containers endpoint.
+      EVENTS: "1" # Allow event logging.
+      NETWORKS: "1" # Allow networks endpoint.
+      INFO: "1" # Allow info endpoint.
+      NODES: "1" # Allow nodes endpoint.
+      IMAGES: "1" # Allows images endpoint.
+      PING: "1" # Allow ping endpoint.
+      SERVICES: "1" # Allow services endpoint.
+      SWARM: "1" # Allow swarm checking.
       TZ: "${TZ}" # Local timezone to use.
     networks:
       - socket-proxy # Internal-only socket proxy network.
     volumes:
-      - socket-proxy:/run/proxy
-      - /var/run/docker.sock:/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount.
+    tmpfs:
+      - /run # Required for read-only image.
     cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
+      - ALL
     deploy:
       resources:
         limits:
@@ -32,6 +39,9 @@ services:
         reservations:
           cpus: 0.125
           memory: 32M
+    healthcheck:
+      interval: 10s
+      test: "wget --spider http://127.0.0.1:2375/_ping || exit 1"
     security_opt:
       - no-new-privileges:true
 
@@ -40,8 +50,3 @@ networks:
     external: true
     internal: true
     name: socket-proxy-network
-
-volumes:
-  socket-proxy:
-    external: true
-    name: socket-proxy-volume

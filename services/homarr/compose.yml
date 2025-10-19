@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   homarr:
-    image: ghcr.io/homarr-labs/homarr:v1.42.1
+    image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
     restart: unless-stopped
     environment:
@@ -95,7 +95,6 @@ networks:
     external: true
     name: caddy-network
   gluetun:
-    driver: bridge
     external: true
     ipam:
       config:
@@ -103,9 +102,7 @@ networks:
           gateway: 172.19.0.1
     name: gluetun-network
   internal-only:
-    driver: bridge
     external: true
-    internal: true
     name: internal-only-network
   socket-proxy:
     external: true

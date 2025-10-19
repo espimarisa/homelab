@@ -186,7 +186,7 @@ create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
 echo -e "\nCreating Docker networks..."
 create_network "caddy-network" --driver=bridge
 create_network "gluetun-network" --driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1
-create_network "internal-only-network" --driver=bridge --internal
+create_network "internal-only-network" --driver=bridge
 create_network "socket-proxy-network" --driver=bridge --internal
 
 # Create Docker volumes.

@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   slskd:
-    image: ghcr.io/slskd/slskd:0.23.2
+    image: ghcr.io/slskd/slskd:latest
     container_name: slskd
     network_mode: service:gluetun
     restart: unless-stopped

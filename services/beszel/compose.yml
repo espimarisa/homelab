@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   beszel:
-    image: ghcr.io/henrygd/beszel/beszel:0.14.0
+    image: ghcr.io/henrygd/beszel/beszel:0
     container_name: beszel
     hostname: beszel
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
   ###########################################################################
 
   beszel-agent:
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.14.0 # Use -intel for future Intel GPU monitoring.
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0 # Use -intel for future Intel GPU monitoring.
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host

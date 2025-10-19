@@ -1,0 +1,50 @@
+services:
+  ###########################################################################
+  # Watchtower: Automatic container updates or update notifications.        #
+  ###########################################################################
+
+  watchtower:
+    image: ghcr.io/nicholas-fedor/watchtower:latest
+    container_name: watchtower
+    hostname: watchtower
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375"
+      TZ: "${TZ}"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_INCLUDE_RESTARTING: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "true"
+      WATCHTOWER_MONITOR_ONLY: "true"
+      WATCHTOWER_NOTIFICATION_URL: "${WATCHTOWER_NOTIFICATION_URL}"
+      WATCHTOWER_SCHEDULE: "0 6 * * *"
+      WATCHTOWER_UPDATE_ON_START: "true"
+    networks:
+      - internal-only
+      - socket-proxy
+    cap_drop:
+      - ALL
+    depends_on:
+      socket-proxy:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 64M
+        reservations:
+          cpus: 0.125
+          memory: 32M
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  internal-only:
+    external: true
+    name: internal-only-network
+  socket-proxy:
+    external: true
+    internal: true
+    name: socket-proxy-network

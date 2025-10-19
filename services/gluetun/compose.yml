@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.40.0
+    image: ghcr.io/qdm12/gluetun:v3
     container_name: gluetun
     hostname: gluetun
     restart: unless-stopped
@@ -80,7 +80,6 @@ networks:
     external: true
     name: caddy-network
   gluetun:
-    driver: bridge
     external: true
     ipam:
       config:
@@ -88,9 +87,7 @@ networks:
           gateway: 172.19.0.1
     name: gluetun-network
   internal-only:
-    driver: bridge
     external: true
-    internal: true
     name: internal-only-network
 
 volumes:

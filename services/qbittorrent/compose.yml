@@ -40,7 +40,7 @@ services:
   ###########################################################################
 
   qui:
-    image: ghcr.io/autobrr/qui:v1.4.0
+    image: ghcr.io/autobrr/qui:latest
     container_name: qui
     network_mode: service:gluetun
     read_only: true

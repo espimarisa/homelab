@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   chhoto:
-    image: ghcr.io/sintan1729/chhoto-url:6.3.2-alpine
+    image: ghcr.io/sintan1729/chhoto-url:6
     container_name: chhoto
     hostname: chhoto
     read_only: true

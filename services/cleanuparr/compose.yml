@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   cleanuparr:
-    image: ghcr.io/cleanuparr/cleanuparr:2.3.3
+    image: ghcr.io/cleanuparr/cleanuparr:2
     container_name: cleanuparr
     hostname: cleanuparr
     restart: unless-stopped
@@ -45,7 +45,6 @@ networks:
     external: true
     name: caddy-network
   gluetun:
-    driver: bridge
     external: true
     ipam:
       config:

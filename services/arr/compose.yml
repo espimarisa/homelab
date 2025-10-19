@@ -86,7 +86,7 @@ services:
   ###########################################################################
 
   prowlarr:
-    image: ghcr.io/11notes/prowlarr:2.0.5
+    image: ghcr.io/11notes/prowlarr:2
     container_name: prowlarr
     network_mode: service:gluetun
     read_only: true
@@ -155,7 +155,7 @@ services:
   ###########################################################################
 
   radarr:
-    image: ghcr.io/11notes/radarr:5.28.0
+    image: ghcr.io/11notes/radarr:5
     container_name: radarr
     hostname: radarr
     read_only: true
@@ -234,7 +234,7 @@ services:
   ###########################################################################
 
   sonarr:
-    image: ghcr.io/11notes/sonarr:4.0.15
+    image: ghcr.io/11notes/sonarr:4
     container_name: sonarr
     hostname: sonarr
     read_only: true
@@ -312,7 +312,6 @@ networks:
     external: true
     name: caddy-network
   gluetun:
-    driver: bridge
     external: true
     ipam:
       config:
@@ -320,9 +319,7 @@ networks:
           gateway: 172.19.0.1
     name: gluetun-network
   internal-only:
-    driver: bridge
     external: true
-    internal: true
     name: internal-only-network
 
 volumes:
