@@ -10,9 +10,6 @@ services:
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
-    dns:
-      - 9.9.9.9
-      - 149.112.112.112
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375"
       TZ: "${TZ}"
@@ -49,5 +46,4 @@ networks:
     name: internal-only-network
   socket-proxy:
     external: true
-    internal: true
     name: socket-proxy-network

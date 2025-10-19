@@ -106,7 +106,6 @@ networks:
     name: internal-only-network
   socket-proxy:
     external: true
-    internal: true
     name: socket-proxy-network
 
 volumes:
