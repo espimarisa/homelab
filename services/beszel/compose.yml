@@ -23,8 +23,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 256M
+          cpus: 0.25
+          memory: 128M
+        reservations:
+          cpus: 0.125
+          memory: 64M
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
     security_opt:
@@ -63,8 +66,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 512M
+          cpus: 0.25
+          memory: 128M
+        reservations:
+          cpus: 0.125
+          memory: 64M
     depends_on:
       beszel:
         condition: service_healthy

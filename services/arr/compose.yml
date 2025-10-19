@@ -39,8 +39,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
+          cpus: 1.5
           memory: 1024M
+        reservations:
+          cpus: 0.25
+          memory: 256M
     healthcheck:
       test: "curl -f http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
     security_opt:
@@ -70,8 +73,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 0.5
+          memory: 256M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     security_opt:
       - no-new-privileges:true
 
@@ -104,8 +110,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
+          cpus: 1.5
           memory: 1024M
+        reservations:
+          cpus: 0.25
+          memory: 256M
     healthcheck:
       test: "wget --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
     security_opt:
@@ -133,8 +142,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 0.5
+          memory: 256M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     security_opt:
       - no-new-privileges:true
 
@@ -175,8 +187,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 1024M
+          cpus: 0.5
+          memory: 256M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     healthcheck:
       test: "wget --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
     security_opt:
@@ -208,6 +223,9 @@ services:
         limits:
           cpus: 1
           memory: 512M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     security_opt:
       - no-new-privileges:true
 
@@ -247,8 +265,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
+          cpus: 1.5
           memory: 1024M
+        reservations:
+          cpus: 0.25
+          memory: 256M
     healthcheck:
       test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
     security_opt:
@@ -278,8 +299,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 0.5
+          memory: 256M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     security_opt:
       - no-new-privileges:true
 

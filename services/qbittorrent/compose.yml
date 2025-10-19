@@ -29,6 +29,9 @@ services:
         limits:
           cpus: 6
           memory: 4096M
+        reservations:
+          cpus: 2
+          memory: 1024M
     security_opt:
       - no-new-privileges:true
 
@@ -69,6 +72,9 @@ services:
         limits:
           cpus: 1
           memory: 1024M
+        reservations:
+          cpus: 0.125
+          memory: 256M
     security_opt:
       - no-new-privileges:true
 

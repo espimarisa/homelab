@@ -48,7 +48,10 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 4096M
+          memory: 2048M
+        reservations:
+          cpus: 0.5
+          memory: 512M
     healthcheck:
       test: "wget --spider http://127.0.0.1:4533/ping || exit 1"
     security_opt:

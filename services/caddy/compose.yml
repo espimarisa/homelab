@@ -7,13 +7,23 @@ services:
     image: ghcr.io/11notes/caddy:2.10.0
     container_name: caddy
     command: ["run", "--config", "/caddy/etc/Caddyfile"]
-    env_file: ../../.env
     hostname: caddy
     read_only: true
     restart: unless-stopped
     environment:
+      ACME_EMAIL: "${ACME_EMAIL}"
+      CHHOTO_URL: "${CHHOTO_URL}"
       DOCKER_HOST: "tcp://socket-proxy:2375"
+      DOMAIN: "${DOMAIN}"
+      GATUS_URL: "${GATUS_URL}"
+      HOMARR_URL: "${HOMARR_URL}"
+      INTERNAL_DOMAIN: "${INTERNAL_DOMAIN}"
+      JELLYFIN_URL: "${JELLYFIN_URL}"
+      NAVIDROME_URL: "${NAVIDROME_URL}"
+      OPENCLOUD_URL: "${OPENCLOUD_URL}"
+      THELOUNGE_URL: "${THELOUNGE_URL}"
       TZ: "${TZ}"
+      VAULTWARDEN_URL: "${VAULTWARDEN_URL}"
     networks:
       - caddy
       - socket-proxy
@@ -39,7 +49,10 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 256M
+          memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 128M
     security_opt:
       - no-new-privileges:true
     sysctls:

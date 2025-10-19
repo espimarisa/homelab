@@ -1,21 +1,10 @@
 {
-	# Configures the ACME email.
 	email {$ACME_EMAIL}
-
-	# Store files in /caddy/var.
 	storage file_system /caddy/var
 }
 
-# Snippet for externally accessible reverse proxied services.
-(external_proxy) {
-	encode zstd gzip
-
-	reverse_proxy {args[0]} {
-		# Trust local, static, Docker, and Tailscale IP addresses.
-		trusted_proxies private_ranges 100.64.0.0/10
-	}
-
-	# Enables HSTS and configures security headers.
+# Snippet for security headers.
+(security_headers) {
 	header {
 		-Server
 		Referrer-Policy "strict-origin-when-cross-origin"
@@ -23,15 +12,23 @@
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 	}
+}
 
-	# Enables logging to log files.
+# Snippet for externally accessible reverse proxied services.
+(external_proxy) {
+	encode zstd gzip
+	import security_headers
+
 	log {
-		format json
-		output file /caddy/logs/access.log {
-			roll_size 10mb # Rotate the log file after it reaches 10 MB.
-			roll_keep 5 # Keep the 5 most recent log files.
-			roll_keep_for 720h # Keep logs for 30 days.
+		output file /caddy/logs/external-access.log {
+			roll_size 10mb
+			roll_keep 5
+			roll_keep_for 720h
 		}
+	}
+
+	reverse_proxy {args[0]} {
+		trusted_proxies private_ranges 100.64.0.0/10
 	}
 }
 
@@ -40,20 +37,26 @@
 	@not_internal not remote_ip private_ranges 100.64.0.0/10
 	abort @not_internal
 	encode zstd gzip
+	import security_headers
 	tls internal
-	reverse_proxy {args[0]}
 
 	log {
-		format json
 		output file /caddy/logs/internal-access.log {
-			roll_size 10mb # Rotate the log file after it reaches 10 MB.
-			roll_keep 5 # Keep the 5 most recent log files.
-			roll_keep_for 720h # Keep logs for 30 days.
+			roll_keep 5
+			roll_keep_for 720h
+			roll_size 10mb
 		}
+	}
+
+	reverse_proxy {args[0]} {
+		trusted_proxies private_ranges 100.64.0.0/10
 	}
 }
 
-# Internal healthcheck endpoint.
+###########################################################################
+# Internal healthcheck endpoint.                                          #
+###########################################################################
+
 :3000 {
 	respond / 200
 }
@@ -76,14 +79,38 @@
 
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
+
+	log {
+		output file /caddy/logs/jellyfin-access.log {
+			roll_size 10mb
+			roll_keep 5
+			roll_keep_for 720h
+		}
+	}
 }
 
 {$NAVIDROME_URL} {
 	import external_proxy navidrome:4533
+
+	log {
+		output file /caddy/logs/navidrome-access.log {
+			roll_size 10mb
+			roll_keep 5
+			roll_keep_for 720h
+		}
+	}
 }
 
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
+
+	log {
+		output file /caddy/logs/opencloud-access.log {
+			roll_size 10mb
+			roll_keep 5
+			roll_keep_for 720h
+		}
+	}
 }
 
 {$THELOUNGE_URL} {
@@ -91,25 +118,24 @@
 }
 
 {$VAULTWARDEN_URL} {
-	# Basic settings.
-	encode zstd gzip
+	# Use the external_proxy snippet for consistency, then override headers.
+	import external_proxy vaultwarden:80
+
+	# Let Vaultwarden manage its own security headers; only keep HSTS from our snippet.
+	header {
+		-Referrer-Policy
+		-X-Content-Type-Options
+		-X-Frame-Options
+	}
+
+	# Give Vaultwarden its own log file for easier troubleshooting.
 	log {
-		format json
-		output file /caddy/logs/access.log {
-			roll_size 10mb # Rotate the log file after it reaches 10 MB.
-			roll_keep 5 # Keep the 5 most recent log files.
-			roll_keep_for 720h # Keep logs for 30 days.
+		output file /caddy/logs/vaultwarden-access.log {
+			roll_keep 5
+			roll_keep_for 720h
+			roll_size 10mb
 		}
 	}
-
-	# Let Vaultwarden manage its own security headers; enable HSTS.
-	header {
-		-Server
-		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-	}
-
-	# Send all traffic to the Vaultwarden container.
-	reverse_proxy vaultwarden:80
 }
 
 ###########################################################################
@@ -162,4 +188,21 @@ slskd.{$INTERNAL_DOMAIN} {
 
 sonarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy sonarr:8989
+}
+
+###########################################################################
+# Catch-all block to reduce spam and annoyance. (MUST BE LAST!)           #
+###########################################################################
+
+* {
+	# Log and abort any requests that don't match the sites above.
+	log {
+		output file /caddy/logs/unmatched.log {
+			roll_keep 5
+			roll_keep_for 720h
+			roll_size 10mb
+		}
+	}
+
+	abort
 }

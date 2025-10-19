@@ -28,8 +28,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 128M
+          cpus: 0.25
+          memory: 64M
+        reservations:
+          cpus: 0.125
+          memory: 32M
     healthcheck:
       test: "wget --spider http://127.0.0.1:4567"
     security_opt:

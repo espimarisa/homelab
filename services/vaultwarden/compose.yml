@@ -53,8 +53,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
+          cpus: 0.5
           memory: 256M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     depends_on:
       vaultwarden-db:
         condition: service_healthy
@@ -89,7 +92,10 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 512M
+          memory: 256M
+        reservations:
+          cpus: 0.125
+          memory: 128M
     security_opt:
       - no-new-privileges:true
 
