@@ -200,8 +200,13 @@ done
 echo -e "\nInitializing files in volumes..."
 docker run --rm \
 	-v "chhoto-volume:/data" \
-	alpine:3.20 \
+	alpine:3.22.2 \
 	touch /data/urls.sqlite
+
+docker run --rm \
+	-v "homarr-volume:/data" \
+	alpine:3.22.2 \
+	mkdir /data/redis
 
 # Set ownership of volumes using a temporary container.
 echo -e "\nSetting volume permissions ---"
@@ -209,7 +214,7 @@ for volume in "${CHOWN_VOLUMES[@]}"; do
 	echo "Setting ownership for volume: '$volume' to ${PUID}:${PGID}"
 	docker run --rm \
 		-v "$volume:/data" \
-		alpine:3.20 \
+		alpine:3.22.2 \
 		chown -R "${PUID}:${PGID}" /data
 done
 
