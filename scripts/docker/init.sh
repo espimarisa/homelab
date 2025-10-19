@@ -54,7 +54,6 @@ readonly VOLUMES=(
 	"caddy-logs-volume"
 	"chhoto-volume"
 	"cleanuparr-volume"
-	"dozzle-volume"
 	"gatus-db-backups-volume"
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"

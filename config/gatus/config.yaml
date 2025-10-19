@@ -134,12 +134,6 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/ddclient/json
 
-  # Dozzle.
-  - name: Dozzle
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/containers/dozzle/json
-
   # Socket Proxy.
   - name: Socket Proxy
     <<: *defaults-container

@@ -7,7 +7,6 @@ include:
   - ./services/chhoto/compose.yml
   - ./services/cleanuparr/compose.yml
   - ./services/ddclient/compose.yml
-  - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
   - ./services/homarr/compose.yml

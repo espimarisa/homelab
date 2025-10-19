@@ -154,10 +154,6 @@ cleanuparr.{$INTERNAL_DOMAIN} {
 	import internal_proxy cleanuparr:11011
 }
 
-dozzle.{$INTERNAL_DOMAIN} {
-	import internal_proxy dozzle:8080
-}
-
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
 }
