@@ -40,7 +40,7 @@ services:
       resources:
         limits:
           cpus: 1.5
-          memory: 1024M
+          memory: 2048M
         reservations:
           cpus: 0.25
           memory: 256M
@@ -111,7 +111,7 @@ services:
       resources:
         limits:
           cpus: 1.5
-          memory: 1024M
+          memory: 2048M
         reservations:
           cpus: 0.25
           memory: 256M
@@ -188,7 +188,7 @@ services:
       resources:
         limits:
           cpus: 0.5
-          memory: 256M
+          memory: 2048M
         reservations:
           cpus: 0.125
           memory: 128M
@@ -266,7 +266,7 @@ services:
       resources:
         limits:
           cpus: 1.5
-          memory: 1024M
+          memory: 2048M
         reservations:
           cpus: 0.25
           memory: 256M
