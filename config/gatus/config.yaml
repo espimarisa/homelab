@@ -140,6 +140,12 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/containers/socket-proxy/json
 
+  # Watchtower.
+  - name: Watchtower
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/containers/watchtower/json
+
   ###########################################################################
   # Media management.                                                       #
   ###########################################################################
