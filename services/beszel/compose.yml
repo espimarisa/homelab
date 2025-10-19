@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   beszel:
-    image: ghcr.io/henrygd/beszel/beszel:0.13.2
+    image: ghcr.io/henrygd/beszel/beszel:0.14.0
     container_name: beszel
     hostname: beszel
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
   ###########################################################################
 
   beszel-agent:
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.13.2 # Use -intel for future Intel GPU monitoring.
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.14.0 # Use -intel for future Intel GPU monitoring.
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host
@@ -53,8 +53,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount, wooo scary!
-      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/dl-cache:ro # Downloads cache drive.
-      - ${STORAGE_PATH}:/extra-filesystems/storage:ro # Storage drive.
+      - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/nvme1n1:ro # Downloads cache drive.
+      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:

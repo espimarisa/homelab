@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   lidarr:
-    image: ghcr.io/hotio/lidarr:pr-plugins-3.0.0.4856
+    image: ghcr.io/hotio/lidarr:pr-plugins
     container_name: lidarr
     hostname: lidarr
     restart: unless-stopped
