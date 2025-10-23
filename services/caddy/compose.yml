@@ -33,7 +33,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - ./config/Caddyfile:/caddy/etc/Caddyfile:ro # Caddyfile mount.
+      - ./config:/caddy/etc:ro # Caddyfile mount.
       - caddy-backups:/caddy/backup # Caddyfile backups.
       - caddy-config:/caddy/etc # Caddy config.
       - caddy-data:/caddy/var # Caddy data and certificates.

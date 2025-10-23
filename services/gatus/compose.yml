@@ -33,7 +33,7 @@ services:
       - internal-only
       - socket-proxy
     volumes:
-      - ./config/config.yaml:/config/config.yaml:ro # Host config mount.
+      - ./config:/config:ro # Host config mount.
     cap_drop:
       - ALL # Drop all default capabilities.
     depends_on:

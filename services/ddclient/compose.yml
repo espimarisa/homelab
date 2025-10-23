@@ -15,7 +15,7 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/var/cache:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - ./config/ddclient/ddclient.conf:/etc/ddclient/ddclient.conf:ro # ddclient config file.
+      - ./config:/etc/ddclient:ro # ddclient config file.
       - /etc/localtime:/etc/localtime:ro # Host timezone mount.
     cap_drop:
       - ALL # Drop all default capabilities.
