@@ -257,6 +257,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
       - "/home/appuser:uid=${PUID},gid=${PGID},exec" # Required for Profilarr.
+    cap_add: *defaults-s6caps
     depends_on:
       radarr:
         condition: service_healthy # Wait for Radarr to be healthy before starting.
