@@ -26,7 +26,7 @@ x-defaults-http: &defaults-http
 x-defaults-container: &defaults-container
   <<: *defaults
   conditions:
-    - "[BODY].State.Health.Status == 'healthy'" # will bitch when restarting lol
+    - "[BODY].State.Health.Status == healthy" # will bitch when restarting lol
     - "[RESPONSE_TIME] < 100" # containers should always be < 100ms
     - "[STATUS] == 200"
   ui:
