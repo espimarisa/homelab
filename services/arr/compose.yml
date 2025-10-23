@@ -251,9 +251,6 @@ services:
       - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
     volumes:
       - profilarr:/config # Configuration and data volume.
-    healthcheck:
-      test: "wget --spider http://127.0.0.1:6868 || exit 1"
-      <<: *defaults-healthcheck
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
       - "/home/appuser:uid=${PUID},gid=${PGID},exec" # Required for Profilarr.
