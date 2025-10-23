@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   jellyfin:
-    image: ghcr.io/jellyfin/jellyfin:unstable
+    image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
     hostname: jellyfin
     read_only: true # Prevent writing directly to the image.
