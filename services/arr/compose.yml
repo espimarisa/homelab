@@ -157,6 +157,7 @@ services:
     container_name: sonarr
     depends_on: *defaults-depends
     hostname: sonarr
+    networks: *defaults-networks
     expose:
       - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
     volumes:
@@ -235,6 +236,7 @@ services:
     image: santiagosayshey/profilarr:latest
     container_name: profilarr
     hostname: profilarr
+    networks: *defaults-networks
     expose:
       - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
     volumes:
