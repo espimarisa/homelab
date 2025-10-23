@@ -9,76 +9,79 @@ services:
     hostname: gluetun
     restart: unless-stopped
     devices:
-      - /dev/net/tun:/dev/net/tun
+      - /dev/net/tun:/dev/net/tun # TUN/TAP device passthrough.
     environment:
-      BLOCK_ADS: "on"
-      BLOCK_MALICIOUS: "on"
-      BLOCK_SURVEILLANCE: "on"
-      DOT_PROVIDERS: "quad9"
-      DOT: "on"
+      BLOCK_ADS: "off" # Disable Unbound, lowers RAM usage.
+      BLOCK_MALICIOUS: "off" # Disable Unbound, lowers RAM usage.
+      BLOCK_SURVEILLANCE: "off" # Disables Unbound, lowers RAM usage.
+      DOT_PROVIDERS: "quad9" # Use Quad9 for DOT.
+      DOT: "on" # Enable DOT.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}"
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
-      HEALTH_TARGET_ADDRESS: "www.quad9.net:443"
-      HEALTH_VPN_DURATION_INITIAL: "60s"
-      HTTPPROXY: "off"
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      SERVER_CITIES: "${SERVER_CITIES}"
-      SERVER_COUNTRIES: "${SERVER_COUNTRIES}"
-      SERVER_HOSTNAMES: "${SERVER_HOSTNAMES}"
-      SERVER_NAMES: "${SERVER_NAMES}"
-      SERVER_REGIONS: "${SERVER_REGIONS}"
-      SHADOWSOCKS: "off"
-      TZ: "${TZ}"
-      UPDATER_PERIOD: "24h"
-      VERSION_INFORMATION: "off"
-      VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}"
-      VPN_TYPE: "wireguard"
-      WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}"
-      WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}"
-      WIREGUARD_MTU: "1400"
-      WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "25s"
-      WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}"
-      WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}"
-      WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}"
+      HEALTH_TARGET_ADDRESS: "www.quad9.net:443" # Use Quad9 for healthchecks.
+      HEALTH_VPN_DURATION_INITIAL: "120s" # Have an initial healthcheck of 2m.
+      HTTPPROXY: "off" # Disable the built-in HTTP proxy.
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities.
+      SERVER_COUNTRIES: "${SERVER_COUNTRIES}" # Optional list of server countries.
+      SERVER_HOSTNAMES: "${SERVER_HOSTNAMES}" # Optional list of server hostnames.
+      SERVER_NAMES: "${SERVER_NAMES}" # Optional list of server names.
+      SERVER_REGIONS: "${SERVER_REGIONS}" # Optional list of server regions.
+      SHADOWSOCKS: "off" # Disables the built-in Shadowsocks proxy.
+      TZ: "${TZ}" # Sets the timezone.
+      UPDATER_PERIOD: "24h" # Update servers every 24 hours.
+      VERSION_INFORMATION: "off" # Hide version information.
+      VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}" # Configures the service provider.
+      VPN_TYPE: "wireguard" # Use Wireguard.
+      WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # Address(es) from wg0.conf.
+      WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # Port from wg0.conf.
+      WIREGUARD_MTU: "1400" # MTU to use.
+      WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # PresharedKey from wg0.conf.
+      WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
+      WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
     expose:
-      - "${SOULSEEK_PORT:-50300}/tcp"
-      - 5030/tcp
-      - 7476/tcp
-      - 8080/tcp
-      - 8191/tcp
-      - 9696/tcp
+      - 5030/tcp # slskd web interface reverse proxied internally at slskd.${DOMAIN}.
+      - 7476/tcp # qui web interface reverse proxied internally at qui.${DOMAIN}.
+      - 8080/tcp # qBittorrent web interface reverse proxied internally at qbittorrent.${DOMAIN}.
+      - 8191/tcp # Byparr API.
+      - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${DOMAIN}.
     networks:
       - caddy
       - gluetun
-      - internal-only
     volumes:
-      - gluetun:/gluetun
+      - gluetun:/gluetun # Gluetun cache.
     cap_add:
-      - NET_ADMIN
-      - NET_RAW
+      - NET_BIND_SERVICE # Required for binding ports <= 1024.
+      - NET_ADMIN # Required for configuring Wireguard.
+      - NET_RAW # Helps with healthchecks and TCP speed.
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
+      - SETPCAP
       - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 1024M
+          cpus: 1 # Allow using up to 1 vCPU.
+          memory: 1G # Allow using 1G of RAM.
         reservations:
-          cpus: 0.5
-          memory: 256M
+          cpus: 0.5 # Reserve 0.5 vCPUs.
+          memory: 256M # Reserve 256MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
   gluetun:
     external: true
     ipam:
@@ -88,6 +91,10 @@ networks:
     name: gluetun-network
   internal-only:
     external: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
+          gateway: 172.20.0.1
     name: internal-only-network
 
 volumes:

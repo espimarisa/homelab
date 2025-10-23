@@ -7,25 +7,25 @@ services:
     image: matthewhuie/ddclient:cad54d2
     container_name: ddclient
     hostname: ddclient
-    network_mode: host
-    read_only: true
+    network_mode: host # Makes getting source IPs easier.
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
-      - "/var/cache:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/var/cache:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - ../../config/ddclient:/etc/ddclient:ro
-      - /etc/localtime:/etc/localtime:ro
+      - ./config/ddclient/ddclient.conf:/etc/ddclient/ddclient.conf:ro # ddclient config file.
+      - /etc/localtime:/etc/localtime:ro # Host timezone mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 64M
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Reserve 64MB of RAM.
         reservations:
-          cpus: 0.125
-          memory: 32M
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 32M # Reserve 32MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.

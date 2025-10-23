@@ -7,45 +7,49 @@ services:
     image: ghcr.io/jellyfin/jellyfin:unstable
     container_name: jellyfin
     hostname: jellyfin
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128:ro
     environment:
-      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}"
+      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures autodiscovery.
     expose:
-      - 8096/tcp
+      - 8096/tcp # Web interface reverse proxied externally at ${JELLYFIN_URL}.
     networks:
       - caddy
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - jellyfin-cache:/cache
-      - jellyfin-config:/config
-      - media-library:/library:ro
+      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
+      - jellyfin-cache:/cache # Cache volume.
+      - jellyfin-config:/config # Configuration and database.
+      - media-library:/library:ro # Read-only media library mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 4096M
+          cpus: 4 # Allow up to 4 vCPUs.
+          memory: 4G # Allow up to 4GB of RAM usage.
         reservations:
-          cpus: 1
-          memory: 2048M
+          cpus: 1 # Reserve 1 vCPU.
+          memory: 2G # Reserve 2GB of RAM.
     group_add:
-      - "${RENDER_GID}"
+      - "${RENDER_GID}" # Adds user to the host render group.
     healthcheck:
       test: "curl -f http://127.0.0.1:8096/health || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
 
 volumes:
   jellyfin-cache:

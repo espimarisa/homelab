@@ -7,7 +7,7 @@ services:
     image: lscr.io/linuxserver/socket-proxy:latest
     container_name: socket-proxy
     hostname: socket-proxy
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
       ALLOW_RESTARTS: "1" # Allow restarting containers.
@@ -22,7 +22,7 @@ services:
       PING: "1" # Allow ping endpoint.
       SERVICES: "1" # Allow services endpoint.
       SWARM: "1" # Allow swarm checking.
-      TZ: "${TZ}" # Local timezone to use.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - socket-proxy # Internal-only socket proxy network.
     volumes:
@@ -30,20 +30,20 @@ services:
     tmpfs:
       - /run # Required for read-only image.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 64M
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Allow up to 64MB of RAM.
         reservations:
-          cpus: 0.125
-          memory: 32M
+          cpus: 0.125 # Resevre 0.125 vCPUs.
+          memory: 32M # Reserve 32MB of RAM.
     healthcheck:
       interval: 10s
       test: "wget --spider http://127.0.0.1:2375/_ping || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   socket-proxy:

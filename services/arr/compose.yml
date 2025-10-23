@@ -1,375 +1,332 @@
+name: arr
+
+# Default depends_on options.
+x-defaults-depends: &defaults-depends
+  arr-db:
+    condition: service_healthy # Wait for arr-db to be healthy before starting.
+    restart: true # Restart when arr-db restarts.
+
+# Default environment variables.
+x-defaults-env: &defaults-env
+  TZ: "${TZ}" # Sets the timezone.
+  PGID: "${PGID}" # Group ID to run as.
+  PUID: "${PUID}" # User ID to run as.
+  UMASK: "${UMASK}" # Umask to apply to newly created files.
+
+# Default networks.
+x-defaults-networks: &defaults-networks
+  caddy: # Caddy network for reverse proxying.
+  internal-only: # Internal only network.
+
+# Default healthcheck options.
+x-defaults-health: &defaults-healthcheck
+  interval: 1m # Run every 1 minute.
+  retries: 3 # Retry 3 times before failing.
+  start_period: 1m # Wait 1 minute after starting before testing.
+  timeout: 3s # Timeout after 3 seconds.
+
+# Required permissions for s6.
+x-defaults-s6caps: &defaults-s6caps
+  - CHOWN # Required for taking ownership.
+  - DAC_OVERRIDE # Required for s6-rc.
+  - FOWNER # Required for s6-rc.
+  - FSETID # Required for s6-rc.
+  - SETGID # Required for dropping down to PGID.
+  - SETUID # Required for dropping down to PUID.
+
+# Default container options.
+x-defaults: &defaults
+  environment: *defaults-env
+  restart: unless-stopped
+  cap_add:
+    - CHOWN # Required for taking ownership.
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  deploy:
+    resources:
+      limits:
+        cpus: 2 # Allow using 2 vCPUs.
+        memory: 2G # Allow using 2GB
+      reservations:
+        cpus: 0.25 # Reserve 0.25 vCPUs.
+        memory: 512M # Reserve 512MB of RAM.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
+# Default rootless container options.
+x-defaults-ro: &defaults-ro
+  <<: *defaults
+  read_only: true # Prevent writing directly to the image.
+  tmpfs:
+    - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
+
+# Default rootless VPN'd container options.
+x-defaults-vpn: &defaults-vpn
+  <<: *defaults-ro
+  network_mode: service:gluetun
+  depends_on:
+    <<: *defaults-depends
+    gluetun:
+      condition: service_healthy # Wait for Gluetun to be healthy before starting.
+      restart: true # Restart when Gluetun restarts.
+
 services:
+  ###########################################################################
+  # arr-db: PostgreSQL instance for 'ARR apps. See the README for setup.    #
+  ###########################################################################
+
+  arr-db:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/postgres:17
+    container_name: arr-db
+    hostname: arr-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
+    networks:
+      - internal-only # Internal network.
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    volumes:
+      - arr-db-backups:/postgres/backup:rw # PostgreSQL backups.
+      - arr-db-config:/postgres/etc:rw # PostgreSQL configuration.
+      - arr-db-data:/postgres/var:rw # PostgreSQL data.
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow using 1 vCPU.
+          memory: 1G # Allow using 1GB.
+        reservations:
+          cpus: 0.25 # Reserve 0.25 vCPUs.
+          memory: 256M # Reserve 256M of RAM.
+
   ###########################################################################
   # Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
   ###########################################################################
 
   lidarr:
+    <<: *defaults
     image: ghcr.io/hotio/lidarr:pr-plugins
     container_name: lidarr
+    depends_on: *defaults-depends
     hostname: lidarr
-    restart: unless-stopped
-    environment:
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      TZ: "${TZ}"
-      UMASK: "${UMASK}"
+    networks: *defaults-networks
     expose:
-      - 8686/tcp
-    networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.20
-      internal-only:
+      - 8686/tcp # Web interface reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     volumes:
-      - downloads:/downloads
-      - lidarr:/config
-      - media-library:/library
-    cap_add:
-      - CHOWN
-      - FOWNER
-      - FSETID
-      - SETGID
-      - SETUID
-    cap_drop:
-      - ALL
-    depends_on:
-      lidarr-db:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 1.5
-          memory: 2048M
-        reservations:
-          cpus: 0.25
-          memory: 256M
+      - downloads:/downloads:rw # Root downloads directory.
+      - media-library:/library:rw # Root media library directory.
+      - lidarr:/config:rw # Configuration and data.
+    cap_add: *defaults-s6caps
     healthcheck:
+      <<: *defaults-healthcheck
       test: "curl -f http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true
-
-  lidarr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: lidarr-db
-    hostname: lidarr-db
-    read_only: true
-    restart: unless-stopped
-    environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}"
-      TZ: "${TZ}"
-    networks:
-      - internal-only
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
-    volumes:
-      - lidarr-db-backups:/postgres/backup
-      - lidarr-db-config:/postgres/etc
-      - lidarr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5
-          memory: 256M
-        reservations:
-          cpus: 0.125
-          memory: 128M
-    security_opt:
-      - no-new-privileges:true
-
-  ###########################################################################
-  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
-  ###########################################################################
-
-  prowlarr:
-    image: ghcr.io/11notes/prowlarr:2
-    container_name: prowlarr
-    network_mode: service:gluetun
-    read_only: true
-    restart: unless-stopped
-    environment:
-      TZ: "${TZ}"
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
-    volumes:
-      - downloads:/downloads
-      - prowlarr:/prowlarr/etc
-    cap_drop:
-      - ALL
-    depends_on:
-      gluetun:
-        condition: service_healthy
-        restart: true
-      prowlarr-db:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 1.5
-          memory: 2048M
-        reservations:
-          cpus: 0.25
-          memory: 256M
-    healthcheck:
-      test: "wget --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true
-
-  prowlarr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: prowlarr-db
-    read_only: true
-    restart: unless-stopped
-    network_mode: service:gluetun
-    environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}"
-      TZ: "${TZ}"
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
-    volumes:
-      - prowlarr-db-backups:/postgres/backup
-      - prowlarr-db-config:/postgres/etc
-      - prowlarr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5
-          memory: 256M
-        reservations:
-          cpus: 0.125
-          memory: 128M
-    security_opt:
-      - no-new-privileges:true
 
   ###########################################################################
   # Radarr: Movie manager, organizer, and PVR - https://radarr.tv           #
   ###########################################################################
 
   radarr:
+    <<: *defaults-ro
     image: ghcr.io/11notes/radarr:5
     container_name: radarr
+    depends_on: *defaults-depends
     hostname: radarr
-    read_only: true
-    restart: unless-stopped
-    environment:
-      TZ: "${TZ}"
+    networks: *defaults-networks
     expose:
-      - 7878/tcp
-    networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.21
-      internal-only:
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - 7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
     volumes:
-      - ../../scripts/radarr:/scripts
-      - downloads:/downloads
-      - media-library:/library
-      - radarr:/radarr/etc
-    cap_add:
-      - CHOWN
-    cap_drop:
-      - ALL
-    depends_on:
-      lidarr-db:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5
-          memory: 2048M
-        reservations:
-          cpus: 0.125
-          memory: 128M
+      - ./scripts:/scripts:ro # 'ARR custom scripts.
+      - downloads:/downloads:rw # Root downloads directory.
+      - media-library:/library:rw # Root media library directory.
+      - radarr:/radarr/etc # Configuration and data.
     healthcheck:
+      <<: *defaults-healthcheck
       test: "wget --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true
-
-  radarr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: radarr-db
-    hostname: radarr-db
-    read_only: true
-    restart: unless-stopped
-    environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${RADARR_DB_PASSWORD}"
-      TZ: "${TZ}"
-    networks:
-      - internal-only
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
-    volumes:
-      - radarr-db-backups:/postgres/backup
-      - radarr-db-config:/postgres/etc
-      - radarr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: 1
-          memory: 512M
-        reservations:
-          cpus: 0.125
-          memory: 128M
-    security_opt:
-      - no-new-privileges:true
 
   ###########################################################################
   # Sonarr: Series manager, organizer, and PVR - https://sonarr.tv          #
   ###########################################################################
 
   sonarr:
+    <<: *defaults-ro
     image: ghcr.io/11notes/sonarr:4
     container_name: sonarr
+    depends_on: *defaults-depends
     hostname: sonarr
-    read_only: true
-    restart: unless-stopped
-    environment:
-      TZ: "${TZ}"
     expose:
-      - 8989/tcp
-    networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.23
-      internal-only:
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
     volumes:
-      - downloads:/downloads
-      - media-library:/library
-      - sonarr:/sonarr/etc
-    cap_add:
-      - CHOWN
-    cap_drop:
-      - ALL
-    depends_on:
-      sonarr-db:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 1.5
-          memory: 2048M
-        reservations:
-          cpus: 0.25
-          memory: 256M
+      - downloads:/downloads:rw # Root downloads directory.
+      - media-library:/library:rw # Root media library directory.
+      - sonarr:/sonarr/etc:rw # Configuration and data.
     healthcheck:
+      <<: *defaults-healthcheck
       test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true
 
-  sonarr-db:
-    image: ghcr.io/11notes/postgres:17
-    container_name: sonarr-db
-    hostname: sonarr-db
-    read_only: true
-    restart: unless-stopped
+  ###########################################################################
+  # Bazarr: Subtitle manager - https://wiki.bazarr.media                    #
+  ###########################################################################
+
+  bazarr:
+    <<: *defaults
+    image: ghcr.io/hotio/bazarr:release
+    container_name: bazarr
+    depends_on: *defaults-depends
+    hostname: bazarr
     environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}"
-      TZ: "${TZ}"
+      <<: *defaults-env
+      POSTGRES_URL: "postgres://postgres:${ARR_DB_PASSWORD}@arr-db:5432/bazarr" # PostgreSQL connection URL.
+    expose:
+      - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
+    volumes:
+      - downloads:/downloads:rw # Root downloads directory.
+      - media-library:/library:rw # Root media library directory.
+      - bazarr:/config:rw # Configuration and data.
+    cap_add: *defaults-s6caps
+    healthcheck:
+      <<: *defaults-healthcheck
+      test: "curl -f http://127.0.0.1:6767/api/system/health -H 'X-Api-Key: ${BAZARR_API_KEY}'"
+
+  ###########################################################################
+  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
+  ###########################################################################
+
+  prowlarr:
+    <<: *defaults-vpn
+    image: ghcr.io/11notes/prowlarr:2
+    container_name: prowlarr
+    depends_on:
+      <<: *defaults-depends
+      gluetun:
+        condition: service_healthy # Wait for Gluetun to be healthy before starting.
+        restart: true # Restart when Gluetun restarts.
+    volumes:
+      - downloads:/downloads:rw # Root downloads directory.
+      - media-library:/library:rw # Root media library directory.
+      - prowlarr:/prowlarr/etc:rw # Configuration and data.
+    healthcheck:
+      <<: *defaults-healthcheck
+      test: "wget --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
+
+  ###########################################################################
+  # Byparr: Captcha solver - https://github.com/ThePhaseless/Byparr         #
+  ###########################################################################
+
+  byparr:
+    <<: *defaults-vpn
+    image: ghcr.io/thephaseless/byparr:main
+    container_name: byparr
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
+      - "/var/cache:uid=${PUID},gid=${PGID}" # Required for Byparr s6.
+
+  ###########################################################################
+  # Profilarr: Config management for 'ARR apps - https://dictionarry.dev/   #
+  ###########################################################################
+
+  profilarr:
+    <<: *defaults-ro
+    image: santiagosayshey/profilarr:latest
+    container_name: profilarr
+    hostname: profilarr
+    expose:
+      - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
+    volumes:
+      - profilarr:/config # Configuration and data volume.
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:6868 || exit 1"
+      <<: *defaults-healthcheck
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
+      - "/home/appuser:uid=${PUID},gid=${PGID},exec" # Required for Profilarr.
+    depends_on:
+      radarr:
+        condition: service_healthy # Wait for Radarr to be healthy before starting.
+        restart: true # Restart when Radarr restarts.
+      sonarr:
+        condition: service_healthy # Wait for Sonarr to be healthy before starting.
+        restart: true # Restart when Sonarr restarts.
+
+  ###########################################################################
+  # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip    #
+  ###########################################################################
+
+  unpackerr:
+    <<: *defaults
+    image: ghcr.io/hotio/unpackerr:release
+    container_name: unpackerr
+    hostname: unpackerr
+    environment:
+      <<: *defaults-env
+      UN_INTERVAL: "5m" # Check for new items every 5 minutes.
+      UN_LOG_FILE: "/downloads/unpackerr.log" # Save log files.
+      UN_PARALLEL: "1" # Run one task at a time.
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}" # Radarr API key.
+      UN_RADARR_0_URL: "http://radarr:7878" # Radarr URL.
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}" # Sonarr API key.
+      UN_SONARR_0_URL: "http://sonarr:8989" # Sonarr URL.
+      UN_WEBSERVER_METRICS: "true" # Enables the metrics server.
+      UN_WEBSERVER_LISTEN_ADDR: "0.0.0.0:5656" # Address to bind the metrics server to.
     networks:
       - internal-only
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    cap_add: *defaults-s6caps
+    healthcheck:
+      <<: *defaults-healthcheck
+      test: "curl -f http://127.0.0.1:5656 || exit 1"
     volumes:
-      - sonarr-db-backups:/postgres/backup
-      - sonarr-db-config:/postgres/etc
-      - sonarr-db-data:/postgres/var
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5
-          memory: 256M
-        reservations:
-          cpus: 0.125
-          memory: 128M
-    security_opt:
-      - no-new-privileges:true
+      - unpackerr:/config # Configuration and data.
+      - downloads:/downloads # Root downloads directory.
 
 networks:
   caddy:
     external: true
     name: caddy-network
-  gluetun:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
+  internal-only:
     external: true
     ipam:
       config:
-        - subnet: 172.19.0.0/16
-          gateway: 172.19.0.1
-    name: gluetun-network
-  internal-only:
-    external: true
+        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
+          gateway: 172.20.0.1
     name: internal-only-network
 
 volumes:
+  arr-db-backups:
+    name: arr-db-backups-volume
+    external: true
+  arr-db-config:
+    name: arr-db-config-volume
+    external: true
+  arr-db-data:
+    name: arr-db-data-volume
+    external: true
+  bazarr:
+    name: bazarr-volume
+    external: true
   lidarr:
     name: lidarr-volume
     external: true
-  lidarr-db-data:
-    name: lidarr-db-data-volume
+  profilarr:
     external: true
-  lidarr-db-config:
-    name: lidarr-db-config-volume
-    external: true
-  lidarr-db-backups:
-    name: lidarr-db-backups-volume
-    external: true
+    name: profilarr-volume
   prowlarr:
     name: prowlarr-volume
-    external: true
-  prowlarr-db-data:
-    name: prowlarr-db-data-volume
-    external: true
-  prowlarr-db-config:
-    name: prowlarr-db-config-volume
-    external: true
-  prowlarr-db-backups:
-    name: prowlarr-db-backups-volume
     external: true
   radarr:
     name: radarr-volume
     external: true
-  radarr-db-data:
-    name: radarr-db-data-volume
-    external: true
-  radarr-db-config:
-    name: radarr-db-config-volume
-    external: true
-  radarr-db-backups:
-    name: radarr-db-backups-volume
-    external: true
   sonarr:
     name: sonarr-volume
     external: true
-  sonarr-db-data:
-    name: sonarr-db-data-volume
-    external: true
-  sonarr-db-config:
-    name: sonarr-db-config-volume
-    external: true
-  sonarr-db-backups:
-    name: sonarr-db-backups-volume
+  unpackerr:
+    name: unpackerr-volume
     external: true
   downloads:
     name: downloads-bind

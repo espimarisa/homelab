@@ -7,41 +7,45 @@ services:
     image: ghcr.io/sintan1729/chhoto-url:latest-alpine
     container_name: chhoto
     hostname: chhoto
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      api_key: "${CHHOTO_API_KEY}"
-      db_url: "/db/urls.sqlite"
-      password: "${CHHOTO_PASSWORD}"
-      site_url: "https://${CHHOTO_URL}"
-      slug_style: "Pair"
-      TZ: "${TZ}"
+      api_key: "${CHHOTO_API_KEY}" # Sets the API key.
+      db_url: "/db/urls.sqlite" # Use urls.sqlite.
+      password: "${CHHOTO_PASSWORD}" # Sets the password.
+      site_url: "https://${CHHOTO_URL}" # Sets the URL to use.
+      slug_style: "Pair" # Use a pair slug style.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 4567/tcp
+      - 4567/tcp # Web interface reverse proxied externally at ${CHHOTO_URL}.
     networks:
       - caddy
     volumes:
-      - chhoto:/db
+      - chhoto:/db # Database.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 64M
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Allow up to 64MB of RAM usage.
         reservations:
-          cpus: 0.125
-          memory: 32M
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 32M # Reserve 32MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:4567"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
 
 volumes:
   chhoto:

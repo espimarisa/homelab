@@ -4,52 +4,52 @@ services:
   ###########################################################################
 
   slskd:
-    image: ghcr.io/slskd/slskd:latest
+    image: ghcr.io/slskd/slskd:0.23.2
     container_name: slskd
-    network_mode: service:gluetun
+    network_mode: service:gluetun # Route all traffic through Gluetun.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      SLSKD_DISK_LOGGER: "true"
-      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
-      SLSKD_INCOMPLETE_DIR: "/dl-cache/soulseek"
-      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
-      SLSKD_JWT_TTL: "604800000"
-      SLSKD_REMOTE_CONFIGURATION: "true"
-      SLSKD_SHARED_DIR: "/library/music"
-      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_DESCRIPTION}"
-      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
-      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
-      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
-      SLSKD_UMASK: "${UMASK}"
-      SLSKD_USERNAME: "${SLSKD_USERNAME}"
-      SOULSEEK_PASSWORD: "${SOULSEEK_PASSWORD}"
-      TZ: "${TZ}"
+      SLSKD_DISK_LOGGER: "true" # Log files to the disk.
+      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Sets the downloads directory.
+      SLSKD_INCOMPLETE_DIR: "/dl-cache/soulseek" # Sets the incomplete downloads directory.
+      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # Sets the JWT API key.
+      SLSKD_JWT_TTL: "604800000" # Sets the JWT API TTL.
+      SLSKD_REMOTE_CONFIGURATION: "true" # Enables editing the configuration.
+      SLSKD_SHARED_DIR: "/library/music" # Share the music library.
+      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_DESCRIPTION}" # Sets user description.
+      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Configures the port used for Soulseek traffic.
+      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}" # Soulseek user password.
+      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}" # Soulseek username.
+      SLSKD_UMASK: "${UMASK}" # Umask to apply to newly created files.
+      SLSKD_USERNAME: "${SLSKD_USERNAME}" # Web interface username to set.
+      SOULSEEK_PASSWORD: "${SOULSEEK_PASSWORD}" # Web interface password to set.
+      TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - slskd:/app
-      - dl-cache:/dl-cache
-      - downloads:/downloads
-      - media-library:/library:ro
+      - slskd:/app # Configuration and database.
+      - dl-cache:/dl-cache # Root path to incomplete downloads.
+      - downloads:/downloads # Root path to downloads.
+      - media-library:/library:ro # Root path to the media library.
     cap_add:
-      - CHOWN
+      - CHOWN # Required for taking ownership.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     depends_on:
       gluetun:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Wait for Gluetun to be healthy before connecting.
+        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 2048M
+          cpus: 1 # Allow up to 1 vCPU.
+          memory: 1G # Allow up to 1G of RAM.
         reservations:
-          cpus: 0.25
-          memory: 256M
+          cpus: 0.125 # Reserve 0.25 vCPUs.
+          memory: 256M # Reserve 256MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 volumes:
   slskd:

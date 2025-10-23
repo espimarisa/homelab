@@ -7,38 +7,42 @@ services:
     image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
     hostname: thelounge
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 9000/tcp
+      - 9000/tcp # Web interface reverse proxied externally at ${THELOUNGE_URL}.
     networks:
       - caddy
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - thelounge:/var/opt/thelounge
+      - thelounge:/var/opt/thelounge # Configuration and data.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 256M
+          cpus: 0.5 # Allow up to 0.5 vCPUs.
+          memory: 256M # Allow up to 256MB of RAM.
         reservations:
-          cpus: 0.25
-          memory: 128M
+          cpus: 0.25 # Reserve 0.25 vCPUs.
+          memory: 128M # Reserve 128MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:9000 || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
 
 volumes:
   thelounge:

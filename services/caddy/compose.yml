@@ -6,62 +6,65 @@ services:
   caddy:
     image: ghcr.io/11notes/caddy:2
     container_name: caddy
-    command: ["run", "--config", "/caddy/etc/Caddyfile"]
+    command: ["run", "--config", "/caddy/etc/Caddyfile"] # Use Caddyfile.
     hostname: caddy
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
-      ACME_EMAIL: "${ACME_EMAIL}"
+      ACME_EMAIL: "${ACME_EMAIL}" # Email used for ACME DNS challenges.
       CHHOTO_URL: "${CHHOTO_URL}"
-      DOCKER_HOST: "tcp://socket-proxy:2375"
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to the socket proxy.
       DOMAIN: "${DOMAIN}"
       GATUS_URL: "${GATUS_URL}"
-      HOMARR_URL: "${HOMARR_URL}"
       INTERNAL_DOMAIN: "${INTERNAL_DOMAIN}"
       JELLYFIN_URL: "${JELLYFIN_URL}"
       NAVIDROME_URL: "${NAVIDROME_URL}"
       OPENCLOUD_URL: "${OPENCLOUD_URL}"
       THELOUNGE_URL: "${THELOUNGE_URL}"
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
       VAULTWARDEN_URL: "${VAULTWARDEN_URL}"
     networks:
       - caddy
       - socket-proxy
     ports:
-      - 80:80/tcp
-      - 443:443/tcp
-      - 443:443/udp
+      - 80:80/tcp # HTTP traffic.
+      - 443:443/tcp # HTTPs traffic.
+      - 443:443/udp # HTTPS3 traffic.
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - ./Caddyfile:/caddy/etc/Caddyfile
-      - caddy-backups:/caddy/backup
-      - caddy-config:/caddy/etc
-      - caddy-data:/caddy/var
-      - caddy-logs:/caddy/logs
+      - ./config/Caddyfile:/caddy/etc/Caddyfile:ro # Caddyfile mount.
+      - caddy-backups:/caddy/backup # Caddyfile backups.
+      - caddy-config:/caddy/etc # Caddy config.
+      - caddy-data:/caddy/var # Caddy data and certificates.
+      - caddy-logs:/caddy/logs # Caddy logs.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     depends_on:
       socket-proxy:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require socket-proxy to be healthy before connecting.
+        restart: true # Restart when socket-proxy is restarted.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 1 # Allow up to 1 vCPU.
+          memory: 512M # Allow up to 512MB of RAM usage.
         reservations:
-          cpus: 0.25
-          memory: 128M
+          cpus: 0.25 # Reserve 0.25 vCPUs.
+          memory: 128M # Reserve 128MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
     sysctls:
-      net.ipv4.ip_unprivileged_port_start: 80
+      net.ipv4.ip_unprivileged_port_start: 80 # Required for binding to port 80.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
   socket-proxy:
     external: true
     name: socket-proxy-network

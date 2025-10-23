@@ -73,44 +73,20 @@
 	import external_proxy gatus:8080
 }
 
-{$HOMARR_URL} {
-	import external_proxy homarr:7575
-}
-
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
-
-	log {
-		output file /caddy/logs/jellyfin-access.log {
-			roll_size 10mb
-			roll_keep 5
-			roll_keep_for 720h
-		}
-	}
 }
 
 {$NAVIDROME_URL} {
 	import external_proxy navidrome:4533
-
-	log {
-		output file /caddy/logs/navidrome-access.log {
-			roll_size 10mb
-			roll_keep 5
-			roll_keep_for 720h
-		}
-	}
 }
 
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
+}
 
-	log {
-		output file /caddy/logs/opencloud-access.log {
-			roll_size 10mb
-			roll_keep 5
-			roll_keep_for 720h
-		}
-	}
+{$SEERR_URL} {
+	import external_proxy seerr:5055
 }
 
 {$THELOUNGE_URL} {
@@ -150,10 +126,6 @@ beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
-cleanuparr.{$INTERNAL_DOMAIN} {
-	import internal_proxy cleanuparr:11011
-}
-
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
 }
@@ -172,6 +144,10 @@ qbittorrent.{$INTERNAL_DOMAIN} {
 
 qui.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7476
+}
+
+seerr.{$INTERNAL_DOMAIN} {
+	import internal_proxy seerr:5055
 }
 
 radarr.{$INTERNAL_DOMAIN} {

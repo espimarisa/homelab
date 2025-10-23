@@ -1,0 +1,278 @@
+# Default alert options.
+x-defaults-alerts: &defaults-alerts
+  - type: discord
+    send-on-resolved: true
+
+# Default conditions.
+x-defaults-conditions: &defaults-conditions
+  - "[STATUS] == 200"
+  - "[RESPONSE_TIME] < 1000"
+
+# Default options.
+x-defaults: &defaults
+  alerts: *defaults-alerts
+  conditions: *defaults-conditions
+  interval: 5m
+
+# Default HTTP options.
+x-defaults-http: &defaults-http
+  <<: *defaults
+  conditions:
+    - "[CERTIFICATE_EXPIRATION] > 240h"
+    - "[RESPONSE_TIME] < 2000" # might be a little low if your shit is slow
+    - "[STATUS] == 200"
+
+# Default container options.
+x-defaults-container: &defaults-container
+  <<: *defaults
+  conditions:
+    - "[BODY].State.Health.Status === 'healthy'" # will bitch when restarting lol
+    - "[RESPONSE_TIME] < 100" # containers should always be < 100ms
+    - "[STATUS] == 200"
+  ui:
+    hide-hostname: true # no reason to show container hostnames
+
+# Alerting configuration.
+alerting:
+  discord:
+    title: "🚨 Status Update"
+    webhook-url: "${GATUS_DISCORD_WEBHOOK_URL}"
+
+# Storage configuration.
+storage:
+  type: postgres
+  path: "postgres://postgres:${GATUS_DB_PASSWORD}@gatus-db:5432/postgres?sslmode=disable"
+
+# UI configuration.
+ui:
+  default-sort-by: group
+  description: "${GATUS_DESCRIPTION}"
+  header: ${GATUS_HEADER}
+  link: "/"
+  logo: "${GATUS_LOGO_URL}"
+  title: ${GATUS_TITLE}
+
+endpoints:
+  ###########################################################################
+  # Download clients.                                                       #
+  ###########################################################################
+
+  # Gluetun.
+  - name: Gluetun (VPN)
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/gluetun/json
+
+  # qBittorrent.
+  - name: qBittorrent
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/qbittorrent/json
+
+  # qui.
+  - name: qui
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/qui/json
+
+  # slskd.
+  - name: slskd
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/slskd/json
+
+  ###########################################################################
+  # Infrastructure.                                                         #
+  ###########################################################################
+
+  # Caddy.
+  - name: Caddy
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/caddy/json
+
+  # ddclient.
+  - name: ddclient
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/ddclient/json
+
+  # Socket Proxy.
+  - name: Socket Proxy
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/socket-proxy/json
+
+  # Watchtower.
+  - name: Watchtower
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/watchtower/json
+
+  ###########################################################################
+  # Media.                                                                  #
+  ###########################################################################
+
+  # Jellyfin.
+  - name: Jellyfin
+    <<: *defaults-http
+    group: External Apps
+    url: https://${JELLYFIN_URL}/health
+
+  # Navidrome.
+  - name: Navidrome
+    <<: *defaults-http
+    group: External Apps
+    url: https://${NAVIDROME_URL}/ping
+
+  # Seerr.
+  - name: Seerr
+    <<: *defaults-http
+    group: Media
+    url: https://${SEERR_URL}
+
+  ###########################################################################
+  # Media management.                                                       #
+  ###########################################################################
+
+  # Bazarr.
+  - name: Bazarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/bazarr/json
+
+  # Byparr.
+  - name: Byparr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/byparr/json
+
+  # Lidarr.
+  - name: Lidarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/lidarr/json
+
+  # mam-ip-helper
+  - name: MyAnonaMouse IP Helper
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/mam-ip-helper/json
+
+  # Profilarr.
+  - name: Profilarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/profilarr/json
+
+  # Prowlarr.
+  - name: Prowlarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/prowlarr/json
+
+  # Radarr.
+  - name: Radarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/radarr/json
+
+  # Sonarr.
+  - name: Sonarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/sonarr/json
+
+  # Unpackerr.
+  - name: Unpackerr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/unpackerr/json
+
+  ###########################################################################
+  # Monitoring.                                                             #
+  ###########################################################################
+
+  # Beszel.
+  - name: Beszel
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/beszel/json
+
+  # Beszel Agent.
+  - name: Beszel Agent
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/beszel-agent/json
+
+  # Gatus.
+  - name: Gatus
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/gatus/json
+
+  ###########################################################################
+  # PostgreSQL Databases.                                                   #
+  ###########################################################################
+
+  # 'ARR DB.
+  - name: "'ARR Database"
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/arr-db/json
+
+  # Gatus DB.
+  - name: Gatus Database
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/gatus-db/json
+
+  # Seerr DB.
+  - name: Seerr Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/seerr-db/json
+
+  # Vaultwarden DB.
+  - name: Vaultwarden Database
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/vaultwarden-db/json
+
+  ###########################################################################
+  # Services.                                                               #
+  ###########################################################################
+
+  # Chhoto.
+  - name: Chhoto URL
+    <<: *defaults-http
+    group: Services
+    url: https://${CHHOTO_URL}
+
+  # OpenCloud.
+  - name: OpenCloud
+    <<: *defaults-http
+    group: Services
+    url: https://${OPENCLOUD_URL}
+
+  # The Lounge.
+  - name: The Lounge
+    <<: *defaults-http
+    group: Services
+    url: https://${THELOUNGE_URL}
+
+  # Vaultwarden.
+  - name: Vaultwarden
+    <<: *defaults-http
+    group: Services
+    url: https://${VAULTWARDEN_URL}/alive
+
+  ###########################################################################
+  # Websites.                                                               #
+  ###########################################################################
+
+  # Website.
+  - name: Main Website - HTTP
+    <<: *defaults-http
+    group: Websites
+    url: https://${DOMAIN}

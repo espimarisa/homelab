@@ -6,80 +6,100 @@ services:
   gatus:
     image: ghcr.io/twin/gatus:stable
     container_name: gatus
-    env_file: ../../.env
     hostname: gatus
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.45"
-      TZ: "${TZ}"
+      CHHOTO_URL: "${CHHOTO_URL}"
+      DOMAIN: "${DOMAIN}"
+      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.
+      GATUS_DESCRIPTION: "${GATUS_DESCRIPTION}" # Sets the page description.
+      GATUS_HEADER: "${GATUS_HEADER}" # Sets the header.
+      GATUS_LOGO_URL: "${GATUS_LOGO_URL}" # Sets the logo.
+      GATUS_TITLE: "${GATUS_TITLE}" # Sets the page title.
+      GATUS_URL: "${GATUS_URL}" # Configures the URL to publish.
+      JELLYFIN_URL: "${JELLYFIN_URL}"
+      NAVIDROME_URL: "${NAVIDROME_URL}"
+      OPENCLOUD_URL: "${OPENCLOUD_URL}"
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Socket proxy API containers base url.
+      THELOUNGE_URL: "${THELOUNGE_URL}"
+      TZ: "${TZ}" # Sets the timezone.
+      VAULTWARDEN_URL: "${VAULTWARDEN_URL}"
     expose:
-      - 8080/tcp
+      - 8080/tcp # Web interface reverse proxied externally at ${GATUS_URL}.
     networks:
       - caddy
       - internal-only
       - socket-proxy
     volumes:
-      - ../../config/gatus:/config
+      - ./config/config.yaml:/config/config.yaml:ro # Host config mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     depends_on:
       gatus-db:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require gatus-db to be healthy before connecting.
+        restart: true # Restart when gatus-db is restarted.
       socket-proxy:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require socket-proxy to be healthy before connecting.
+        restart: true # Restart when socket-proxy is restarted.
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 128M
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 128M # Allow up to 128MB of RAM usage.
         reservations:
-          cpus: 0.125
-          memory: 32M
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 32M # Reserve 32MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
   gatus-db:
     image: ghcr.io/11notes/postgres:17
     container_name: gatus-db
     hostname: gatus-db
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup every day at 6AM.
+      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Configures the PostgreSQL password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal-only
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - gatus-db-backups:/postgres/backup
-      - gatus-db-config:/postgres/etc
-      - gatus-db-data:/postgres/var
+      - gatus-db-backups:/postgres/backup # PostgreSQL backups.
+      - gatus-db-config:/postgres/etc # PostgreSQL config.
+      - gatus-db-data:/postgres/var # PostgreSQL data.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 256M
+          cpus: 0.5 # Allow up to 0.5 vCPUs.
+          memory: 256M # Allow up to 256MB of RAM usage.
         reservations:
-          cpus: 0.125
-          memory: 128M
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 128M # Reserve 128MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
   internal-only:
     external: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
+          gateway: 172.20.0.1
     name: internal-only-network
   socket-proxy:
     external: true

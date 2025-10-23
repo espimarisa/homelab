@@ -7,104 +7,112 @@ services:
     image: ghcr.io/dani-garcia/vaultwarden:latest-alpine
     container_name: vaultwarden
     hostname: vaultwarden
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      ADMIN_RATELIMIT_MAX_BURST: "3"
-      ADMIN_RATELIMIT_SECONDS: "300"
-      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
-      DOMAIN: "https://${VAULTWARDEN_URL}"
-      EMAIL_CHANGE_ALLOWED: "true"
-      DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres"
-      EMERGENCY_ACCESS_ALLOWED: "true"
+      ADMIN_RATELIMIT_MAX_BURST: "3" # Configures admin burst ratelimit settings.
+      ADMIN_RATELIMIT_SECONDS: "300" # Configures how long to ratelimit the admin account for.
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN} # Sets the admin token.
+      DOMAIN: "https://${VAULTWARDEN_URL}" # Sets the URL to use.
+      EMAIL_CHANGE_ALLOWED: "true" # Allow users to change their email.
+      DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres" # PostgreSQL connection url.
+      EMERGENCY_ACCESS_ALLOWED: "true" # Allow emergency access.
       EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments"
-      IP_HEADER: "X-Forwarded-For"
-      LOGIN_RATELIMIT_MAX_BURST: "10"
-      LOGIN_RATELIMIT_SECONDS: "60"
-      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}"
-      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}"
-      PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}"
-      REQUIRE_DEVICE_EMAIL: "true"
-      SENDS_ALLOWED: "true"
-      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}"
-      SIGNUPS_VERIFY: "true"
-      SMTP_FROM: "${SMTP_SENDER}"
-      SMTP_HOST: "${SMTP_HOST}"
-      SMTP_PASSWORD: "${SMTP_PASSWORD}"
-      SMTP_PORT: "${SMTP_PORT}"
-      SMTP_SECURITY: "${SMTP_SECURITY}"
-      SMTP_TIMEOUT: "${SMTP_TIMEOUT}"
-      SMTP_USERNAME: "${SMTP_USERNAME}"
-      TZ: "${TZ}"
-      WEB_VAULT_ENABLED: "true"
-      WEBSOCKET_ENABLED: "true"
-    ports:
-      - 80/tcp
+      IP_HEADER: "X-Forwarded-For" # Required for reverse proxy.
+      LOGIN_RATELIMIT_MAX_BURST: "10" # Configures max burst ratelimit.
+      LOGIN_RATELIMIT_SECONDS: "60" # Ratelimit for 60 seconds.
+      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles support for push notifications.
+      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # Bitwarden installation ID for push notifications.
+      PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # Bitwarden installation key for push notifications.
+      REQUIRE_DEVICE_EMAIL: "true" # Require email verification.
+      SENDS_ALLOWED: "true" # Allow usage of the send feature.
+      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles support for signing up.
+      SIGNUPS_VERIFY: "true" # Require signups to be verified.
+      SMTP_FROM: "${SMTP_SENDER}" # Sets the SMTP sender address.
+      SMTP_HOST: "${SMTP_HOST}" # Sets the SMTP host.
+      SMTP_PASSWORD: "${SMTP_PASSWORD}" # Sets the SMTP password.
+      SMTP_PORT: "${SMTP_PORT}" # Sets the SMTP port.
+      SMTP_SECURITY: "${SMTP_SECURITY}" # Sets the SMTP security type.
+      SMTP_TIMEOUT: "${SMTP_TIMEOUT}" # Sets the SMTP timeout.
+      SMTP_USERNAME: "${SMTP_USERNAME}" # Sets the SMTP username.
+      TZ: "${TZ}" # Sets the timezone.
+      WEB_VAULT_ENABLED: "true" # Enables the web vault.
+      WEBSOCKET_ENABLED: "true" # Enables websocket.
+    expose:
+      - 80/tcp # Web interface reverse proxied externally at ${VAULTWARDEN_URL}.
     networks:
       - caddy
       - internal-only
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - vaultwarden:/data
+      - vaultwarden:/data # Configuration and data.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 256M
+          cpus: 0.5 # Allow up to 0.5 vCPUs.
+          memory: 256M # Allow up to 256M of RAM.
         reservations:
-          cpus: 0.125
-          memory: 128M
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 128M # Reserve 128M of RAM.
     depends_on:
       vaultwarden-db:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require vaultwarden-db to be ready before connecting.
+        restart: true # Restart when vaultwarden-db is restarted.
     healthcheck:
       test: "wget --spider http://127.0.0.1:80/alive || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
   vaultwarden-db:
     image: ghcr.io/11notes/postgres:17
     container_name: vaultwarden-db
     hostname: vaultwarden-db
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
+      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the database password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal-only
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - vaultwarden-db-backups:/postgres/backup
-      - vaultwarden-db-config:/postgres/etc
-      - vaultwarden-db-data:/postgres/var
+      - vaultwarden-db-backups:/postgres/backup # PostgreSQL backups.
+      - vaultwarden-db-config:/postgres/etc # PostgreSQL config.
+      - vaultwarden-db-data:/postgres/var # PostgreSQL data.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 256M
+          cpus: 1 # Allow using 1 vCPU.
+          memory: 256M # Allow using 256M of RAM.
         reservations:
-          cpus: 0.125
-          memory: 128M
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 128M # Reserve 128MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
   internal-only:
     external: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
+          gateway: 172.20.0.1
     name: internal-only-network
 
 volumes:

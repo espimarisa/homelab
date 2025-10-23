@@ -1,82 +1,76 @@
+---
+# Default container settings.
+x-defaults: &defaults
+  restart: unless-stopped
+  read_only: true # Prevent writing directly to the image.
+  network_mode: service:gluetun # Route all traffic through Gluetun.
+  environment:
+    TZ: "${TZ}" # Sets the timezone.
+  cap_add:
+    - CHOWN # Required for taking ownership.
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  depends_on:
+    gluetun:
+      condition: service_healthy # Wait for Gluetun to be healthy before connecting.
+      restart: true # Restart when Gluetun restarts.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # qBittorrent: BitTorrent client - https://www.qbittorrent.org/           #
   ###########################################################################
 
   qbittorrent:
-    image: ghcr.io/11notes/qbittorrent:5.1.2
+    <<: *defaults
+    image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
-    network_mode: service:gluetun
-    read_only: true
-    restart: unless-stopped
-    environment:
-      TZ: "${TZ}"
     volumes:
-      - downloads:/downloads
-      - dl-cache:/dl-cache
-      - qbittorrent-config:/qbittorrent/etc
-      - qbittorrent-data:/qbittorrent/var
-    cap_add:
-      - CHOWN
-    cap_drop:
-      - ALL
-    depends_on:
-      gluetun:
-        condition: service_healthy
-        restart: true
+      - downloads:/downloads # Root downloads path.
+      - dl-cache:/dl-cache # Root downloads cache path.
+      - qbittorrent-config:/qbittorrent/etc # Configuration path.
+      - qbittorrent-data:/qbittorrent/var # Data path.
     deploy:
       resources:
         limits:
-          cpus: 6
-          memory: 4096M
+          cpus: 6 # Allow up to 6 vCPUs.
+          memory: 4G # Allow up to 4GB of RAM usage.
         reservations:
-          cpus: 2
-          memory: 1024M
-    security_opt:
-      - no-new-privileges:true
+          cpus: 2 # Reserve 2 vCPUs.
+          memory: 1G # Reserve 1GB of RAM.
 
   ###########################################################################
   # qui: Alternate web UI for qBittorrent - https://github.com/autobrr/qui  #
   ###########################################################################
 
   qui:
+    <<: *defaults
     image: ghcr.io/autobrr/qui:latest
     container_name: qui
-    network_mode: service:gluetun
-    read_only: true
-    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       QUI__PORT: "7476"
       QUI__LOG_PATH: "/config/logs/qui.log"
-      QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}"
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - qui-config:/config
-      - qui-logs:/config/logs
-    cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
+      - qui-config:/config # qui config and database.
+      - qui-logs:/config/logs # qui logs.
     depends_on:
       gluetun:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require Gluetun to be healthy before connecting.
+        restart: true # Restart when Gluetun is restarted.
       qbittorrent:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require qBittorrent to be healthy before connecting.
+        restart: true # Restart when qBittorrent restarts.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 1024M
+          cpus: 0.5 # Allow up to 0.5 vCPUs.
+          memory: 512M # Allow up to 512MB of RAM usage.
         reservations:
-          cpus: 0.125
-          memory: 256M
-    security_opt:
-      - no-new-privileges:true
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 128M # Reserve 128MB of RAM.
 
 volumes:
   qbittorrent-config:

@@ -7,62 +7,64 @@ services:
     image: opencloudeu/opencloud-rolling:3
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
-    entrypoint: /bin/sh
+    entrypoint: /bin/sh # Enter in /bin/sh for CLI commands.
     hostname: opencloud
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      FRONTEND_ARCHIVER_MAX_SIZE: "10000000000"
-      IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}"
-      IDM_CREATE_DEMO_USERS: "false"
-      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}"
-      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}"
-      NOTIFICATIONS_SMTP_INSECURE: "${SMTP_INSECURE}"
-      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}"
-      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}"
-      NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>"
-      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}"
-      OC_ADD_RUN_SERVICES: "notifications"
-      OC_INSECURE: "false"
-      OC_LOG_COLOR: "true"
-      OC_LOG_LEVEL: "info"
-      OC_LOG_PRETTY: "true"
-      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false"
-      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true"
-      OC_URL: "https://${OPENCLOUD_URL}"
-      PROXY_TLS: "false"
-      TZ: "${TZ}"
+      FRONTEND_ARCHIVER_MAX_SIZE: "10000000000" # Sets the max archive size.
+      IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}" # Sets the admin password.
+      IDM_CREATE_DEMO_USERS: "false" # Do not create demo users.
+      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}" # Configures SMTP encryption.
+      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}" # Configures SMTP host.
+      NOTIFICATIONS_SMTP_INSECURE: "${SMTP_INSECURE}" # Toggles SMTP insecure mode.
+      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}" # Configures SMTP password.
+      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}" # Configures SMTP port.
+      NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>" # Configures SMTP sender.
+      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}" # Configures SMTP username.
+      OC_ADD_RUN_SERVICES: "notifications" # Run the notifications service.
+      OC_INSECURE: "false" # Do not run in insecure mode.
+      OC_LOG_COLOR: "true" # Log in color.
+      OC_LOG_LEVEL: "info" # Log info and above.
+      OC_LOG_PRETTY: "true" # Use pretty logs.
+      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false" # Allow public shares.
+      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true" # Require writable public shares to have a password.
+      OC_URL: "https://${OPENCLOUD_URL}" # Configures the URL.
+      PROXY_TLS: "false" # Do not proxy between backend and reverse proxy.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 9200/tcp
-    extra_hosts:
-      - "${OPENCLOUD_URL}:host-gateway"
+      - 9200/tcp # Web interface reverse proxied externally at ${OPENCLOUD_URL}.
     networks:
       - caddy
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - opencloud-config:/etc/opencloud
-      - opencloud-data:/var/lib/opencloud
+      - opencloud-config:/etc/opencloud # Configuration and data.
+      - opencloud-data:/var/lib/opencloud # User data.
     cap_drop:
-      - ALL
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 4096M
+          cpus: 4 # Allow up to 4 vCPUs.
+          memory: 4G # Allow up to 4G of RAM.
         reservations:
-          cpus: 1
-          memory: 512M
+          cpus: 1 # Reserve 1 vCPU.
+          memory: 512M # Reserve 512MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   caddy:
     external: true
     name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
 
 volumes:
   opencloud-config:

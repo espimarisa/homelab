@@ -12,12 +12,11 @@ readonly APPDATA_DIRECTORIES=(
 readonly DOWNLOADS_DIRECTORIES=(
 	".torrent-files"
 	"deezer"
-	"lidarr"
-	"prowlarr"
-	"radarr"
-	"sonarr"
 	"soulseek"
-	"torrents"
+	"torrents/sonarr"
+	"torrents/radarr"
+	"torrents/lidarr"
+	"torrents/prowlarr"
 	"uncategorized"
 )
 
@@ -41,9 +40,9 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"bazarr-db-backups-volume"
-	"bazarr-db-config-volume"
-	"bazarr-db-data-volume"
+	"arr-db-backups-volume"
+	"arr-db-config-volume"
+	"arr-db-data-volume"
 	"bazarr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
@@ -53,45 +52,33 @@ readonly VOLUMES=(
 	"caddy-data-volume"
 	"caddy-logs-volume"
 	"chhoto-volume"
-	"cleanuparr-volume"
 	"gatus-db-backups-volume"
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"
-	"homarr-db-backups-volume"
-	"homarr-db-config-volume"
-	"homarr-db-data-volume"
-	"homarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"lidarr-db-backups-volume"
-	"lidarr-db-config-volume"
-	"lidarr-db-data-volume"
 	"lidarr-volume"
 	"navidrome-backups-volume"
 	"navidrome-cache-volume"
 	"navidrome-data-volume"
 	"opencloud-config-volume"
 	"profilarr-volume"
-	"prowlarr-db-backups-volume"
-	"prowlarr-db-config-volume"
-	"prowlarr-db-data-volume"
 	"prowlarr-volume"
 	"qbittorrent-config-volume"
 	"qbittorrent-data-volume"
 	"qui-config-volume"
 	"qui-logs-volume"
-	"radarr-db-backups-volume"
-	"radarr-db-config-volume"
-	"radarr-db-data-volume"
 	"radarr-volume"
+	"seerr-db-backups-volume"
+	"seerr-db-config-volume"
+	"seerr-db-data-volume"
+	"seerr-volume"
 	"slskd-volume"
 	"socket-proxy-volume"
-	"sonarr-db-backups-volume"
-	"sonarr-db-config-volume"
-	"sonarr-db-data-volume"
 	"sonarr-volume"
 	"thelounge-volume"
+	"unpackerr-volume"
 	"vaultwarden-db-backups-volume"
 	"vaultwarden-db-config-volume"
 	"vaultwarden-db-data-volume"
@@ -100,14 +87,26 @@ readonly VOLUMES=(
 
 # Docker volumes to take ownership of.
 readonly CHOWN_VOLUMES=(
+	"beszel-agent-volume"
+	"beszel-data-volume"
+	"caddy-backups-volume"
+	"caddy-config-volume"
+	"caddy-data-volume"
 	"caddy-logs-volume"
 	"chhoto-volume"
-	"homarr-volume"
+	"jellyfin-cache-volume"
+	"jellyfin-config-volume"
 	"navidrome-backups-volume"
 	"navidrome-cache-volume"
 	"navidrome-data-volume"
 	"opencloud-config-volume"
+	"profilarr-volume"
+	"qui-config-volume"
+	"qui-logs-volume"
+	"seerr-volume"
+	"slskd-volume"
 	"thelounge-volume"
+	"unpackerr-volume"
 	"vaultwarden-volume"
 )
 
@@ -154,7 +153,7 @@ fi
 
 # Source environment variables from .env file.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="${SCRIPT_DIR}/../../.env"
+ENV_FILE="${SCRIPT_DIR}/../.env"
 if [ -f "$ENV_FILE" ]; then
 	echo "Sourcing environment variables from ${ENV_FILE}."
 	set -a
@@ -184,10 +183,10 @@ create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
-create_network "caddy-network" --driver=bridge
+create_network "caddy-network" --driver=bridge --subnet=172.18.0.0/16 --gateway=172.18.0.1
 create_network "gluetun-network" --driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1
-create_network "internal-only-network" --driver=bridge
-create_network "socket-proxy-network" --driver=bridge
+create_network "internal-only-network" --driver=bridge --subnet=172.20.0.0/16 --gateway=172.20.0.1
+create_network "socket-proxy-network" --driver=bridge --internal=true
 
 # Create Docker volumes.
 echo -e "\nCreating Docker volumes..."
@@ -197,24 +196,26 @@ done
 
 # Initialize files in volumes using a temporary container.
 echo -e "\nInitializing files in volumes..."
-docker run --rm \
-	-v "chhoto-volume:/data" \
-	alpine:3.22.2 \
-	touch /data/urls.sqlite
+docker run --rm -v "chhoto-volume:/data" alpine:3 touch /data/urls.sqlite
 
-docker run --rm \
-	-v "homarr-volume:/data" \
-	alpine:3.22.2 \
-	mkdir /data/redis
+# Get Docker's root directory
+DOCKER_ROOT=$($SUDO docker info -f '{{ .DockerRootDir }}')
+if [ -z "$DOCKER_ROOT" ]; then
+	echo "Error: Could not determine Docker root directory." >&2
+	exit 1
+fi
 
-# Set ownership of volumes using a temporary container.
-echo -e "\nSetting volume permissions ---"
+# Set ownership of volumes by chowning their _data directory on the host
+VOLUMES_PATH="${DOCKER_ROOT}/volumes"
+echo -e "\nSetting volume permissions..."
 for volume in "${CHOWN_VOLUMES[@]}"; do
-	echo "Setting ownership for volume: '$volume' to ${PUID}:${PGID}"
-	docker run --rm \
-		-v "$volume:/data" \
-		alpine:3.22.2 \
-		chown -R "${PUID}:${PGID}" /data
+	VOLUME_DATA_PATH="${VOLUMES_PATH}/${volume}/_data"
+	if $SUDO [ -d "$VOLUME_DATA_PATH" ]; then
+		echo "Setting ownership for volume: '$volume' to ${PUID}:${PGID}"
+		$SUDO chown -R "${PUID}:${PGID}" "$VOLUME_DATA_PATH"
+	else
+		echo "Warning: Could not find data directory for volume '$volume' at $VOLUME_DATA_PATH"
+	fi
 done
 
 # Set ownership of the main bind mount directories on the host.
