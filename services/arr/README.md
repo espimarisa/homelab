@@ -4,13 +4,13 @@ This stack contains the primary 'ARR apps (Lidarr, Prowlarr, Radarr, and Sonarr)
 
 ## Scripts
 
-`chmod +x ../../scripts/radarr/*.sh`
+`chmod +x ./scripts/*.sh`
 
 In Docker, go to Connect -> Custom Script and add `/scripts/featurettes.sh`. This script will handle importing extras.
 
 ## PostgreSQL Setup
 
-To use PostgreSQL with an 'ARR app, you simply need to edit the configuration in both `appname-volume` and `appname-db-config-volume*`.
+To use PostgreSQL with an 'ARR app, you simply need to edit the configuration in both `appname-volume` and `arr-db-config-volume`.
 
 ```sh
 sudo nano /path/to/docker/volumes/appname-volume/_data/config.xml
@@ -33,7 +33,7 @@ docker compose up -d appname appname-db
 docker compose down appname
 
 # create databases
-docker compose exec -it appname-db sh
+docker compose exec -it arr-db-config sh
 psql --user=postgres
 ```
 
@@ -47,7 +47,7 @@ CREATE DATABASE "appname-log";
 exit
 
 # update psql config
-sudo nano /path/to/docker/volumes/appname-db-config-data/_data/pg_hba.conf
+sudo nano /path/to/docker/volumes/arr-db-config-data/_data/pg_hba.conf
 host appname-main postgres 0.0.0.0/0 password
 host appname-log postgres 0.0.0.0/0 password
 ```
