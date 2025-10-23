@@ -198,7 +198,7 @@ services:
     cap_add: *defaults-s6caps
     healthcheck:
       <<: *defaults-healthcheck
-      test: "curl -f http://127.0.0.1:6767/api/system/health -H 'X-Api-Key: ${BAZARR_API_KEY}'"
+      test: "curl -f http://127.0.0.1:6767/api/system/health?apikey=${BAZARR_API_KEY} || exit 1"
 
   ###########################################################################
   # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
