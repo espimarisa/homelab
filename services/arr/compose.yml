@@ -177,6 +177,7 @@ services:
     container_name: bazarr
     depends_on: *defaults-depends
     hostname: bazarr
+    networks: *defaults-networks
     environment:
       <<: *defaults-env
       POSTGRES_URL: "postgres://postgres:${ARR_DB_PASSWORD}@arr-db:5432/bazarr-main" # PostgreSQL connection URL.
