@@ -16,9 +16,9 @@ services:
       WATCHTOWER_CLEANUP: "true" # Cleanup images.
       WATCHTOWER_INCLUDE_RESTARTING: "true" # Include restarting images.
       WATCHTOWER_INCLUDE_STOPPED: "true" # Include stopped images.
-      WATCHTOWER_MONITOR_ONLY: "false" # Also restart.
+      WATCHTOWER_MONITOR_ONLY: "true" # Only monitor and notify, do not auto install.
       WATCHTOWER_NOTIFICATION_URL: "${WATCHTOWER_NOTIFICATION_URL}" # Configures the notification URL.
-      WATCHTOWER_SCHEDULE: "0 7 * * *" # Run every day at 7AM.
+      WATCHTOWER_SCHEDULE: "0 6 * * *" # Run every day at 6AM.
       WATCHTOWER_UPDATE_ON_START: "true" # Check for updates on start.
     networks:
       - caddy
