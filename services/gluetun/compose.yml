@@ -47,8 +47,9 @@ services:
       - 8191/tcp # Byparr API.
       - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${DOMAIN}.
     networks:
-      - caddy
-      - gluetun
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.10
     volumes:
       - gluetun:/gluetun # Gluetun cache.
     cap_add:
