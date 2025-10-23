@@ -6,26 +6,20 @@ services:
   gatus:
     image: ghcr.io/twin/gatus:stable
     container_name: gatus
+    env_file: ../../.env
     hostname: gatus
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      CHHOTO_URL: "${CHHOTO_URL}"
-      DOMAIN: "${DOMAIN}"
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.
       GATUS_DESCRIPTION: "${GATUS_DESCRIPTION}" # Sets the page description.
       GATUS_HEADER: "${GATUS_HEADER}" # Sets the header.
       GATUS_LOGO_URL: "${GATUS_LOGO_URL}" # Sets the logo.
       GATUS_TITLE: "${GATUS_TITLE}" # Sets the page title.
       GATUS_URL: "${GATUS_URL}" # Configures the URL to publish.
-      JELLYFIN_URL: "${JELLYFIN_URL}"
-      NAVIDROME_URL: "${NAVIDROME_URL}"
-      OPENCLOUD_URL: "${OPENCLOUD_URL}"
       SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Socket proxy API containers base url.
-      THELOUNGE_URL: "${THELOUNGE_URL}"
       TZ: "${TZ}" # Sets the timezone.
-      VAULTWARDEN_URL: "${VAULTWARDEN_URL}"
     expose:
       - 8080/tcp # Web interface reverse proxied externally at ${GATUS_URL}.
     networks:
