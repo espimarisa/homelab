@@ -116,13 +116,13 @@ endpoints:
   # Jellyfin.
   - name: Jellyfin
     <<: *defaults-http
-    group: External Apps
+    group: Media
     url: https://${JELLYFIN_URL}/health
 
   # Navidrome.
   - name: Navidrome
     <<: *defaults-http
-    group: External Apps
+    group: Media
     url: https://${NAVIDROME_URL}/ping
 
   # Seerr.
