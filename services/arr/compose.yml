@@ -13,11 +13,6 @@ x-defaults-env: &defaults-env
   PUID: "${PUID}" # User ID to run as.
   UMASK: "${UMASK}" # Umask to apply to newly created files.
 
-# Default networks.
-x-defaults-networks: &defaults-networks
-  caddy: # Caddy network for reverse proxying.
-  internal-only: # Internal only network.
-
 # Default healthcheck options.
 x-defaults-health: &defaults-healthcheck
   interval: 1m # Run every 1 minute.
@@ -85,8 +80,8 @@ services:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
       POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
     networks:
-      - internal-only # Internal network.
-      - gluetun
+      gluetun:
+        ipv4_address: 172.19.0.30
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -113,7 +108,10 @@ services:
     container_name: lidarr
     depends_on: *defaults-depends
     hostname: lidarr
-    networks: *defaults-networks
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.20
     expose:
       - 8686/tcp # Web interface reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     volumes:
@@ -135,7 +133,10 @@ services:
     container_name: radarr
     depends_on: *defaults-depends
     hostname: radarr
-    networks: *defaults-networks
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.21
     expose:
       - 7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
     volumes:
@@ -157,7 +158,10 @@ services:
     container_name: sonarr
     depends_on: *defaults-depends
     hostname: sonarr
-    networks: *defaults-networks
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.22
     expose:
       - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
     volumes:
@@ -178,7 +182,10 @@ services:
     container_name: bazarr
     depends_on: *defaults-depends
     hostname: bazarr
-    networks: *defaults-networks
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.23
     environment:
       <<: *defaults-env
       POSTGRES_URL: "postgres://postgres:${ARR_DB_PASSWORD}@arr-db:5432/bazarr-main" # PostgreSQL connection URL.
@@ -236,7 +243,10 @@ services:
     image: santiagosayshey/profilarr:latest
     container_name: profilarr
     hostname: profilarr
-    networks: *defaults-networks
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.24
     expose:
       - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
     volumes:
@@ -276,7 +286,8 @@ services:
       UN_WEBSERVER_METRICS: "true" # Enables the metrics server.
       UN_WEBSERVER_LISTEN_ADDR: "0.0.0.0:5656" # Address to bind the metrics server to.
     networks:
-      - internal-only
+      gluetun:
+        ipv4_address: 172.19.0.25
     cap_add: *defaults-s6caps
     healthcheck:
       <<: *defaults-healthcheck
@@ -293,13 +304,6 @@ networks:
       config:
         - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
           gateway: 172.18.0.1
-  internal-only:
-    external: true
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
-          gateway: 172.20.0.1
-    name: internal-only-network
 
 volumes:
   arr-db-backups:
