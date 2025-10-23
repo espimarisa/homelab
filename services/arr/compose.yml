@@ -178,7 +178,7 @@ services:
     hostname: bazarr
     environment:
       <<: *defaults-env
-      POSTGRES_URL: "postgres://postgres:${ARR_DB_PASSWORD}@arr-db:5432/bazarr" # PostgreSQL connection URL.
+      POSTGRES_URL: "postgres://postgres:${ARR_DB_PASSWORD}@arr-db:5432/bazarr-main" # PostgreSQL connection URL.
     expose:
       - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
     volumes:
