@@ -233,6 +233,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
       - "/var/cache:uid=${PUID},gid=${PGID}" # Required for Byparr s6.
+      - "/home:uid=${PUID},gid=${PGID},exec" # Required for something?
 
   ###########################################################################
   # Profilarr: Config management for 'ARR apps - https://dictionarry.dev/   #
