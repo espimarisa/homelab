@@ -86,6 +86,7 @@ services:
       POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
     networks:
       - internal-only # Internal network.
+      - gluetun
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
