@@ -11,6 +11,9 @@ services:
     hostname: caddy
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
+    dns:
+      - 9.9.9.9
+      - 149.112.112.112
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to the socket proxy.
       TZ: "${TZ}" # Sets the timezone.
