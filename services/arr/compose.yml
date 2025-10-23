@@ -57,7 +57,7 @@ x-defaults-ro: &defaults-ro
 
 # Default rootless VPN'd container options.
 x-defaults-vpn: &defaults-vpn
-  <<: *defaults-ro
+  <<: *defaults
   network_mode: service:gluetun
   depends_on:
     <<: *defaults-depends
@@ -208,6 +208,7 @@ services:
     <<: *defaults-vpn
     image: ghcr.io/11notes/prowlarr:2
     container_name: prowlarr
+    read_only: true # Prevent writing directly to the image.
     depends_on:
       <<: *defaults-depends
       gluetun:
@@ -220,6 +221,8 @@ services:
     healthcheck:
       <<: *defaults-healthcheck
       test: "wget --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
 
   ###########################################################################
   # Byparr: Captcha solver - https://github.com/ThePhaseless/Byparr         #
@@ -230,10 +233,6 @@ services:
     image: ghcr.io/thephaseless/byparr:main
     container_name: byparr
     user: "${PUID}:${PGID}" # Run as non-root user.
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
-      - "/var/cache:uid=${PUID},gid=${PGID}" # Required for Byparr s6.
-      - "/home:uid=${PUID},gid=${PGID},exec" # Required for something?
 
   ###########################################################################
   # Profilarr: Config management for 'ARR apps - https://dictionarry.dev/   #
