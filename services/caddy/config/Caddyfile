@@ -17,7 +17,6 @@
 # Snippet for externally accessible reverse proxied services.
 (external_proxy) {
 	encode zstd gzip
-	import security_headers
 
 	log {
 		output file /caddy/logs/external-access.log {
@@ -37,7 +36,6 @@
 	@not_internal not remote_ip private_ranges 100.64.0.0/10
 	abort @not_internal
 	encode zstd gzip
-	import security_headers
 	tls internal
 
 	log {
@@ -67,50 +65,40 @@
 
 {$CHHOTO_URL} {
 	import external_proxy chhoto:4567
+	import security_headers
 }
 
 {$GATUS_URL} {
 	import external_proxy gatus:8080
+	import security_headers
 }
 
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
-}
-
-{$NAVIDROME_URL} {
-	import external_proxy navidrome:4533
+	import security_headers
 }
 
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
+	import security_headers
 }
 
 {$SEERR_URL} {
 	import external_proxy seerr:5055
+	import security_headers
 }
 
 {$THELOUNGE_URL} {
 	import external_proxy thelounge:9000
+	import security_headers
 }
 
 {$VAULTWARDEN_URL} {
-	# Use the external_proxy snippet for consistency, then override headers.
 	import external_proxy vaultwarden:80
 
-	# Let Vaultwarden manage its own security headers; only keep HSTS from our snippet.
+	# Let Vaultwarden manage its own security headers; only keep HSTS.
 	header {
-		-Referrer-Policy
-		-X-Content-Type-Options
-		-X-Frame-Options
-	}
-
-	# Give Vaultwarden its own log file for easier troubleshooting.
-	log {
-		output file /caddy/logs/vaultwarden-access.log {
-			roll_keep 5
-			roll_keep_for 720h
-			roll_size 10mb
-		}
+		header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 	}
 }
 

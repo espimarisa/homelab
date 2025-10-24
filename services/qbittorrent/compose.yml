@@ -24,7 +24,7 @@ services:
 
   qbittorrent:
     <<: *defaults
-    image: ghcr.io/11notes/qbittorrent:5
+    image: ghcr.io/11notes/qbittorrent:5.1.2
     container_name: qbittorrent
     volumes:
       - downloads:/downloads # Root downloads path.
@@ -46,7 +46,7 @@ services:
 
   qui:
     <<: *defaults
-    image: ghcr.io/autobrr/qui:latest
+    image: ghcr.io/autobrr/qui:v1.5.0
     container_name: qui
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:

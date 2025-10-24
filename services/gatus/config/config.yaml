@@ -103,34 +103,6 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/socket-proxy/json
 
-  # Watchtower.
-  - name: Watchtower
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/watchtower/json
-
-  ###########################################################################
-  # Media.                                                                  #
-  ###########################################################################
-
-  # Jellyfin.
-  - name: Jellyfin
-    <<: *defaults-http
-    group: Media
-    url: https://${JELLYFIN_URL}/health
-
-  # Navidrome.
-  - name: Navidrome
-    <<: *defaults-http
-    group: Media
-    url: https://${NAVIDROME_URL}/ping
-
-  # Seerr.
-  - name: Seerr
-    <<: *defaults-http
-    group: Media
-    url: https://${SEERR_URL}
-
   ###########################################################################
   # Media management.                                                       #
   ###########################################################################
@@ -176,6 +148,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/radarr/json
+
+  # Seerr.
+  - name: Seerr
+    <<: *defaults-http
+    group: Media Management
+    url: https://${SEERR_URL}
 
   # Sonarr.
   - name: Sonarr
@@ -254,6 +232,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
+
+  # Jellyfin.
+  - name: Jellyfin
+    <<: *defaults-http
+    group: Services
+    url: https://${JELLYFIN_URL}/health
 
   # The Lounge.
   - name: The Lounge

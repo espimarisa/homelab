@@ -4,7 +4,7 @@ services:
   ###########################################################################
 
   vaultwarden:
-    image: ghcr.io/dani-garcia/vaultwarden:latest-alpine
+    image: ghcr.io/dani-garcia/vaultwarden:1.34.3-alpine
     container_name: vaultwarden
     hostname: vaultwarden
     read_only: true # Prevent writing directly to the image.

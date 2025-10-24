@@ -13,7 +13,7 @@ services:
 
   seerr:
     <<: *defaults
-    image: ghcr.io/fallenbagel/jellyseerr:2
+    image: ghcr.io/fallenbagel/jellyseerr:2.7.3
     container_name: seerr
     hostname: seerr
     user: "${PUID}:${PGID}" # Run as non-root user.

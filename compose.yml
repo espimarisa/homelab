@@ -8,7 +8,6 @@ include:
   - ./services/gluetun/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/mam-ip-helper/compose.yml
-  - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/qbittorrent/compose.yml
   - ./services/seerr/compose.yml
@@ -16,4 +15,3 @@ include:
   - ./services/socket-proxy/compose.yml
   - ./services/thelounge/compose.yml
   - ./services/vaultwarden/compose.yml
-  - ./services/watchtower/compose.yml
