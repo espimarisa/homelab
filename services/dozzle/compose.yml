@@ -1,0 +1,59 @@
+services:
+  ###########################################################################
+  # Dozzle: Docker log viewer - https://dozzle.dev/                         #
+  ###########################################################################
+
+  dozzle:
+    image: ghcr.io/amir20/dozzle:v8.14.5
+    container_name: dozzle
+    hostname: dozzle
+    read_only: true # Prevent writing to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      DOZZLE_ENABLE_ACTIONS: "true" # Enable actions.
+      DOZZLE_ENABLE_SHELL: "true" # Enable shell.
+    expose:
+      - 8080/tcp # Dozzle web interface; will be reverse proxied internally at dozzle.${INTERNAL_DOMAIN}.
+    networks:
+      - caddy
+      - socket-proxy
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Timezone mount.
+      - dozzle:/data # Configuration and data.
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    depends_on:
+      socket-proxy:
+        condition: service_healthy # Require socket-proxy to be healthy before connecting.
+        restart: true # Restart when socket-proxy is restarted.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 256M # Allow up to 256MB of RAM.
+        reservations:
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 128M # Reserve 128MB of RAM.
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+    security_opt:
+      - no-new-privileges:true # Prevent privelage escalation.
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
+  socket-proxy:
+    external: true
+    name: socket-proxy-network
+
+volumes:
+  dozzle:
+    name: dozzle-volume
+    external: true

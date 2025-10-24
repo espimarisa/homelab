@@ -50,8 +50,11 @@ services:
     container_name: qui
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      QUI__PORT: "7476"
-      QUI__LOG_PATH: "/config/logs/qui.log"
+      QUI__LOG_LEVEL: "info" # Log at the info level.
+      QUI__LOG_MAX_SIZE: "10" # Rotate 10mb per file.
+      QUI__LOG_PATH: "/config/logs/qui.log" # Log path.
+      QUI__PORT: "7476" # Sets the port.
+      QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}" # Session secret to use.
       TZ: "${TZ}" # Sets the timezone.
     volumes:
       - qui-config:/config # qui config and database.

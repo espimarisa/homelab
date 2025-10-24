@@ -1,0 +1,62 @@
+---
+services:
+  ###########################################################################
+  # Watchtower: Automatic container updates or update notifications.        #
+  ###########################################################################
+
+  watchtower:
+    image: ghcr.io/nicholas-fedor/watchtower:1.12.1
+    container_name: watchtower
+    hostname: watchtower
+    read_only: true # Prevent writing to the image directly.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      TZ: "${TZ}" # Sets the timezone.
+      WATCHTOWER_CLEANUP: "true" # Cleanup images.
+      WATCHTOWER_INCLUDE_RESTARTING: "true" # Include restarting images.
+      WATCHTOWER_INCLUDE_STOPPED: "true" # Include stopped images.
+      WATCHTOWER_MONITOR_ONLY: "true" # Only monitor and notify, do not auto install.
+      WATCHTOWER_NOTIFICATION_URL: "${WATCHTOWER_NOTIFICATION_URL}" # Configures the notification URL.
+      WATCHTOWER_SCHEDULE: "0 6 * * *" # Run every day at 6AM.
+      WATCHTOWER_UPDATE_ON_START: "true" # Check for updates on start.
+    networks:
+      - caddy
+      - internal-only
+      - socket-proxy
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    depends_on:
+      socket-proxy:
+        condition: service_healthy # Wait for socket-proxy to be healthy before connecting.
+        restart: true # Restart when socket-proxy restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Allow up to 64MB of RAM.
+        reservations:
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 32M # Reserve 32MB of RAM.
+    security_opt:
+      - no-new-privileges:true # Prevents privelage escalation
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
+  internal-only:
+    external: true
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
+          gateway: 172.20.0.1
+    name: internal-only-network
+  socket-proxy:
+    external: true
+    name: socket-proxy-network

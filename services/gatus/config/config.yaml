@@ -58,6 +58,12 @@ endpoints:
   # Download clients.                                                       #
   ###########################################################################
 
+  # Autobrr.
+  - name: Autobrr
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/autobrr/json
+
   # Gluetun.
   - name: Gluetun (VPN)
     <<: *defaults-container
@@ -132,17 +138,17 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/mam-ip-helper/json
 
-  # Profilarr.
-  - name: Profilarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/profilarr/json
-
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/prowlarr/json
+
+  # Recyclarr.
+  - name: Recyclarr.
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/recyclarr/json
 
   # Radarr.
   - name: Radarr
@@ -184,15 +190,39 @@ endpoints:
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/beszel-agent/json
 
+  # Dozzle.
+  - name: Dozzle
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/dozzle/json
+
   # Gatus.
   - name: Gatus
     <<: *defaults-container
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/gatus/json
 
+  # Scrutiny.
+  - name: Scrutiny
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/scrutiny/json
+
+  # Watchtower.
+  - name: Watchtower
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/watchtower/json
+
   ###########################################################################
   # PostgreSQL Databases.                                                   #
   ###########################################################################
+
+  # Autobrr DB.
+  - name: "Autobrr Database"
+    <<: *defaults-container
+    group: PostgreSQL Databases
+    url: ${SOCKET_PROXY_URL}/autobrr-db/json
 
   # 'ARR DB.
   - name: "'ARR Database"
@@ -205,6 +235,12 @@ endpoints:
     <<: *defaults-container
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/gatus-db/json
+
+  # Homarr DB.
+  - name: Homarr Database
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/homarr-db/json
 
   # Seerr DB.
   - name: Seerr Database
@@ -223,22 +259,28 @@ endpoints:
   ###########################################################################
 
   # Chhoto.
-  - name: Chhoto URL
+  - name: Chhoto
     <<: *defaults-http
     group: Services
     url: https://${CHHOTO_URL}
 
-  # OpenCloud.
-  - name: OpenCloud
+  # Homarr.
+  - name: Homarr
     <<: *defaults-http
     group: Services
-    url: https://${OPENCLOUD_URL}
+    url: https://${HOMARR_URL}
 
   # Jellyfin.
   - name: Jellyfin
     <<: *defaults-http
     group: Services
     url: https://${JELLYFIN_URL}/health
+
+  # OpenCloud.
+  - name: OpenCloud
+    <<: *defaults-http
+    group: Services
+    url: https://${OPENCLOUD_URL}
 
   # The Lounge.
   - name: The Lounge

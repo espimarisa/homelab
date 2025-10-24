@@ -73,6 +73,11 @@
 	import security_headers
 }
 
+{$HOMARR_URL} {
+	import external_proxy homarr:7575
+	import security_headers
+}
+
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
 	import security_headers
@@ -106,6 +111,10 @@
 # Internal-only services; need DNS rewrites + Caddy CA cert installed.    #
 ###########################################################################
 
+autobrr.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:7474
+}
+
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767
 }
@@ -114,12 +123,12 @@ beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
-lidarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy lidarr:8686
+dozzle.{$INTERNAL_DOMAIN} {
+	import internal_proxy dozzle:8080
 }
 
-profilarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy profilarr:6868
+lidarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy lidarr:8686
 }
 
 prowlarr.{$INTERNAL_DOMAIN} {
@@ -140,6 +149,10 @@ seerr.{$INTERNAL_DOMAIN} {
 
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
+}
+
+scrutiny.{$INTERNAL_DOMAIN} {
+	import internal_proxy scrutiny:8080
 }
 
 slskd.{$INTERNAL_DOMAIN} {

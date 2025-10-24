@@ -236,33 +236,41 @@ services:
     user: "${PUID}:${PGID}" # Run as non-root user.
 
   ###########################################################################
-  # Profilarr: Config management for 'ARR apps - https://dictionarry.dev/   #
+  # Recyclarr: 'ARR profile synchronization.                                #
   ###########################################################################
 
-  profilarr:
+  recyclarr:
     <<: *defaults-ro
-    image: santiagosayshey/profilarr:v1.1.3
-    container_name: profilarr
-    hostname: profilarr
+    image: ghcr.io/recyclarr/recyclarr:7.4.1
+    container_name: recyclarr
+    env_file: ../../.env
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      <<: *defaults-env
+      RADARR_API_KEY: "${RADARR_API_KEY}" # Radarr API key.
+      SONARR_API_KEY: "${SONARR_API_KEY}" # Sonarr API key.
     networks:
-      caddy:
-      gluetun:
-        ipv4_address: 172.19.0.24
-    expose:
-      - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
+      - caddy
     volumes:
-      - profilarr:/config # Configuration and data volume.
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
-      - "/home/appuser:uid=${PUID},gid=${PGID},exec" # Required for Profilarr.
-    cap_add: *defaults-s6caps
+      - recyclarr:/config # Recyclarr cache/data volume.
+      - ./recyclarr.yml:/config/recyclarr.yml # Local Recyclarr config.
     depends_on:
       radarr:
-        condition: service_healthy # Wait for Radarr to be healthy before starting.
+        condition: service_healthy # Require Radarr to be healthy.
         restart: true # Restart when Radarr restarts.
       sonarr:
-        condition: service_healthy # Wait for Sonarr to be healthy before starting.
+        condition: service_healthy # Require Sonarr to be healthy.
         restart: true # Restart when Sonarr restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64MB # Allow up to 64MB of RAM.
+        reservations:
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 32MB # Reserve 32MB of RAM.
+    healthcheck:
+      test: "pgrep -x crond || exit 1"
 
   ###########################################################################
   # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip    #
@@ -327,14 +335,14 @@ volumes:
   lidarr:
     name: lidarr-volume
     external: true
-  profilarr:
-    external: true
-    name: profilarr-volume
   prowlarr:
     name: prowlarr-volume
     external: true
   radarr:
     name: radarr-volume
+    external: true
+  recyclarr:
+    name: recyclarr-volume
     external: true
   sonarr:
     name: sonarr-volume

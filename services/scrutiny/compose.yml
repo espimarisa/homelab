@@ -1,0 +1,73 @@
+---
+services:
+  ###########################################################################
+  # Scrutiny: Drive SMART monitoring - https://github.com/AnalogJ/scrutiny  #
+  ###########################################################################
+
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: scrutiny
+    restart: unless-stopped
+    environment:
+      COLLECTOR_CRON_SCHEDULE: "0 6 * * *" # Collect data every day at 6AM.
+      SCRUTINY_WEB_INFLUXDB_INIT_PASSWORD: ${SCRUTINY_INFLUXDB_PASSWORD} # Sets the DB password.
+      SCRUTINY_WEB_INFLUXDB_INIT_USERNAME: "admin" # Use admin as username.
+      SCRUTINY_WEB_INFLUXDB_TOKEN: "${SCRUTINY_INFLUXDB_TOKEN}" # Sets the DB token.
+      TZ: ${TZ} # Sets the timezone.
+    expose:
+      - 8080/tcp # Scrutiny web interface; will be reverse proxied internally at scrutiny.${INTERNAL_DOMAIN}.
+    networks:
+      - caddy
+    volumes:
+      - /usr/share/smartmontools:/usr/share/smartmontools:ro # sudo update-smart-drivedb
+      - /usr/share/smartmontools/drivedb.h:/var/lib/smartmontools/drivedb/drivedb.h:ro # sudo update-smart-drivedb
+      - scrutiny:/opt/scrutiny/config # Scrutiny config.
+      - scrutiny-db:/opt/scrutiny/influxdb # Scrutiny database.
+    cap_add:
+      - SYS_RAWIO # Required for getting SMART data.
+      - SYS_ADMIN # Required for running SMART tools.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 512M # Allow up to 512MB of RAM.
+        reservations:
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 256M # Reserve 256MB of RAM.
+    devices:
+      - /dev/sda # boot ssd
+      - /dev/sdb # hdd1
+      - /dev/sdc # hdd2
+      - /dev/sdd # hdd3
+      - /dev/sdd # hdd4
+      - /dev/nvme0n1 # dl-cache
+      - /dev/nvme1n1 # cache drive
+    healthcheck:
+      test: "curl -f http://127.0.0.1:8080/web/dashboard || exit 1"
+    security_opt:
+      - no-new-privileges:true # Prevent privelage escalation.
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
+
+volumes:
+  scrutiny:
+    name: scrutiny-volume
+    external: true
+  scrutiny-db:
+    name: scrutiny-db-volume
+    external: true
