@@ -9,6 +9,9 @@ services:
     container_name: scrutiny
     restart: unless-stopped
     environment:
+      COLLECTOR_COMMANDS_METRICS_INFO_ARGS: "-xv 188,raw16 --info --json -n standby"
+      COLLECTOR_COMMANDS_METRICS_SCAN_ARGS: "-xv 188,raw16 --scan --json -n standby"
+      COLLECTOR_COMMANDS_METRICS_SMART_ARGS: "-xv 188,raw16 --xall --json -n standby"
       COLLECTOR_CRON_SCHEDULE: "0 6 * * *" # Collect data every day at 6AM.
       SCRUTINY_WEB_INFLUXDB_INIT_PASSWORD: ${SCRUTINY_INFLUXDB_PASSWORD} # Sets the DB password.
       SCRUTINY_WEB_INFLUXDB_INIT_USERNAME: "admin" # Use admin as username.

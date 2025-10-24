@@ -269,8 +269,6 @@ services:
         reservations:
           cpus: 0.125 # Reserve 0.125 vCPUs.
           memory: 32MB # Reserve 32MB of RAM.
-    healthcheck:
-      test: "pgrep -x crond || exit 1"
 
   ###########################################################################
   # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip    #
