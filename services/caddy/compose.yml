@@ -1,3 +1,4 @@
+---
 services:
   ###########################################################################
   # Caddy: Reverse proxy and web server - https://caddyserver.com/          #

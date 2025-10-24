@@ -1,3 +1,4 @@
+---
 # Default alert options.
 x-defaults-alerts: &defaults-alerts
   - type: discord

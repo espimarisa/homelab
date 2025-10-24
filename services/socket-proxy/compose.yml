@@ -1,3 +1,4 @@
+---
 services:
   ###########################################################################
   # Socket Proxy: Proxy wrapper for the Docker socket for secure access.    #

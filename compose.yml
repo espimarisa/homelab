@@ -1,3 +1,4 @@
+---
 include:
   - ./services/arr/compose.yml
   - ./services/beszel/compose.yml
