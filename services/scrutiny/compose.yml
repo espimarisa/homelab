@@ -50,7 +50,7 @@ services:
       - /dev/sdb # hdd1
       - /dev/sdc # hdd2
       - /dev/sdd # hdd3
-      - /dev/sdd # hdd4
+      - /dev/sde # hdd4
       - /dev/nvme0n1 # dl-cache
       - /dev/nvme1n1 # cache drive
     healthcheck:
