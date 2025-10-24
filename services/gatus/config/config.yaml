@@ -145,7 +145,7 @@ endpoints:
     url: ${SOCKET_PROXY_URL}/prowlarr/json
 
   # Recyclarr.
-  - name: Recyclarr.
+  - name: Recyclarr
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/recyclarr/json
@@ -219,7 +219,7 @@ endpoints:
   ###########################################################################
 
   # Autobrr DB.
-  - name: "Autobrr Database"
+  - name: Autobrr Database
     <<: *defaults-container
     group: PostgreSQL Databases
     url: ${SOCKET_PROXY_URL}/autobrr-db/json
