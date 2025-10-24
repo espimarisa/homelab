@@ -5,7 +5,7 @@ services:
   ###########################################################################
 
   gatus:
-    image: ghcr.io/twin/gatus:v5.28.0
+    image: ghcr.io/twin/gatus:latest
     container_name: gatus
     env_file: ../../.env
     hostname: gatus

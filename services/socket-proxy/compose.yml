@@ -5,7 +5,7 @@ services:
   ###########################################################################
 
   socket-proxy:
-    image: lscr.io/linuxserver/socket-proxy:3.2.6
+    image: lscr.io/linuxserver/socket-proxy:latest
     container_name: socket-proxy
     hostname: socket-proxy
     read_only: true # Prevent writing directly to the image.

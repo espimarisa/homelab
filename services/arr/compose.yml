@@ -130,7 +130,7 @@ services:
 
   radarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/radarr:5.28.0
+    image: ghcr.io/11notes/radarr:5
     container_name: radarr
     depends_on: *defaults-depends
     hostname: radarr
@@ -155,7 +155,7 @@ services:
 
   sonarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/sonarr:4.0.15
+    image: ghcr.io/11notes/sonarr:4
     container_name: sonarr
     depends_on: *defaults-depends
     hostname: sonarr
@@ -179,7 +179,7 @@ services:
 
   bazarr:
     <<: *defaults
-    image: ghcr.io/hotio/bazarr:release-1.5.3
+    image: ghcr.io/hotio/bazarr:release
     container_name: bazarr
     depends_on: *defaults-depends
     hostname: bazarr
@@ -207,7 +207,7 @@ services:
 
   prowlarr:
     <<: *defaults-vpn
-    image: ghcr.io/11notes/prowlarr:2.0.5
+    image: ghcr.io/11notes/prowlarr:2
     container_name: prowlarr
     read_only: true # Prevent writing directly to the image.
     depends_on:
@@ -241,7 +241,7 @@ services:
 
   recyclarr:
     <<: *defaults-ro
-    image: ghcr.io/recyclarr/recyclarr:7.4.1
+    image: ghcr.io/recyclarr/recyclarr:7
     container_name: recyclarr
     env_file: ../../.env
     user: "${PUID}:${PGID}" # Run as non-root user.
@@ -278,7 +278,7 @@ services:
 
   unpackerr:
     <<: *defaults
-    image: ghcr.io/hotio/unpackerr:release-0.14.5
+    image: ghcr.io/hotio/unpackerr:release
     container_name: unpackerr
     hostname: unpackerr
     environment:

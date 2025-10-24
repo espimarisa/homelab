@@ -5,7 +5,7 @@ services:
   ###########################################################################
 
   homarr:
-    image: ghcr.io/homarr-labs/homarr:v1.42.1
+    image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
     hostname: homarr
     restart: unless-stopped

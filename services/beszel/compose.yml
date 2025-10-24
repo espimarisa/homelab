@@ -24,7 +24,7 @@ services:
 
   beszel:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel:0.14.1
+    image: ghcr.io/henrygd/beszel/beszel:0
     container_name: beszel
     hostname: beszel
     environment:
@@ -51,7 +51,7 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent:0.14.1
+    image: ghcr.io/henrygd/beszel/beszel-agent:0
     container_name: beszel-agent
     hostname: beszel-agent
     environment:
