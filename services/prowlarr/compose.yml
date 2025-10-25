@@ -48,7 +48,7 @@ services:
       POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      glutun:
+      gluetun:
         ipv4_address: 172.19.0.30
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
