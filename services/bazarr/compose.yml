@@ -19,6 +19,7 @@ services:
       - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
     networks:
       - caddy
+      - internal-only
     volumes:
       - media-library:/library:rw # Root media library directory.
       - bazarr:/config:rw # Configuration and data.
@@ -55,7 +56,7 @@ services:
       POSTGRES_PASSWORD: "${BAZARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - caddy
+      - internal-only
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -77,10 +78,9 @@ networks:
   caddy:
     external: true
     name: caddy-network
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
-          gateway: 172.18.0.1
+  internal-only:
+    external: true
+    name: internal-only-network
 
 volumes:
   bazarr-db-backups:

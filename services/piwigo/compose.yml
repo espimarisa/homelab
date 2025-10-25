@@ -1,0 +1,95 @@
+---
+x-defaults-env: &defaults-env
+  TZ: "${TZ}" # Sets the timezone.
+  PGID: "${PGID}" # Group ID to run as.
+  PUID: "${PUID}" # User ID to run as.
+  UMASK: "${UMASK}" # Umask to apply to newly created files.
+
+x-defaults: &defaults
+  restart: unless-stopped
+  environment: *defaults-env
+  cap_drop:
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+  security_opt:
+    - no-new-privileges:true # Prevent privelage escalation.
+
+services:
+  ###########################################################################
+  # Piwigo: Self-hosted photo management - https://piwigo.org/              #
+  ###########################################################################
+
+  piwigo:
+    <<: *defaults
+    image: lscr.io/linuxserver/piwigo:latest
+    container_name: piwigo
+    hostname: piwigo
+    expose:
+      - 80/tcp # Web interface reverse proxied externally at ${PIWIGO_URL}.
+    networks:
+      - caddy
+      - internal-only
+    volumes:
+      - piwigo:/config # Configuration and user data.
+      - piwigo-data:/gallery # Photo storage destination.
+    deploy:
+      resources:
+        limits:
+          cpus: 2 # Allow up to 2 vCPUs.
+          memory: 4G # Allow up to 4G of RAM.
+    depends_on:
+      piwigo-db:
+        condition: service_healthy # Require piwigo-db to be healthy before connecting.
+        restart: true # Restart when piwigo-db restarts.
+    healthcheck:
+      test: "curl -f http://127.0.0.1:80 || exit 1"
+
+  piwigo-db:
+    <<: *defaults
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: piwigo-db
+    hostname: piwigo-db
+    environment:
+      <<: *defaults-env
+      MYSQL_DATABASE: "piwigo" # Create the piwigo database.
+      MYSQL_PASSWORD: "${PIWIGO_DB_PASSWORD}" # Sets the DB password.
+      MYSQL_ROOT_PASSWORD: "${PIWIGO_DB_ROOT_PASSWORD}" # Sets the DB root password.
+      MYSQL_USER: "piwigo" # Create the piwigo user.
+    networks:
+      - internal-only
+    volumes:
+      - piwigo-db:/config # Piwigo database volume.
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow up to 1 vCPUs.
+          memory: 2G # Allow up to 2G of RAM.
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+  internal-only:
+    external: true
+    name: internal-only-network
+
+volumes:
+  piwigo:
+    external: true
+    name: piwigo-volume
+  piwigo-db:
+    external: true
+    name: piwigo-db-volume
+  piwigo-data:
+    name: piwigo-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/piwigo"
+      o: bind
+      type: none

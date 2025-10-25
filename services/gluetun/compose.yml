@@ -78,23 +78,11 @@ networks:
   caddy:
     external: true
     name: caddy-network
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
-          gateway: 172.18.0.1
   gluetun:
     external: true
-    ipam:
-      config:
-        - subnet: 172.19.0.0/16
-          gateway: 172.19.0.1
     name: gluetun-network
   internal-only:
     external: true
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
-          gateway: 172.20.0.1
     name: internal-only-network
 
 volumes:

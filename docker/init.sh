@@ -6,6 +6,7 @@ set -euo pipefail
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
 	"opencloud"
+	"piwigo"
 )
 
 # Download directories to create.
@@ -73,6 +74,8 @@ readonly VOLUMES=(
 	"lidarr-db-data-volume"
 	"lidarr-volume"
 	"opencloud-config-volume"
+	"piwigo-db-volume"
+	"piwigo-volume"
 	"prowlarr-db-backups-volume"
 	"prowlarr-db-config-volume"
 	"prowlarr-db-data-volume"
@@ -206,7 +209,7 @@ echo -e "\nCreating Docker networks..."
 create_network "caddy-network" --driver=bridge --subnet=172.18.0.0/16 --gateway=172.18.0.1
 create_network "gluetun-network" --driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1
 create_network "internal-only-network" --driver=bridge --subnet=172.20.0.0/16 --gateway=172.20.0.1
-create_network "socket-proxy-network" --driver=bridge --internal=true
+create_network "socket-proxy-network" --driver=bridge --subnet=172.21.0.0/16 --gateway-=172.21.0.0/16
 
 # Create Docker volumes.
 echo -e "\nCreating Docker volumes..."

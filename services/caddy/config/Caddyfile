@@ -88,6 +88,11 @@
 	import security_headers
 }
 
+{$PIWIGO_URL} {
+	import external_proxy piwigo:80
+	import security_headers
+}
+
 {$SEERR_URL} {
 	import external_proxy seerr:5055
 	import security_headers

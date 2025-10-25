@@ -41,10 +41,6 @@ services:
 networks:
   gluetun:
     external: true
-    ipam:
-      config:
-        - subnet: 172.19.0.0/16
-          gateway: 172.19.0.1
     name: gluetun-network
 
 volumes:

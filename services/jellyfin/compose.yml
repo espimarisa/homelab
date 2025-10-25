@@ -44,10 +44,6 @@ networks:
   caddy:
     external: true
     name: caddy-network
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
-          gateway: 172.18.0.1
 
 volumes:
   jellyfin-cache:

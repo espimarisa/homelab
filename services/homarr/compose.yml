@@ -32,15 +32,14 @@ services:
       - socket-proxy
     volumes:
       - homarr:/appdata # Configuration and data.
-    cap_add:
-      - CHOWN # Required for setting ownership.
-      - DAC_OVERRIDE # Required for s6-rc.
-      - FOWNER # Required for s6-rc.
-      - FSETID # Required for s6-rc.
-      - SETGID # Required for dropping down to PGID.
-      - SETUID # Required for dropping down to PUID.
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       homarr-db:
         condition: service_healthy # Require homarr-db to be healthy before connecting.
@@ -91,23 +90,11 @@ networks:
   caddy:
     external: true
     name: caddy-network
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
-          gateway: 172.18.0.1
   gluetun:
     external: true
-    ipam:
-      config:
-        - subnet: 172.19.0.0/16
-          gateway: 172.19.0.1
     name: gluetun-network
   internal-only:
     external: true
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16 # Always use the 172.20.0.0/16 subnet.
-          gateway: 172.20.0.1
     name: internal-only-network
   socket-proxy:
     external: true

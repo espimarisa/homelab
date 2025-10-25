@@ -213,63 +213,69 @@ endpoints:
   ###########################################################################
 
   # Autobrr DB.
-  - name: Autobrr Database
+  - name: Autobrr - PostgreSQL
     <<: *defaults-container
-    group: PostgreSQL Databases
+    group: Databases
     url: ${SOCKET_PROXY_URL}/autobrr-db/json
 
   # Bazarr DB.
-  - name: Bazarr Database
+  - name: Bazarr - PostgreSQL
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
     url: ${SOCKET_PROXY_URL}/bazarr-db/json
 
   # Gatus DB.
-  - name: Gatus Database
+  - name: Gatus - PostgreSQL
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
     url: ${SOCKET_PROXY_URL}/gatus-db/json
 
   # Homarr DB.
-  - name: Homarr Database
+  - name: Homarr - PostgreSQL
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
     url: ${SOCKET_PROXY_URL}/homarr-db/json
 
   # Lidarr DB.
-  - name: Lidarr Database
+  - name: Lidarr - PostgreSQL
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
     url: ${SOCKET_PROXY_URL}/lidarr-db/json
 
-  # Prowlarr DB.
-  - name: Prowlarr Database
+  # Piwigo DB.
+  - name: Piwigo - MariaDB
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/piwigo-db/json
+
+  # Prowlarr DB.
+  - name: Prowlarr - PostgreSQL
+    <<: *defaults-container
+    group: Databases
     url: ${SOCKET_PROXY_URL}/prowlarr-db/json
 
   # Radarr DB.
-  - name: Radarr Database
+  - name: Radarr - PostgreSQL
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
     url: ${SOCKET_PROXY_URL}/radarr-db/json
 
   # Seerr DB.
-  - name: Seerr Database
+  - name: Seerr - PostgreSQL
     <<: *defaults-container
-    group: PostgreSQL Databases
+    group: Databases
     url: ${SOCKET_PROXY_URL}/seerr-db/json
 
   # Sonarr DB.
-  - name: Sonarr Database
+  - name: Sonarr - PostgreSQL
     <<: *defaults-container
-    group: Monitoring
+    group: Databases
     url: ${SOCKET_PROXY_URL}/sonarr-db/json
 
   # Vaultwarden DB.
-  - name: Vaultwarden Database
+  - name: Vaultwarden - PostgreSQL
     <<: *defaults-container
-    group: PostgreSQL Databases
+    group: Databases
     url: ${SOCKET_PROXY_URL}/vaultwarden-db/json
 
   ###########################################################################
@@ -299,6 +305,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
+
+  # Piwigo.
+  - name: Piwigo
+    <<: *defaults-http
+    group: Services
+    url: https://${PIWIGO_URL}
 
   # The Lounge.
   - name: The Lounge

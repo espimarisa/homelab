@@ -14,6 +14,7 @@ services:
       caddy:
       gluetun:
         ipv4_address: 172.19.0.22
+      internal-only:
     environment:
       TZ: "${TZ}" # Sets the timezone.
     expose:
@@ -53,7 +54,7 @@ services:
       POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - gluetun
+      - internal-only
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -75,17 +76,12 @@ networks:
   caddy:
     external: true
     name: caddy-network
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
-          gateway: 172.18.0.1
   gluetun:
     external: true
-    ipam:
-      config:
-        - subnet: 172.19.0.0/16
-          gateway: 172.19.0.1
     name: gluetun-network
+  internal-only:
+    external: true
+    name: internal-only-network
 
 volumes:
   sonarr-db-backups:
