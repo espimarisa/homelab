@@ -5,9 +5,9 @@ services:
   ###########################################################################
 
   lidarr:
-    image: ghcr.io/hotio/unpackerr:release
-    container_name: unpackerr
-    hostname: unpackerr
+    image: ghcr.io/hotio/lidarr:pr-plugins
+    container_name: lidarr
+    hostname: lidarr
     restart: unless-stopped
     environment:
       PGID: "${PGID}" # Group ID to run as.
