@@ -6,8 +6,8 @@ services:
 
   bazarr:
     image: ghcr.io/hotio/bazarr:release
-    container_name: unpackerr
-    hostname: unpackerr
+    container_name: bazarr
+    hostname: bazarr
     restart: unless-stopped
     environment:
       PGID: "${PGID}" # Group ID to run as.
