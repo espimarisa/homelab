@@ -57,6 +57,10 @@ services:
       - prowlarr-db-data:/postgres/var:rw # PostgreSQL data.
     cap_drop:
       - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy # Wait for Gluetun to be healthy before starting.
+        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
