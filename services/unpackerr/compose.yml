@@ -1,0 +1,61 @@
+---
+services:
+  ###########################################################################
+  # Unpackerr: Auto-extract compressed downloads - https://unpackerr.zip    #
+  ###########################################################################
+
+  unpackerr:
+    image: ghcr.io/hotio/unpackerr:release
+    container_name: unpackerr
+    hostname: unpackerr
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      UMASK: "${UMASK}" # Umask to apply to newly created files.
+      UN_INTERVAL: "5m" # Check for new items every 5 minutes.
+      UN_LOG_FILE: "/downloads/unpackerr.log" # Save log files.
+      UN_PARALLEL: "1" # Run one task at a time.
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}" # Radarr API key.
+      UN_RADARR_0_URL: "http://radarr:7878" # Radarr URL.
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}" # Sonarr API key.
+      UN_SONARR_0_URL: "http://sonarr:8989" # Sonarr URL.
+      UN_WEBSERVER_METRICS: "true" # Enables the metrics server.
+      UN_WEBSERVER_LISTEN_ADDR: "0.0.0.0:5656" # Address to bind the metrics server to.
+    networks:
+      - gluetun
+    volumes:
+      - unpackerr:/config # Configuration and data.
+      - downloads:/downloads # Root downloads directory.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 2 # Allow using 2 vCPUs.
+          memory: 2G # Allow using 2GB
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
+    healthcheck:
+      test: "curl -f http://127.0.0.1:5656 || exit 1"
+
+networks:
+  gluetun:
+    external: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+    name: gluetun-network
+
+volumes:
+  unpackerr:
+    name: unpackerr-volume
+    external: true

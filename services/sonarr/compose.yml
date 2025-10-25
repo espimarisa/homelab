@@ -1,0 +1,114 @@
+---
+services:
+  ###########################################################################
+  # Sonarr: Series manager, organizer, and PVR - https://sonarr.tv          #
+  ###########################################################################
+
+  sonarr:
+    image: ghcr.io/11notes/sonarr:4
+    container_name: sonarr
+    hostname: sonarr
+    read_only: true
+    restart: unless-stopped
+    networks:
+      caddy:
+      gluetun:
+        ipv4_address: 172.19.0.22
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+    expose:
+      - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
+    volumes:
+      - downloads:/downloads:rw # Root downloads directory.
+      - media-library:/library:rw # Root media library directory.
+      - sonarr:/sonarr/etc:rw # Configuration and data.
+    cap_add:
+      - CHOWN
+    cap_drop:
+      - ALL
+    depends_on:
+      sonarr-db:
+        condition: service_healthy # Wait for sonarr-db to be healthy before starting.
+        restart: true # Restart when sonarr-db restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 2 # Allow using 2 vCPUs.
+          memory: 2G # Allow using 2G.
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
+
+  sonarr-db:
+    image: ghcr.io/11notes/postgres:17
+    container_name: sonarr-db
+    hostname: sonarr-db
+    read_only: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
+      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - gluetun
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    volumes:
+      - sonarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
+      - sonarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
+      - sonarr-db-data:/postgres/var:rw # PostgreSQL data.
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5 # Allow using 0.5 vCPUs.
+          memory: 512M # Allow using 512MB.
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
+
+networks:
+  caddy:
+    external: true
+    name: caddy-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16 # Always use the 172.18.0.0/16 subnet.
+          gateway: 172.18.0.1
+  gluetun:
+    external: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+    name: gluetun-network
+
+volumes:
+  sonarr-db-backups:
+    name: sonarr-db-backups-volume
+    external: true
+  sonarr-db-config:
+    name: sonarr-db-config-volume
+    external: true
+  sonarr-db-data:
+    name: sonarr-db-data-volume
+    external: true
+  sonarr:
+    name: sonarr-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

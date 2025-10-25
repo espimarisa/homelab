@@ -44,9 +44,6 @@ services:
         limits:
           cpus: 1 # Allow up to 1 vCPU.
           memory: 1G # Allow up to 1G of RAM.
-        reservations:
-          cpus: 0.125 # Reserve 0.25 vCPUs.
-          memory: 256M # Reserve 256MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:

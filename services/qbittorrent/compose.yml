@@ -36,9 +36,6 @@ services:
         limits:
           cpus: 6 # Allow up to 6 vCPUs.
           memory: 4G # Allow up to 4GB of RAM usage.
-        reservations:
-          cpus: 2 # Reserve 2 vCPUs.
-          memory: 1G # Reserve 1GB of RAM.
 
   ###########################################################################
   # qui: Alternate web UI for qBittorrent - https://github.com/autobrr/qui  #
@@ -71,9 +68,6 @@ services:
         limits:
           cpus: 0.5 # Allow up to 0.5 vCPUs.
           memory: 512M # Allow up to 512MB of RAM usage.
-        reservations:
-          cpus: 0.125 # Reserve 0.125 vCPUs.
-          memory: 128M # Reserve 128MB of RAM.
 
 volumes:
   qbittorrent-config:

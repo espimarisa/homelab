@@ -33,9 +33,6 @@ services:
         limits:
           cpus: 4 # Allow up to 4 vCPUs.
           memory: 4G # Allow up to 4GB of RAM usage.
-        reservations:
-          cpus: 1 # Reserve 1 vCPU.
-          memory: 2G # Reserve 2GB of RAM.
     group_add:
       - "${RENDER_GID}" # Adds user to the host render group.
     healthcheck:

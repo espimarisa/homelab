@@ -151,10 +151,6 @@ radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
 }
 
-scrutiny.{$INTERNAL_DOMAIN} {
-	import internal_proxy scrutiny:8080
-}
-
 slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
 }

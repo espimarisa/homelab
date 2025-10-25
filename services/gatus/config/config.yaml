@@ -202,12 +202,6 @@ endpoints:
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/gatus/json
 
-  # Scrutiny.
-  - name: Scrutiny
-    <<: *defaults-container
-    group: Monitoring
-    url: ${SOCKET_PROXY_URL}/scrutiny/json
-
   # Watchtower.
   - name: Watchtower
     <<: *defaults-container
@@ -224,11 +218,11 @@ endpoints:
     group: PostgreSQL Databases
     url: ${SOCKET_PROXY_URL}/autobrr-db/json
 
-  # 'ARR DB.
-  - name: "'ARR Database"
+  # Bazarr DB.
+  - name: Bazarr Database
     <<: *defaults-container
-    group: PostgreSQL Databases
-    url: ${SOCKET_PROXY_URL}/arr-db/json
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/bazarr-db/json
 
   # Gatus DB.
   - name: Gatus Database
@@ -242,11 +236,35 @@ endpoints:
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/homarr-db/json
 
+  # Lidarr DB.
+  - name: Lidarr Database
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/lidarr-db/json
+
+  # Prowlarr DB.
+  - name: Prowlarr Database
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/prowlarr-db/json
+
+  # Radarr DB.
+  - name: Radarr Database
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/radarr-db/json
+
   # Seerr DB.
   - name: Seerr Database
     <<: *defaults-container
     group: PostgreSQL Databases
     url: ${SOCKET_PROXY_URL}/seerr-db/json
+
+  # Sonarr DB.
+  - name: Sonarr Database
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/sonarr-db/json
 
   # Vaultwarden DB.
   - name: Vaultwarden Database
