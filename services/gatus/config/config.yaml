@@ -20,7 +20,7 @@ x-defaults-http: &defaults-http
   <<: *defaults
   conditions:
     - "[CERTIFICATE_EXPIRATION] > 240h"
-    - "[RESPONSE_TIME] < 2000" # might be a little low if your shit is slow
+    - "[RESPONSE_TIME] < 5000" # might be a little low if your shit is slow
     - "[STATUS] == 200"
 
 # Default container options.
