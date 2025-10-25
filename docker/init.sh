@@ -220,6 +220,7 @@ done
 # Initialize files in volumes using a temporary container.
 echo -e "\nInitializing files in volumes..."
 docker run --rm -v "chhoto-volume:/data" alpine:3 touch /data/urls.sqlite
+docker run --rm -v "homarr-volume:/data" alpine:3 mkdir /data/redis
 
 # Get Docker's root directory
 DOCKER_ROOT=$($SUDO docker info -f '{{ .DockerRootDir }}')

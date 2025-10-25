@@ -17,7 +17,7 @@ x-defaults: &defaults
     - SYS_CHROOT
     - SYS_PTRACE
   security_opt:
-    - no-new-privileges:true # Prevent privelage escalation.
+    - no-new-privileges:true # Prevent privilege escalation.
 
 services:
   ###########################################################################

@@ -66,45 +66,72 @@
 {$CHHOTO_URL} {
 	import external_proxy chhoto:4567
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy chhoto:4567
 }
 
 {$GATUS_URL} {
 	import external_proxy gatus:8080
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy gatus:8080
 }
 
 {$HOMARR_URL} {
 	import external_proxy homarr:7575
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy homarr:7575
 }
 
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy jellyfin:8096
 }
 
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy opencloud:9200
 }
 
 {$PIWIGO_URL} {
 	import external_proxy piwigo:80
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy piwigo:80
 }
 
 {$SEERR_URL} {
 	import external_proxy seerr:5055
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy seerr:5055
 }
 
 {$THELOUNGE_URL} {
 	import external_proxy thelounge:9000
 	import security_headers
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy thelounge:9000
 }
 
 {$VAULTWARDEN_URL} {
 	import external_proxy vaultwarden:80
+
+	# Testing internal-only, keep commented.
+	# import internal_proxy vaultwarden:80
 
 	# Let Vaultwarden manage its own security headers; only keep HSTS.
 	header {

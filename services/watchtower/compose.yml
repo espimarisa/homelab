@@ -37,7 +37,7 @@ services:
           cpus: 0.25 # Allow up to 0.25 vCPUs.
           memory: 64M # Allow up to 64MB of RAM.
     security_opt:
-      - no-new-privileges:true # Prevents privelage escalation
+      - no-new-privileges:true # Prevents privilege escalation
 
 networks:
   caddy:

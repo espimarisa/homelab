@@ -45,7 +45,7 @@ services:
     healthcheck:
       test: "curl -f http://127.0.0.1:7474 || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privelage escalation.
+      - no-new-privileges:true # Prevent privilege escalation.
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
 

@@ -55,7 +55,7 @@ services:
     healthcheck:
       test: "wget --spider http://127.0.0.1:7575 || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privelage escalation.
+      - no-new-privileges:true # Prevent privilege escalation.
 
   homarr-db:
     image: ghcr.io/11notes/postgres:17
