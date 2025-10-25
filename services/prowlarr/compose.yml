@@ -41,13 +41,15 @@ services:
   prowlarr-db:
     image: ghcr.io/11notes/postgres:17
     container_name: prowlarr-db
-    network_mode: service:gluetun
     read_only: true
     restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
       POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
+    networks:
+      glutun:
+        ipv4_address: 172.19.0.30
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -68,6 +70,15 @@ services:
           memory: 512M # Allow using 512MB.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
+
+networks:
+  gluetun:
+    external: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+    name: gluetun-network
 
 volumes:
   prowlarr:
