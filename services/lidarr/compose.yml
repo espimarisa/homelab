@@ -57,7 +57,7 @@ services:
       POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - gluetun
+      - caddy
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
