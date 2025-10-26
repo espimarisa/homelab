@@ -246,17 +246,17 @@ create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
 echo -e "\nCreating Docker networks..."
 
 # 1. EXTERNAL (Routable for Internet/Caddy)
-create_dual_stack_network "external" \
+create_dual_stack_network "external-network" \
 	"$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" \
 	"$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
 
 # 2. INTERNAL (Isolated for internal-only traffic).
-create_dual_stack_network "internal" \
+create_dual_stack_network "internal-network" \
 	"$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" \
 	"$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
 
 # 3. GLUETUN (VPN)
-create_dual_stack_network "gluetun" \
+create_dual_stack_network "gluetun-network" \
 	"$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" \
 	"$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
 
