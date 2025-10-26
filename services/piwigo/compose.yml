@@ -72,7 +72,7 @@ services:
           cpus: 1 # Allow up to 1 vCPUs.
           memory: 2G # Allow up to 2G of RAM.
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1"]
 
 networks:
   external:

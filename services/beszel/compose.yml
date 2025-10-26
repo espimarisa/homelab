@@ -38,7 +38,7 @@ services:
       - beszel-data:/beszel_data # Configuration and database.
       - beszel-socket:/beszel_socket # Beszel socket.
     healthcheck:
-      test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
+      test: ["CMD", "/beszel", "health", "--url", "http://127.0.0.1:8090"]
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
 

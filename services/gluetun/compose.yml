@@ -40,11 +40,9 @@ services:
       - 8191/tcp # Byparr API.
       - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${INTERNAL_DOMAIN}.
     networks:
-      external: # External interface; allows for reverse proxying.
       gluetun: # Internal Gluetun interface.
         ipv4_address: 172.19.3.10
         ipv6_address: fdad:21b2:bca9:3::10
-      internal: # Internal-only interface for VPN'd databases, etc.
     volumes:
       - gluetun:/gluetun # Gluetun cache.
     cap_add:
@@ -67,15 +65,9 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  external:
-    external: true
-    name: external-network
   gluetun:
     external: true
     name: gluetun-network
-  internal:
-    external: true
-    name: internal-network
 
 volumes:
   gluetun:
