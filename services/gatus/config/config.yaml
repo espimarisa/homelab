@@ -168,12 +168,6 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/caddy/json
 
-  # ddclient.
-  - name: ddclient
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/ddclient/json
-
   # Socket Proxy.
   - name: Socket Proxy
     <<: *defaults-container
