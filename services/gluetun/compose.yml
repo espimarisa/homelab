@@ -14,7 +14,7 @@ services:
     environment:
       DOT_PROVIDERS: "quad9" # Use Quad9 for DOT.
       DOT: "on" # Enable DOT.
-      FIREWALL_OUTBOUND_SUBNETS: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fc00::/7,fd7a:115c:a1e0::/64"
+      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,fdad:21b2:bca9:2::/64,fdad:21b2:bca9:1::/64,fdad:21b2:bca9:3::/64,fd7a:115c:a1e0::/64"
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443" # Use Quad9 for healthchecks.
       HEALTH_VPN_DURATION_INITIAL: "60s" # Have an initial healthcheck of 2m.
