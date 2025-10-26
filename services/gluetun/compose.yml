@@ -28,7 +28,7 @@ services:
       VPN_TYPE: "wireguard" # Use Wireguard.
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # Address(es) from wg0.conf.
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # Port from wg0.conf.
-      WIREGUARD_MTU: "1480" # MTU to use.
+      WIREGUARD_MTU: "1420" # MTU to use.
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # PresharedKey from wg0.conf.
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
