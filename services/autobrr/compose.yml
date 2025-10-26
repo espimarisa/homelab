@@ -60,8 +60,9 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     networks:
       internal:
-        ipv4_address: 172.19.2.30 # Static IPV4 from the internal subnet
-        ipv6_address: fdad:21b2:bca9:1::30 # Static IPV6 equivalent
+      gluetun:
+        ipv4_address: 172.19.3.30
+        ipv6_address: fdad:21b2:bca9:3::30
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -80,6 +81,9 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
+  gluetun:
+    name: gluetun-network
+    external: true
   internal:
     name: internal-network
     external: true

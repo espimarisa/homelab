@@ -49,8 +49,9 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     networks:
       internal:
-        ipv4_address: 172.19.2.21 # Static IPV4 from the internal subnet
-        ipv6_address: fdad:21b2:bca9:1::21 # Static IPV6 equivalent
+      gluetun:
+        ipv4_address: 172.19.3.31
+        ipv6_address: fdad:21b2:bca9:3::31
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
