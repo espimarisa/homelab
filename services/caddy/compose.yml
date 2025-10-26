@@ -17,6 +17,7 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
+      - gluetun
       - internal
     ports:
       - 80:80/tcp # HTTP traffic.
@@ -52,6 +53,9 @@ networks:
   external:
     external: true
     name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
   internal:
     external: true
     name: internal-network

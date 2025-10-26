@@ -14,10 +14,10 @@ services:
     environment:
       DOT_PROVIDERS: "quad9" # Use Quad9 for DOT.
       DOT: "on" # Enable DOT.
-      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,fdad:21b2:bca9:2::/64,fdad:21b2:bca9:1::/64,fdad:21b2:bca9:3::/64,fd7a:115c:a1e0::/64"
+      DOT_IPV6: "on" # Enable DOT for IPV6.
+      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/24,fc00::/7,fd7a:115c:a1e0::/64"
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443" # Use Quad9 for healthchecks.
-      HEALTH_VPN_DURATION_INITIAL: "60s" # Have an initial healthcheck of 2m.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
       SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities.
@@ -40,8 +40,6 @@ services:
       - 8191/tcp # Byparr API.
       - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${INTERNAL_DOMAIN}.
     networks:
-      external:
-      internal:
       gluetun: # Internal Gluetun interface.
         ipv4_address: 172.19.3.10
         ipv6_address: fdad:21b2:bca9:3::10
@@ -65,6 +63,8 @@ services:
           memory: 2G # Allow using 2G of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
 
 networks:
   external:
