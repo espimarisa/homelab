@@ -3,6 +3,26 @@
 # Exit immediately if a command exits with a non-zero status.
 set -euo pipefail
 
+# ULA Base: fdad:21b2:bca9::/48
+
+# Internal (Subnet #1): Used for isolated services (DBs, Socket Proxy).
+readonly INTERNAL_IPV4_SUBNET="172.19.2.0/24"
+readonly INTERNAL_IPV4_GATEWAY="172.19.2.1"
+readonly INTERNAL_IPV6_SUBNET="fdad:21b2:bca9:1::/64"
+readonly INTERNAL_IPV6_GATEWAY="fdad:21b2:bca9:1::1"
+
+# External (Subnet #2): Used for Caddy/general external access.
+readonly EXTERNAL_IPV4_SUBNET="172.19.1.0/24"
+readonly EXTERNAL_IPV4_GATEWAY="172.19.1.1"
+readonly EXTERNAL_IPV6_SUBNET="fdad:21b2:bca9:2::/64"
+readonly EXTERNAL_IPV6_GATEWAY="fdad:21b2:bca9:2::1"
+
+# Gluetun (Subnet #3): Used for VPN-routed apps.
+readonly GLUETUN_IPV4_SUBNET="172.19.3.0/24"
+readonly GLUETUN_IPV4_GATEWAY="172.19.3.1"
+readonly GLUETUN_IPV6_SUBNET="fdad:21b2:bca9:3::/64"
+readonly GLUETUN_IPV6_GATEWAY="fdad:21b2:bca9:3::1"
+
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
 	"opencloud"
@@ -144,13 +164,31 @@ create_dirs() {
 	done
 }
 
-# Function to create a Docker network if it doesn't exist.
-create_network() {
+# Function to create a dual-stack bridge networks.
+create_dual_stack_network() {
 	local network_name="$1"
-	shift
+	local ipv4_subnet="$2"
+	local ipv4_gateway="$3"
+	local ipv6_subnet="$4"
+	local ipv6_gateway="$5"
+	local internal_flag="$6"
+
 	if ! docker network inspect "$network_name" &>/dev/null; then
-		echo "Creating Docker network: $network_name"
-		docker network create "$@" "$network_name"
+		echo "Creating dual-stack network: $network_name (IPv6: $ipv6_subnet, Internal: $internal_flag)"
+
+		local command="docker network create --driver=bridge --ipv6 "
+
+		# The internal network requires the internal flag and gateway defined for static IPs
+		if [ "$internal_flag" = "true" ]; then
+			command+="--internal "
+		fi
+
+		# We specify subnet and gateway for all, even internal, to ensure static IPs work
+		command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} --subnet=${ipv6_subnet} --gateway=${ipv6_gateway} "
+
+		# Append network name and execute
+		eval "$command" "$network_name"
+
 	else
 		echo "Docker network '$network_name' already exists."
 	fi
@@ -206,10 +244,21 @@ create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
-create_network "caddy-network" --driver=bridge --subnet=172.18.0.0/16 --gateway=172.18.0.1
-create_network "gluetun-network" --driver=bridge --subnet=172.19.0.0/16 --gateway=172.19.0.1
-create_network "internal-only-network" --driver=bridge --subnet=172.20.0.0/16 --gateway=172.20.0.1
-create_network "socket-proxy-network" --driver=bridge --subnet=172.21.0.0/16 --gateway-=172.21.0.0/16
+
+# 1. EXTERNAL (Routable for Internet/Caddy)
+create_dual_stack_network "external" \
+	"$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" \
+	"$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
+
+# 2. INTERNAL (Isolated for internal-only traffic).
+create_dual_stack_network "internal" \
+	"$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" \
+	"$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
+
+# 3. GLUETUN (VPN)
+create_dual_stack_network "gluetun" \
+	"$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" \
+	"$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
 
 # Create Docker volumes.
 echo -e "\nCreating Docker volumes..."

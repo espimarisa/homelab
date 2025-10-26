@@ -16,7 +16,7 @@ services:
     expose:
       - 9000/tcp # Web interface reverse proxied externally at ${THELOUNGE_URL}.
     networks:
-      - caddy
+      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
@@ -34,9 +34,9 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
+    name: external-network
 
 volumes:
   thelounge:

@@ -43,8 +43,8 @@ services:
     expose:
       - 80/tcp # Web interface reverse proxied externally at ${VAULTWARDEN_URL}.
     networks:
-      - caddy
-      - internal-only
+      - external
+      - internal
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
@@ -76,7 +76,7 @@ services:
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the database password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - internal-only
+      - internal
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -95,12 +95,12 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  internal-only:
+    name: external-network
+  internal:
     external: true
-    name: internal-only-network
+    name: internal-network
 
 volumes:
   vaultwarden:

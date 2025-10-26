@@ -30,8 +30,8 @@ services:
     expose:
       - 5055:5055/tcp # Web interface reverse proxied externally at ${SEERR_URL}.
     networks:
-      - caddy
-      - internal-only
+      - external
+      - internal
     volumes:
       - seerr:/app/config # Configuration and database.
     depends_on:
@@ -56,7 +56,7 @@ services:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
       POSTGRES_PASSWORD: "${SEERR_DB_PASSWORD}" # Configures the default PostgreSQL password.
     networks:
-      - internal-only # Internal network.
+      - internal
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -71,12 +71,12 @@ services:
           memory: 256M # Allow using 256MB of RAM.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  internal-only:
+    name: external-network
+  internal:
     external: true
-    name: internal-only-network
+    name: internal-network
 
 volumes:
   seerr:

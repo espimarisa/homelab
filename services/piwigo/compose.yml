@@ -32,8 +32,8 @@ services:
     expose:
       - 80/tcp # Web interface reverse proxied externally at ${PIWIGO_URL}.
     networks:
-      - caddy
-      - internal-only
+      - external
+      - internal
     volumes:
       - piwigo:/config # Configuration and user data.
       - piwigo-data:/gallery # Photo storage destination.
@@ -61,7 +61,9 @@ services:
       MYSQL_ROOT_PASSWORD: "${PIWIGO_DB_ROOT_PASSWORD}" # Sets the DB root password.
       MYSQL_USER: "piwigo" # Create the piwigo user.
     networks:
-      - internal-only
+      internal:
+        ipv4_address: 172.19.2.43 # Static IPV4 from the internal subnet
+        ipv6_address: fdad:21b2:bca9:1::43 # Static IPV6 equivalent
     volumes:
       - piwigo-db:/config # Piwigo database volume.
     deploy:
@@ -73,12 +75,12 @@ services:
       test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  internal-only:
+    name: external-network
+  internal:
     external: true
-    name: internal-only-network
+    name: internal-network
 
 volumes:
   piwigo:

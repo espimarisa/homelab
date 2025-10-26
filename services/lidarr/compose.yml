@@ -17,10 +17,11 @@ services:
     expose:
       - 8686/tcp # Web interface reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     networks:
-      caddy:
+      external:
       gluetun:
-        ipv4_address: 172.19.0.20
-      internal-only:
+        ipv4_address: 172.19.3.20
+        ipv6_address: fdad:21b2:bca9:3::20
+      internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.
       - media-library:/library:rw # Root media library directory.
@@ -58,7 +59,9 @@ services:
       POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - internal-only
+      internal:
+        ipv4_address: 172.19.2.20 # Static IPV4 from the internal subnet
+        ipv6_address: fdad:21b2:bca9:1::20 # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -77,15 +80,15 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
+    name: external-network
   gluetun:
     external: true
     name: gluetun-network
-  internal-only:
+  internal:
     external: true
-    name: internal-only-network
+    name: internal-network
 
 volumes:
   lidarr-db-backups:

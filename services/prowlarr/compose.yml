@@ -48,8 +48,9 @@ services:
       POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      gluetun:
-        ipv4_address: 172.19.0.30
+      internal:
+        ipv4_address: 172.19.2.21 # Static IPV4 from the internal subnet
+        ipv6_address: fdad:21b2:bca9:1::21 # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -75,6 +76,9 @@ networks:
   gluetun:
     external: true
     name: gluetun-network
+  internal:
+    name: internal-network
+    external: true
 
 volumes:
   prowlarr:

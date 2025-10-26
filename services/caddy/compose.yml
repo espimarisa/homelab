@@ -16,8 +16,8 @@ services:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to the socket proxy.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - caddy
-      - socket-proxy
+      - external
+      - internal
     ports:
       - 80:80/tcp # HTTP traffic.
       - 443:443/tcp # HTTPS traffic.
@@ -49,12 +49,12 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  socket-proxy:
+    name: external-network
+  internal:
     external: true
-    name: socket-proxy-network
+    name: internal-network
 
 volumes:
   caddy-backups:

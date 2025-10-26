@@ -19,7 +19,7 @@ services:
       AUTOBRR__LOG_MAX_SIZE: "10" # 10mb max.
       AUTOBRR__LOG_PATH: "/logs/autobrr.log" # Log at /logs.
       AUTOBRR__POSTGRES_DATABASE: "postgres" # Use default database.
-      AUTOBRR__POSTGRES_HOST: "127.0.0.1" # Connect to PostgreSQL.
+      AUTOBRR__POSTGRES_HOST: "172.19.2.30" # Connect to PostgreSQL.
       AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Connect with PostgreSQL password.
       AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
       AUTOBRR__POSTGRES_USER: "postgres" # Use default user.
@@ -52,13 +52,16 @@ services:
   autobrr-db:
     image: ghcr.io/11notes/postgres:17
     container_name: autobrr-db
-    network_mode: service:gluetun # Route all traffic through Gluetun.
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
       POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}" # Sets the database password.
       TZ: "${TZ}" # Sets the timezone.
+    networks:
+      internal:
+        ipv4_address: 172.19.2.30 # Static IPV4 from the internal subnet
+        ipv6_address: fdad:21b2:bca9:1::30 # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -68,10 +71,6 @@ services:
       - autobrr-db-data:/postgres/var # PostgreSQL data.
     cap_drop:
       - ALL # Drop all default capabilities.
-    depends_on:
-      gluetun:
-        condition: service_healthy # Wait for Gluetun to be healthy before starting.
-        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
@@ -79,6 +78,11 @@ services:
           memory: 256M # Allow using 256M of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
+
+networks:
+  internal:
+    name: internal-network
+    external: true
 
 volumes:
   autobrr:

@@ -22,9 +22,8 @@ services:
       WATCHTOWER_SCHEDULE: "0 6 * * *" # Run every day at 6AM.
       WATCHTOWER_UPDATE_ON_START: "true" # Check for updates on start.
     networks:
-      - caddy
-      - internal-only
-      - socket-proxy
+      - external
+      - internal
     cap_drop:
       - ALL # Drop all default capabilities.
     depends_on:
@@ -40,12 +39,9 @@ services:
       - no-new-privileges:true # Prevents privilege escalation
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  internal-only:
+    name: external-network
+  internal:
     external: true
-    name: internal-only-network
-  socket-proxy:
-    external: true
-    name: socket-proxy-network
+    name: internal-network

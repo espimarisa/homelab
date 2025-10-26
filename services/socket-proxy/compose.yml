@@ -25,7 +25,7 @@ services:
       SWARM: "1" # Allow swarm checking.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - socket-proxy # Internal-only socket proxy network.
+      - internal
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount.
     tmpfs:
@@ -44,6 +44,6 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  socket-proxy:
+  internal:
     external: true
-    name: socket-proxy-network
+    name: internal-network

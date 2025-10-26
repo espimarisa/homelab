@@ -21,7 +21,7 @@ services:
     expose:
       - 4567/tcp # Web interface reverse proxied externally at ${CHHOTO_URL}.
     networks:
-      - caddy
+      - external
     volumes:
       - chhoto:/db # Database.
     cap_drop:
@@ -37,9 +37,9 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
+    name: external-network
 
 volumes:
   chhoto:

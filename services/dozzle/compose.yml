@@ -17,8 +17,8 @@ services:
     expose:
       - 8080/tcp # Dozzle web interface; will be reverse proxied internally at dozzle.${INTERNAL_DOMAIN}.
     networks:
-      - caddy
-      - socket-proxy
+      - external
+      - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Timezone mount.
       - dozzle:/data # Configuration and data.
@@ -39,12 +39,12 @@ services:
       - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  socket-proxy:
+    name: external-network
+  internal:
     external: true
-    name: socket-proxy-network
+    name: internal-network
 
 volumes:
   dozzle:

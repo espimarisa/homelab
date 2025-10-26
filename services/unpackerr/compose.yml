@@ -24,7 +24,7 @@ services:
       UN_WEBSERVER_METRICS: "true" # Enables the metrics server.
       UN_WEBSERVER_LISTEN_ADDR: "0.0.0.0:5656" # Address to bind the metrics server to.
     networks:
-      - gluetun
+      - internal
     volumes:
       - unpackerr:/config # Configuration and data.
       - downloads:/downloads # Root downloads directory.
@@ -47,9 +47,9 @@ services:
       test: "curl -f http://127.0.0.1:5656 || exit 1"
 
 networks:
-  gluetun:
+  internal:
     external: true
-    name: gluetun-network
+    name: internal-network
 
 volumes:
   unpackerr:

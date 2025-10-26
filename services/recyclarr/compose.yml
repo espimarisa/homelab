@@ -15,7 +15,7 @@ services:
       RADARR_API_KEY: "${RADARR_API_KEY}" # Radarr API key.
       SONARR_API_KEY: "${SONARR_API_KEY}" # Sonarr API key.
     networks:
-      - caddy
+      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
     volumes:
@@ -39,9 +39,9 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  gluetun:
+  external:
     external: true
-    name: gluetun-network
+    name: external-network
 
 volumes:
   recyclarr:

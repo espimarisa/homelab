@@ -24,9 +24,8 @@ services:
     expose:
       - 8080/tcp # Web interface reverse proxied externally at ${GATUS_URL}.
     networks:
-      - caddy
-      - internal-only
-      - socket-proxy
+      - external
+      - internal
     volumes:
       - ./config:/config:ro # Host config mount.
     cap_drop:
@@ -57,7 +56,9 @@ services:
       POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Configures the PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      - internal-only
+      internal:
+        ipv4_address: 172.19.2.41 # Static IPV4 from the internal subnet
+        ipv6_address: fdad:21b2:bca9:1::41 # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -76,16 +77,12 @@ services:
       - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
-  caddy:
+  external:
     external: true
-    name: caddy-network
-  internal-only:
+    name: external-network
+  internal:
     external: true
-    name: internal-only-network
-  socket-proxy:
-    external: true
-    name: socket-proxy-network
-
+    name: internal-network
 volumes:
   gatus-db-config:
     name: gatus-db-config-volume
