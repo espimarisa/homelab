@@ -94,7 +94,7 @@ services:
         condition: service_healthy # Require Caddy to be healthy.
         restart: true # Restart when Caddy restarts.
       gatus:
-        condition: service_healthy # Require Gatus to be healthy.
+        condition: service_started # Require Gatus to be started.
         restart: true # Restart when Gatus restarts.
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
