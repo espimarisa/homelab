@@ -89,6 +89,8 @@ services:
       TARGET: "http://gatus:8080" # Target the container.
       TZ: "${TZ}" # Sets the timezone.
       WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    networks:
+      - external
     depends_on:
       caddy:
         condition: service_healthy # Require Caddy to be healthy.
