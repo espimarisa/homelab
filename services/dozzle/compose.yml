@@ -21,7 +21,7 @@ services:
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Timezone mount.
-      - socket-proxy:/var/run:ro # Socket proxy.
+      - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
       - dozzle:/data # Configuration and data.
     cap_drop:
       - ALL # Drop all default capabilities.

@@ -66,7 +66,7 @@ services:
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive, change to be your path.
       - beszel-agent:/var/lib/beszel-agent # Besel agent.
       - beszel-socket:/beszel_socket # Beszel socket.
-      - socket-proxy:/var/run:ro # Socket proxy volume.
+      - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
     depends_on:
       beszel:
         condition: service_healthy # Wait for Beszel to be healthy before connecting.

@@ -39,7 +39,7 @@ services:
       - internal
     volumes:
       - homarr:/appdata # Configuration and data.
-      - socket-proxy:/var/run:ro # Socket proxy.
+      - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
     depends_on:
       homarr-db:
         condition: service_healthy # Require homarr-db to be healthy before connecting.
