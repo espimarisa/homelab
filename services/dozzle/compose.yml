@@ -12,6 +12,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375"
       DOZZLE_ENABLE_ACTIONS: "true" # Enable actions.
       DOZZLE_ENABLE_SHELL: "true" # Enable shell.
     expose:
@@ -21,7 +22,6 @@ services:
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Timezone mount.
-      - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
       - dozzle:/data # Configuration and data.
     cap_drop:
       - ALL # Drop all default capabilities.
@@ -51,6 +51,3 @@ volumes:
   dozzle:
     name: dozzle-volume
     external: true
-  socket-proxy:
-    external: true
-    name: socket-proxy-volume

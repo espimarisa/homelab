@@ -24,6 +24,8 @@ services:
     container_name: homarr
     hostname: homarr
     environment:
+      DOCKER_HOSTS: "socket-proxy" # Connect to Socket Proxy.
+      DOCKER_PORTS: "2375" # Connect to Socket Proxy.
       DB_URL: "postgres://postgres:${HOMARR_DB_PASSWORD}@homarr-db:5432/postgres" # PostgreSQL connection URL.
       DB_DIALECT: "postgresql" # Use PostgreSQL.
       DB_DRIVER: "node-postgres" # Use node-postgres.
@@ -39,7 +41,6 @@ services:
       - internal
     volumes:
       - homarr:/appdata # Configuration and data.
-      - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
     depends_on:
       homarr-db:
         condition: service_healthy # Require homarr-db to be healthy before connecting.
@@ -142,6 +143,3 @@ volumes:
   homarr-db-backups:
     name: homarr-db-backups-volume
     external: true
-  socket-proxy:
-    external: true
-    name: socket-proxy-volume

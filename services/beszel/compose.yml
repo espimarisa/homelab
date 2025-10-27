@@ -53,6 +53,7 @@ services:
     container_name: beszel-agent
     hostname: beszel-agent
     environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       HUB_URL: "http://beszel:8090" # Listen to the beszel container.
       KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
       LISTEN: "0.0.0.0:45876" # Bind to 0.0.0.0.

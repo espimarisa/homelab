@@ -13,6 +13,7 @@ services:
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket proxy.
       TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
@@ -30,7 +31,6 @@ services:
       - caddy-config:/caddy/etc # Caddy config.
       - caddy-data:/caddy/var # Caddy data and certificates.
       - caddy-logs:/caddy/logs # Caddy logs.
-      - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
     cap_add:
       - NET_BIND_SERVICE # Required for binding ports <= 1024.
       - NET_ADMIN # Improves HTTP3 performance.
@@ -72,6 +72,3 @@ volumes:
   caddy-logs:
     external: true
     name: caddy-logs-volume
-  socket-proxy:
-    external: true
-    name: socket-proxy-volume
