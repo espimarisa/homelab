@@ -27,6 +27,7 @@ services:
     container_name: gatus
     hostname: gatus
     environment:
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.
       GATUS_DESCRIPTION: "${GATUS_DESCRIPTION}" # Sets the page description.
       GATUS_HEADER: "${GATUS_HEADER}" # Sets the header.
