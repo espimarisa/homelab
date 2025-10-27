@@ -1,6 +1,7 @@
 ---
 include:
   - ./services/autobrr/compose.yml
+  - ./services/backrest/compose.yml
   - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
   - ./services/byparr/compose.yml

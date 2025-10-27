@@ -1,0 +1,82 @@
+---
+services:
+  ###########################################################################
+  # Backrest: Web UI and orchestrator for restic backup.                    #
+  ###########################################################################
+
+  backrest:
+    image: garethgeorge/backrest:v1
+    container_name: backrest
+    env_file: ../../.env
+    restart: unless-stopped
+    hostname: backrest
+    environment:
+      BACKREST_CONFIG: "/config/config.json" # Sets the config directory.
+      BACKREST_DATA: "/data" # Sets the data directory.
+      TMPDIR: "/tmp" # Sets the tmp directory.
+      TZ: "${TZ}" # Sets the timezone.
+      XDG_CACHE_HOME: "/cache" # Sets the cache directory.
+    expose:
+      - 9898/tcp # Backrest web interface; reverse proxied internally at backrest.${INTERNAL_DOMAIN}.
+    networks:
+      - external
+    volumes:
+      - appdata-data:/appdata-data # Local appdata directory.
+      - backrest-cache:/cache # Cache.
+      - backrest-config:/config # Config.
+      - backrest-data:/data # Data.
+      - backrest-hdd:/mnt/backrest-hdd # Local HDD repo.
+      - backrest-tmp:/tmp # Temp files.
+      - docker-volumes:/docker-volumes # Local Docker volumes.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 2 # Allow up to 2 vCPUs.
+          memory: 512M # Allow up to 512MB of RAM.
+    healthcheck:
+      test: "wget --spider http://127.0.0.1:9898"
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    name: external-network
+    external: true
+
+volumes:
+  backrest-data:
+    name: backrest-data-volume
+    external: true
+  backrest-cache:
+    name: backrest-cache-volume
+    external: true
+  backrest-config:
+    name: backrest-config-volume
+    external: true
+  backrest-tmp:
+    name: backrest-tmp-volume
+    external: true
+  appdata-data:
+    name: appdata-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}"
+      o: bind
+      type: none
+  docker-volumes:
+    name: docker-volume-bind
+    driver_opts:
+      device: "${DOCKER_VOLUMES_PATH}"
+      o: bind
+      type: none
+  backrest-hdd:
+    name: backrest-hdd-bind
+    driver_opts:
+      device: "${BACKREST_HDD_PATH}"
+      o: bind
+      type: none

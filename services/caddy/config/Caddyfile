@@ -128,6 +128,11 @@ autobrr.{$INTERNAL_DOMAIN} {
 	import security_headers
 }
 
+backrest.{$INTERNAL_DOMAIN} {
+	import internal_proxy backrest:9898
+	import security_headers
+}
+
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767
 	import security_headers

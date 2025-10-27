@@ -214,6 +214,12 @@ endpoints:
   # Infrastructure.                                                         #
   ###########################################################################
 
+  # Backrest.
+  - name: Backrest
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/backrest/json
+
   # Caddy.
   - name: Caddy
     <<: *defaults-container
