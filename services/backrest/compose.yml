@@ -37,8 +37,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow up to 2 vCPUs.
-          memory: 1G # Allow up to 512MB of RAM.
+          cpus: 4 # Allow up to 4 vCPUs.
+          memory: 4G # Allow up to 4G of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:9898"
     security_opt:
