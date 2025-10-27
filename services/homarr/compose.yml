@@ -116,6 +116,11 @@ services:
       homarr:
         condition: service_healthy # Require Homarr to be healthy.
         restart: true # Restart when Homarr restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Allow up to 64MB of RAM usage.
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
 
