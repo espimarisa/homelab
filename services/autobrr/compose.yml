@@ -27,7 +27,7 @@ services:
       AUTOBRR__LOG_MAX_SIZE: "10" # 10mb max.
       AUTOBRR__LOG_PATH: "/logs/autobrr.log" # Log at /logs.
       AUTOBRR__POSTGRES_DATABASE: "postgres" # Use default database.
-      AUTOBRR__POSTGRES_HOST: "172.19.2.30" # Connect to PostgreSQL.
+      AUTOBRR__POSTGRES_HOST: "172.19.3.30" # Connect to PostgreSQL.
       AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Connect with PostgreSQL password.
       AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
       AUTOBRR__POSTGRES_USER: "postgres" # Use default user.
