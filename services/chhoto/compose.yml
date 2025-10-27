@@ -22,6 +22,7 @@ services:
   ###########################################################################
 
   chhoto:
+    <<: *defaults
     image: ghcr.io/sintan1729/chhoto-url:6-alpine
     container_name: chhoto
     hostname: chhoto

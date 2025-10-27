@@ -17,6 +17,7 @@ services:
   ###########################################################################
 
   opencloud:
+    <<: *defaults
     image: opencloudeu/opencloud-rolling:3
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
