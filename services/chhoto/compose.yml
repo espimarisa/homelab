@@ -1,4 +1,21 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  networks:
+    - external
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  deploy:
+    resources:
+      limits:
+        cpus: 0.25 # Allow up to 0.25 vCPUs.
+        memory: 64M # Allow up to 64MB of RAM usage.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # Chhoto URL: URL shortener - https://github.com/sintan1729/chhoto-url    #
@@ -7,11 +24,7 @@ services:
   chhoto:
     image: ghcr.io/sintan1729/chhoto-url:6-alpine
     container_name: chhoto
-    env_file: ../../.env
     hostname: chhoto
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       api_key: "${CHHOTO_API_KEY}" # Sets the API key.
       db_url: "/db/urls.sqlite" # Use urls.sqlite.
@@ -21,21 +34,35 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     expose:
       - 4567/tcp # Web interface reverse proxied externally at ${CHHOTO_URL}.
-    networks:
-      - external
     volumes:
       - chhoto:/db # Database.
-    cap_drop:
-      - ALL # Drop all default capabilities.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 64M # Allow up to 64MB of RAM usage.
     healthcheck:
       test: "wget --spider http://127.0.0.1:4567 || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  chhoto-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: chhoto-anubis
+    hostname: chhoto-anubis
+    environment:
+      BIND: ":4567" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${CHHOTO_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${CHHOTO_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://chhoto:4567" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
 
 networks:
   external:

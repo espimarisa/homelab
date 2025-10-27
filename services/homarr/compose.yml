@@ -84,6 +84,40 @@ services:
           cpus: 1 # Allow using 1 vCPU.
           memory: 256M # Allow using 256M of RAM.
 
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  homarr-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: homarr-anubis
+    hostname: homarr-anubis
+    read_only: true # Prevent writing directly to the image.
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      BIND: ":7575" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${HOMARR_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${HOMARR_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://homarr:7575" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    networks:
+      - external
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      homarr:
+        condition: service_healthy # Require Homarr to be healthy.
+        restart: true # Restart when Homarr restarts.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+
 networks:
   external:
     external: true

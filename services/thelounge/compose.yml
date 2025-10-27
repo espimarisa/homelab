@@ -1,29 +1,34 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  environment:
+    TZ: "${TZ}" # Sets the timezone.
+  networks:
+    - external
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # The Lounge: IRC Client - https://thelounge.chat                         #
   ###########################################################################
 
   thelounge:
+    <<: *defaults
     image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
-    env_file: ../../.env
     hostname: thelounge
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
-    environment:
-      TZ: "${TZ}" # Sets the timezone.
     expose:
       - 9000/tcp # Web interface reverse proxied externally at ${THELOUNGE_URL}.
-    networks:
-      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - thelounge:/var/opt/thelounge # Configuration and data.
-    cap_drop:
-      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
@@ -31,8 +36,39 @@ services:
           memory: 256M # Allow up to 256MB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:9000 || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  thelounge-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: thelounge-anubis
+    hostname: thelounge-anubis
+    environment:
+      BIND: ":9000" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${THELOUNGE_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${THELOUNGE_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://thelounge:9000" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      thelounge:
+        condition: service_healthy # Require The Lounge to be healthy.
+        restart: true # Restart when The Lounge restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow using 0.25 vCPUs.
+          memory: 64MB # Allow using 64MB of RAM.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
 
 networks:
   external:

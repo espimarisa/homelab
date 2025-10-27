@@ -1,4 +1,16 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  networks:
+    - external
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # OpenCloud: Self-hosted cloud storage service - https://opencloud.eu/en  #
@@ -9,11 +21,7 @@ services:
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh # Enter in /bin/sh for CLI commands.
-    env_file: ../../.env
     hostname: opencloud
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       FRONTEND_ARCHIVER_MAX_SIZE: "10000000000" # Sets the max archive size.
       IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}" # Sets the admin password.
@@ -37,15 +45,11 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     expose:
       - 9200/tcp # Web interface reverse proxied externally at ${OPENCLOUD_URL}.
-    networks:
-      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - opencloud-config:/etc/opencloud # Configuration and data.
       - opencloud-data:/var/lib/opencloud # User data.
-    cap_drop:
-      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
@@ -53,8 +57,39 @@ services:
           memory: 4G # Allow up to 4G of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  opencloud-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: opencloud-anubis
+    hostname: opencloud-anubis
+    environment:
+      BIND: ":9200" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${OPENCLOUD_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${OPENCLOUD_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://opencloud:9200" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      opencloud:
+        condition: service_healthy # Require OpenCloud to be healthy.
+        restart: true # Restart when OpenCloud restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Allow up to 64MB of RAM.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
 
 networks:
   external:

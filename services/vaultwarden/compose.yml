@@ -92,6 +92,41 @@ services:
           cpus: 0.5 # Allow using 0.5 vCPUs.
           memory: 256M # Allow using 256M of RAM.
 
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  vaultwarden-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: vaultwarden-anubis
+    hostname: vaultwarden-anubis
+    networks:
+      - external
+    environment:
+      BIND: ":80" # Bind to the used container port..
+      ED25519_PRIVATE_KEY_HEX: "${VAULTWARDEN_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${VAULTWARDEN_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://vaultwarden:80" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      vaultwarden:
+        condition: service_healthy # Require Vaultwarden to be healthy.
+        restart: true # Restart when Vaultwarden restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow using 0.25 vCPUs.
+          memory: 64MB # Allow using 64MB of RAM.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+
 networks:
   external:
     external: true

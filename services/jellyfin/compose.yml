@@ -1,25 +1,32 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  networks:
+    - external
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # Jellyfin: Media Server - https://jellyfin.org                           #
   ###########################################################################
 
   jellyfin:
+    <<: *defaults
     image: ghcr.io/jellyfin/jellyfin:10
     container_name: jellyfin
-    env_file: ../../.env
     hostname: jellyfin
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128:ro
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures autodiscovery.
     expose:
       - 8096/tcp # Web interface reverse proxied externally at ${JELLYFIN_URL}.
-    networks:
-      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
@@ -27,8 +34,6 @@ services:
       - jellyfin-cache:/cache # Cache volume.
       - jellyfin-config:/config # Configuration and database.
       - media-library:/library:ro # Read-only media library mount.
-    cap_drop:
-      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
@@ -38,8 +43,39 @@ services:
       - "${RENDER_GID}" # Adds user to the host render group.
     healthcheck:
       test: "curl -f http://127.0.0.1:8096/health || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  jellyfin-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: jellyfin-anubis
+    hostname: jellyfin-anubis
+    environment:
+      BIND: ":8096" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${JELLYFIN_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${JELLYFIN_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://jellyfin:8096" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      jellyfin:
+        condition: service_healthy # Require Jellyfin to be healthy.
+        restart: true # Restart when Jellyfin restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow using 0.25 vCPUs.
+          memory: 64MB # Allow using 64MB of RAM.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
 
 networks:
   external:

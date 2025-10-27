@@ -71,6 +71,34 @@ services:
       - gatus-db-config:/postgres/etc # PostgreSQL config.
       - gatus-db-data:/postgres/var # PostgreSQL data.
 
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  gatus-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: gatus-anubis
+    hostname: gatus-anubis
+    environment:
+      BIND: ":8080" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${GATUS_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${GATUS_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://gatus:8080" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      gatus:
+        condition: service_healthy # Require Gatus to be healthy.
+        restart: true # Restart when Gatus restarts.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+
 networks:
   external:
     external: true

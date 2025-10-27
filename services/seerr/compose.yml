@@ -71,6 +71,42 @@ services:
           cpus: 0.5 # Allow up to 0.5 vCPUs.
           memory: 256M # Allow using 256MB of RAM.
 
+  ###########################################################################
+  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
+  ###########################################################################
+
+  seerr-anubis:
+    <<: *defaults
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: seerr-anubis
+    hostname: seerr-anubis
+    read_only: true
+    networks:
+      - external
+    environment:
+      BIND: ":5055" # Bind to the used container port..
+      ED25519_PRIVATE_KEY_HEX: "${SEERR_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${SEERR_URL}" # Sets allowed redirect URLs.
+      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+      SLOG_LEVEL: "DEBUG" # Log more things.
+      TARGET: "http://seerr:5055" # Target the container.
+      TZ: "${TZ}" # Sets the timezone.
+      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+    depends_on:
+      caddy:
+        condition: service_healthy # Require Caddy to be healthy.
+        restart: true # Restart when Caddy restarts.
+      seerr:
+        condition: service_healthy # Require Seerr to be healthy.
+        restart: true # Restart when Seerr restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow using 0.25 vCPUs.
+          memory: 64MB # Allow using 64MB of RAM.
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+
 networks:
   external:
     external: true

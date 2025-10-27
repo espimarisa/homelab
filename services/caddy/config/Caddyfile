@@ -27,13 +27,17 @@
 	}
 
 	reverse_proxy {args[0]} {
-		trusted_proxies private_ranges 100.64.0.0/10
+		header_up Connection {http.request.header.Connection}
+		header_up Upgrade {http.request.header.Upgrade}
+		header_up X-Http-Version {http.request.proto}
+		header_up X-Real-Ip {remote_host}
+		trusted_proxies private_ranges
 	}
 }
 
 # Snippet for internal-only reverse proxied services.
 (internal_proxy) {
-	@not_internal not remote_ip private_ranges 100.64.0.0/10
+	@not_internal not remote_ip private_ranges
 	abort @not_internal
 	encode zstd gzip
 	tls internal
@@ -47,7 +51,11 @@
 	}
 
 	reverse_proxy {args[0]} {
-		trusted_proxies private_ranges 100.64.0.0/10
+		header_up Connection {http.request.header.Connection}
+		header_up Upgrade {http.request.header.Upgrade}
+		header_up X-Http-Version {http.request.proto}
+		header_up X-Real-Ip {remote_host}
+		trusted_proxies private_ranges
 	}
 }
 
@@ -64,78 +72,50 @@
 ###########################################################################
 
 {$CHHOTO_URL} {
-	import external_proxy chhoto:4567
+	import external_proxy chhoto-anubis:4567
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy chhoto:4567
 }
 
 {$GATUS_URL} {
-	import external_proxy gatus:8080
+	import external_proxy gatus-anubis:8080
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy gatus:8080
 }
 
 {$HOMARR_URL} {
-	import external_proxy homarr:7575
+	import external_proxy homarr-anubis:7575
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy homarr:7575
 }
 
 {$JELLYFIN_URL} {
-	import external_proxy jellyfin:8096
+	import external_proxy jellyfin-anubis:8096
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy jellyfin:8096
 }
 
 {$OPENCLOUD_URL} {
-	import external_proxy opencloud:9200
+	import external_proxy opencloud-anubis:9200
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy opencloud:9200
 }
 
 {$PIWIGO_URL} {
-	import external_proxy piwigo:80
+	import external_proxy piwigo-anubis:80
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy piwigo:80
 }
 
 {$SEERR_URL} {
-	import external_proxy seerr:5055
+	import external_proxy seerr-anubis:5055
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy seerr:5055
 }
 
 {$THELOUNGE_URL} {
-	import external_proxy thelounge:9000
+	import external_proxy thelounge-anubis:9000
 	import security_headers
-
-	# Testing internal-only, keep commented.
-	# import internal_proxy thelounge:9000
 }
 
 {$VAULTWARDEN_URL} {
-	import external_proxy vaultwarden:80
+	import external_proxy vaultwarden-anubis:80
 
-	# Testing internal-only, keep commented.
-	# import internal_proxy vaultwarden:80
-
-	# Let Vaultwarden manage its own security headers; only keep HSTS.
 	header {
-		header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 	}
 }
 
@@ -145,50 +125,62 @@
 
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474
+	import security_headers
 }
 
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767
+	import security_headers
 }
 
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
+	import security_headers
 }
 
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
+	import security_headers
 }
 
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
+	import security_headers
 }
 
 prowlarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:9696
+	import security_headers
 }
 
 qbittorrent.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:8080
+	import security_headers
 }
 
 qui.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7476
+	import security_headers
 }
 
 seerr.{$INTERNAL_DOMAIN} {
 	import internal_proxy seerr:5055
+	import security_headers
 }
 
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
+	import security_headers
 }
 
 slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
+	import security_headers
 }
 
 sonarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy sonarr:8989
+	import security_headers
 }
 
 ###########################################################################
