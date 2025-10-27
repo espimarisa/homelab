@@ -1,6 +1,8 @@
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
   cap_drop:
     - ALL # Drop all default capabilities.
   security_opt:
@@ -16,7 +18,6 @@ services:
     image: ghcr.io/fallenbagel/jellyseerr:2
     container_name: seerr
     hostname: seerr
-    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       DB_TYPE: "postgres" # Use PostgreSQL.
       DB_HOST: "seerr-db" # Connect to seerr-db.

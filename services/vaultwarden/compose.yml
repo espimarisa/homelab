@@ -1,16 +1,23 @@
 ---
+x-defaults: &defaults
+  restart: unless-stopped
+  read_only: true # Prevent writing to the image directly.
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # Vaultwarden: BW server - https://github.com/dani-garcia/vaultwarden     #
   ###########################################################################
 
   vaultwarden:
+    <<: *defaults
     image: ghcr.io/dani-garcia/vaultwarden:latest-alpine
     container_name: vaultwarden
     hostname: vaultwarden
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       ADMIN_RATELIMIT_MAX_BURST: "3" # Configures admin burst ratelimit settings.
       ADMIN_RATELIMIT_SECONDS: "300" # Configures how long to ratelimit the admin account for.
@@ -49,8 +56,6 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - vaultwarden:/data # Configuration and data.
-    cap_drop:
-      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
@@ -62,15 +67,12 @@ services:
         restart: true # Restart when vaultwarden-db is restarted.
     healthcheck:
       test: "wget --spider http://127.0.0.1:80/alive || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
   vaultwarden-db:
+    <<: *defaults
     image: ghcr.io/11notes/postgres:17
     container_name: vaultwarden-db
     hostname: vaultwarden-db
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the database password.
@@ -84,15 +86,11 @@ services:
       - vaultwarden-db-backups:/postgres/backup # PostgreSQL backups.
       - vaultwarden-db-config:/postgres/etc # PostgreSQL config.
       - vaultwarden-db-data:/postgres/var # PostgreSQL data.
-    cap_drop:
-      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using 1 vCPU.
+          cpus: 0.5 # Allow using 0.5 vCPUs.
           memory: 256M # Allow using 256M of RAM.
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:

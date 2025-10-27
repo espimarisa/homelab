@@ -7,6 +7,7 @@ services:
   chhoto:
     image: ghcr.io/sintan1729/chhoto-url:6-alpine
     container_name: chhoto
+    env_file: ../../.env
     hostname: chhoto
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
@@ -32,7 +33,7 @@ services:
           cpus: 0.25 # Allow up to 0.25 vCPUs.
           memory: 64M # Allow up to 64MB of RAM usage.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:4567"
+      test: "wget --spider http://127.0.0.1:4567 || exit 1"
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

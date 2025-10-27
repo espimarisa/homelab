@@ -1,24 +1,32 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true # Prevent privilege escalation.
+  cap_drop:
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+
 services:
   ###########################################################################
   # Homarr: Dashboard and homepage - https://homarr.dev/                    #
   ###########################################################################
 
   homarr:
+    <<: *defaults
     image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
     hostname: homarr
-    restart: unless-stopped
     environment:
+      DB_URL: "postgres://postgres:${HOMARR_DB_PASSWORD}@homarr-db:5432/postgres" # PostgreSQL connection URL.
       DB_DIALECT: "postgresql" # Use PostgreSQL.
       DB_DRIVER: "node-postgres" # Use node-postgres.
-      DB_HOST: "homarr-db" # Sets PostgreSQL host.
-      DB_NAME: "postgres" # Sets PostgreSQL database name.
-      DB_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets PostgreSQL password.
-      DB_PORT: "5432" # Sets PostgreSQL port.
-      DB_USER: "postgres" # Sets PostgreSQL username.
-      DOCKER_HOSTNAMES: "socket-proxy" # Connect to the socket proxy.
-      DOCKER_PORTS: "2375" # Connect to port 2375.
       PGID: ${PGID} # Group ID to run as.
       PUID: ${PUID} # User ID to run as.
       SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}" # Encryption key to use for sessions.
@@ -31,14 +39,7 @@ services:
       - internal
     volumes:
       - homarr:/appdata # Configuration and data.
-    cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SETPCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
+      - socket-proxy:/var/run:ro # Socket proxy.
     depends_on:
       homarr-db:
         condition: service_healthy # Require homarr-db to be healthy before connecting.
@@ -53,15 +54,13 @@ services:
           memory: 1G # Allow using 1G of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:7575 || exit 1"
-    security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
 
   homarr-db:
+    <<: *defaults
     image: ghcr.io/11notes/postgres:17
     container_name: homarr-db
     hostname: homarr-db
     read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
       POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets the database password.
@@ -84,8 +83,6 @@ services:
         limits:
           cpus: 1 # Allow using 1 vCPU.
           memory: 256M # Allow using 256M of RAM.
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:
@@ -111,3 +108,6 @@ volumes:
   homarr-db-backups:
     name: homarr-db-backups-volume
     external: true
+  socket-proxy:
+    external: true
+    name: socket-proxy-volume

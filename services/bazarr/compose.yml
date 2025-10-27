@@ -1,14 +1,28 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  restart: unless-stopped
+  cap_drop:
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # Bazarr: Subtitle manager - https://wiki.bazarr.media                    #
   ###########################################################################
 
   bazarr:
+    <<: *defaults
     image: ghcr.io/hotio/bazarr:release
     container_name: bazarr
     hostname: bazarr
-    restart: unless-stopped
     environment:
       PGID: "${PGID}" # Group ID to run as.
       POSTGRES_URL: "postgres://postgres:${BAZARR_DB_PASSWORD}@bazarr-db:5432/postgres" # PostgreSQL connection URL.
@@ -23,14 +37,6 @@ services:
     volumes:
       - media-library:/library:rw # Root media library directory.
       - bazarr:/config:rw # Configuration and data.
-    cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SETPCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
     depends_on:
       bazarr-db:
         condition: service_healthy # Wait for bazarr-db to be healthy before starting.
@@ -42,15 +48,13 @@ services:
           memory: 1G # Allow using 2GB.
     healthcheck:
       test: "curl -f http://127.0.0.1:6767/api/system/health?apikey=${BAZARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
   bazarr-db:
+    <<: *defaults
     image: ghcr.io/11notes/postgres:17
     container_name: bazarr-db
     hostname: bazarr-db
     read_only: true
-    restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
       POSTGRES_PASSWORD: "${BAZARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
@@ -73,8 +77,6 @@ services:
         limits:
           cpus: 0.5 # Allow using 0.5 vCPUs.
           memory: 512M # Allow using 512MB.
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:

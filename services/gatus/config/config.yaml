@@ -266,12 +266,6 @@ endpoints:
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/gatus/json
 
-  # Watchtower.
-  - name: Watchtower
-    <<: *defaults-container
-    group: Monitoring
-    url: ${SOCKET_PROXY_URL}/watchtower/json
-
   ###########################################################################
   # Services.                                                               #
   ###########################################################################

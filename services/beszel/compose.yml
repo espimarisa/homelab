@@ -1,9 +1,10 @@
 ---
 # Default container options.
 x-defaults: &defaults
+  env_file: ../../.env
   read_only: true # Prevent writing directly to the image.
-  user: "${PUID}:${PGID}" # Run as non-root user.
   restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
   cap_drop:
     - ALL # Drop all default capabilities.
   deploy:
@@ -52,7 +53,6 @@ services:
     container_name: beszel-agent
     hostname: beszel-agent
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       HUB_URL: "http://beszel:8090" # Listen to the beszel container.
       KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
       LISTEN: "0.0.0.0:45876" # Bind to 0.0.0.0.
@@ -66,6 +66,7 @@ services:
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive, change to be your path.
       - beszel-agent:/var/lib/beszel-agent # Besel agent.
       - beszel-socket:/beszel_socket # Beszel socket.
+      - socket-proxy:/var/run:ro # Socket proxy volume.
     depends_on:
       beszel:
         condition: service_healthy # Wait for Beszel to be healthy before connecting.
@@ -95,4 +96,7 @@ volumes:
     external: true
   beszel-socket:
     name: beszel-socket-volume
+    external: true
+  socket-proxy:
+    name: socket-proxy-volume
     external: true

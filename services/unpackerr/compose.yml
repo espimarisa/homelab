@@ -7,6 +7,7 @@ services:
   unpackerr:
     image: ghcr.io/hotio/unpackerr:release
     container_name: unpackerr
+    env_file: ../../.env
     hostname: unpackerr
     restart: unless-stopped
     environment:

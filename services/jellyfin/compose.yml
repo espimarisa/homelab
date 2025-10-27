@@ -7,6 +7,7 @@ services:
   jellyfin:
     image: ghcr.io/jellyfin/jellyfin:10
     container_name: jellyfin
+    env_file: ../../.env
     hostname: jellyfin
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped

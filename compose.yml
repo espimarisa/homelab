@@ -26,4 +26,3 @@ include:
   - ./services/thelounge/compose.yml
   - ./services/unpackerr/compose.yml
   - ./services/vaultwarden/compose.yml
-  - ./services/watchtower/compose.yml

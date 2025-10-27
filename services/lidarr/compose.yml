@@ -1,14 +1,28 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  restart: unless-stopped
+  cap_drop:
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
   ###########################################################################
 
   lidarr:
+    <<: *defaults
     image: ghcr.io/hotio/lidarr:pr-plugins
     container_name: lidarr
     hostname: lidarr
-    restart: unless-stopped
     environment:
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
@@ -26,14 +40,6 @@ services:
       - downloads:/downloads:rw # Root downloads directory.
       - media-library:/library:rw # Root media library directory.
       - lidarr:/config:rw # Configuration and data.
-    cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SETPCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
     depends_on:
       lidarr-db:
         condition: service_healthy # Wait for lidarr-db to be healthy before starting.
@@ -45,15 +51,13 @@ services:
           memory: 2G # Allow using 2GB.
     healthcheck:
       test: "curl -f http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
   lidarr-db:
+    <<: *defaults
     image: ghcr.io/11notes/postgres:17
     container_name: lidarr-db
     hostname: lidarr-db
     read_only: true
-    restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Run every night at 6AM.
       POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
@@ -76,8 +80,6 @@ services:
         limits:
           cpus: 0.5 # Allow using 0.5 vCPUs.
           memory: 512M # Allow using 512MB.
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:

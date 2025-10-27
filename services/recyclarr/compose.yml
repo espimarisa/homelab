@@ -8,8 +8,9 @@ services:
     image: ghcr.io/recyclarr/recyclarr:7
     container_name: recyclarr
     env_file: ../../.env
-    user: "${PUID}:${PGID}" # Run as non-root user.
     read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       TZ: "${TZ}" # Sets the timezone.
       RADARR_API_KEY: "${RADARR_API_KEY}" # Radarr API key.

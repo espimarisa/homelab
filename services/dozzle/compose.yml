@@ -6,12 +6,12 @@ services:
   dozzle:
     image: ghcr.io/amir20/dozzle:v8
     container_name: dozzle
+    env_file: ../../.env
     hostname: dozzle
     read_only: true # Prevent writing to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       DOZZLE_ENABLE_ACTIONS: "true" # Enable actions.
       DOZZLE_ENABLE_SHELL: "true" # Enable shell.
     expose:
@@ -21,6 +21,7 @@ services:
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Timezone mount.
+      - socket-proxy:/var/run:ro # Socket proxy.
       - dozzle:/data # Configuration and data.
     cap_drop:
       - ALL # Drop all default capabilities.
@@ -50,3 +51,6 @@ volumes:
   dozzle:
     name: dozzle-volume
     external: true
+  socket-proxy:
+    external: true
+    name: socket-proxy-volume

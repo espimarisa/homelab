@@ -9,6 +9,7 @@ services:
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh # Enter in /bin/sh for CLI commands.
+    env_file: ../../.env
     hostname: opencloud
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped

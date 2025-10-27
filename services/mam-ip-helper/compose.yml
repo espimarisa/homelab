@@ -7,7 +7,8 @@ services:
   mam-ip-helper:
     image: tyzen9/myanonamouse-ip-helper:1.0.0
     container_name: mam-ip-helper
-    network_mode: service:gluetun
+    env_file: ../../.env
+    network_mode: service:gluetun # Route all traffic through Gluetun.
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.

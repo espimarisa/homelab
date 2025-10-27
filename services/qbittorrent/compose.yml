@@ -1,9 +1,11 @@
 ---
 # Default container settings.
 x-defaults: &defaults
-  restart: unless-stopped
-  read_only: true # Prevent writing directly to the image.
+  env_file: ../../.env
   network_mode: service:gluetun # Route all traffic through Gluetun.
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
   environment:
     TZ: "${TZ}" # Sets the timezone.
   cap_add:
@@ -45,7 +47,6 @@ services:
     <<: *defaults
     image: ghcr.io/autobrr/qui:latest
     container_name: qui
-    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       QUI__LOG_LEVEL: "info" # Log at the info level.
       QUI__LOG_MAX_SIZE: "10" # Rotate 10mb per file.

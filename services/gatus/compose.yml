@@ -1,17 +1,31 @@
 ---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  environment:
+    TZ: "${TZ}" # Sets the timezone.
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  deploy:
+    resources:
+      limits:
+        cpus: 0.5 # Allow up to 0.5 vCPUs.
+        memory: 256M # Allow up to 256MB of RAM usage.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
 services:
   ###########################################################################
   # Gatus: Status and uptime monitoring - https://gatus.io                  #
   ###########################################################################
 
   gatus:
+    <<: *defaults
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
-    env_file: ../../.env
     hostname: gatus
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.
       GATUS_DESCRIPTION: "${GATUS_DESCRIPTION}" # Sets the page description.
@@ -28,8 +42,6 @@ services:
       - internal
     volumes:
       - ./config:/config:ro # Host config mount.
-    cap_drop:
-      - ALL # Drop all default capabilities.
     depends_on:
       gatus-db:
         condition: service_healthy # Require gatus-db to be healthy before connecting.
@@ -37,20 +49,12 @@ services:
       socket-proxy:
         condition: service_healthy # Require socket-proxy to be healthy before connecting.
         restart: true # Restart when socket-proxy is restarted.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 128M # Allow up to 128MB of RAM usage.
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
   gatus-db:
+    <<: *defaults
     image: ghcr.io/11notes/postgres:17
     container_name: gatus-db
     hostname: gatus-db
-    read_only: true # Prevent writing directly to the image.
-    restart: unless-stopped
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup every day at 6AM.
       POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Configures the PostgreSQL password.
@@ -66,15 +70,6 @@ services:
       - gatus-db-backups:/postgres/backup # PostgreSQL backups.
       - gatus-db-config:/postgres/etc # PostgreSQL config.
       - gatus-db-data:/postgres/var # PostgreSQL data.
-    cap_drop:
-      - ALL # Drop all default capabilities.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5 # Allow up to 0.5 vCPUs.
-          memory: 256M # Allow up to 256MB of RAM usage.
-    security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:

@@ -6,6 +6,7 @@ x-defaults-env: &defaults-env
   UMASK: "${UMASK}" # Umask to apply to newly created files.
 
 x-defaults: &defaults
+  env_file: ../../.env
   restart: unless-stopped
   environment: *defaults-env
   cap_drop:
