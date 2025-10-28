@@ -59,39 +59,6 @@ services:
     healthcheck:
       test: "wget --spider http://127.0.0.1:9200 || exit 1"
 
-  ###########################################################################
-  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
-  ###########################################################################
-
-  opencloud-anubis:
-    <<: *defaults
-    image: ghcr.io/techarohq/anubis:latest
-    container_name: opencloud-anubis
-    hostname: opencloud-anubis
-    environment:
-      BIND: ":9200" # Bind to the used container port.
-      ED25519_PRIVATE_KEY_HEX: "${OPENCLOUD_ANUBIS_KEY}" # Sets the private key.
-      REDIRECT_DOMAINS: "*.${OPENCLOUD_URL}" # Sets allowed redirect URLs.
-      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
-      SLOG_LEVEL: "DEBUG" # Log more things.
-      TARGET: "http://opencloud:9200" # Target the container.
-      TZ: "${TZ}" # Sets the timezone.
-      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
-    depends_on:
-      caddy:
-        condition: service_healthy # Require Caddy to be healthy.
-        restart: true # Restart when Caddy restarts.
-      opencloud:
-        condition: service_healthy # Require OpenCloud to be healthy.
-        restart: true # Restart when OpenCloud restarts.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 64M # Allow up to 64MB of RAM.
-    healthcheck:
-      test: ["CMD", "anubis", "--healthcheck"]
-
 networks:
   external:
     external: true

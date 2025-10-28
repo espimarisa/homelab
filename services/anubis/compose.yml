@@ -1,0 +1,186 @@
+---
+# Default depends-on options.
+x-defaults-depends: &defaults-depends
+  caddy:
+    condition: service_healthy # Require Caddy to be healthy.
+    restart: true # Restart when Caddy restarts.
+
+# Default environment variables.
+x-defaults-env: &defaults-env
+  POLICY_FNAME: "/etc/anubis/policy.yaml"
+  SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
+  SLOG_LEVEL: "DEBUG" # Log more things.
+  TZ: "${TZ}" # Sets the timezone.
+  WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
+
+# Default options.
+x-defaults: &defaults
+  image: ghcr.io/techarohq/anubis:latest
+  env_file: ../../.env
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  user: "${PUID}:${PGID}" # Run as non-root user.
+  networks:
+    - external
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  deploy:
+    resources:
+      limits:
+        cpus: 0.25 # Allow up to 0.25 vCPUs.
+        memory: 128M # Allow up to 128MB of RAM.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+  volumes:
+    - ./config/anubis-policy.yaml:/etc/anubis/policy.yaml:ro
+  healthcheck:
+    test: ["CMD", "anubis", "--healthcheck"]
+
+services:
+  ###########################################################################
+  # Anubis: Anti-bot/web scraper - https://anubis.techaro.lol               #
+  ###########################################################################
+
+  chhoto-anubis:
+    <<: *defaults
+    container_name: chhoto-anubis
+    hostname: chhoto-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":4567" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${CHHOTO_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${CHHOTO_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://chhoto:4567" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      chhoto:
+        condition: service_healthy # Require Chhoto to be started.
+        restart: true # Restart when Chhoto restarts.
+
+  gatus-anubis:
+    <<: *defaults
+    container_name: gatus-anubis
+    hostname: gatus-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":8080" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${GATUS_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${GATUS_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://gatus:8080" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      gatus:
+        condition: service_started # Require Gatus to be started.
+        restart: true # Restart when Gatus restarts.
+
+  homarr-anubis:
+    <<: *defaults
+    container_name: homarr-anubis
+    hostname: homarr-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":7575" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${HOMARR_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${HOMARR_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://homarr:7575" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      homarr:
+        condition: service_healthy # Require Homarr to be healthy.
+        restart: true # Restart when Homarr restarts.
+
+  jellyfin-anubis:
+    <<: *defaults
+    container_name: jellyfin-anubis
+    hostname: jellyfin-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":8096" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${JELLYFIN_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${JELLYFIN_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://jellyfin:8096" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      jellyfin:
+        condition: service_healthy # Require Jellyfin to be healthy.
+        restart: true # Restart when Jellyfin restarts.
+
+  opencloud-anubis:
+    <<: *defaults
+    container_name: opencloud-anubis
+    hostname: opencloud-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":9200" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${OPENCLOUD_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${OPENCLOUD_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://opencloud:9200" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      opencloud:
+        condition: service_healthy # Require OpenCloud to be healthy.
+        restart: true # Restart when OpenCloud restarts.
+
+  piwigo-anubis:
+    <<: *defaults
+    container_name: piwigo-anubis
+    hostname: piwigo-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":80" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${PIWIGO_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${PIWIGO_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://piwigo:80" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      piwigo:
+        condition: service_healthy # Require Piwigo to be healthy.
+        restart: true # Restart when Piwigo restarts.
+
+  seerr-anubis:
+    <<: *defaults
+    container_name: seerr-anubis
+    hostname: seerr-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":5055" # Bind to the used container port..
+      ED25519_PRIVATE_KEY_HEX: "${SEERR_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${SEERR_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://seerr:5055" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      seerr:
+        condition: service_healthy # Require Seerr to be healthy.
+        restart: true # Restart when Seerr restarts.
+
+  thelounge-anubis:
+    <<: *defaults
+    container_name: thelounge-anubis
+    hostname: thelounge-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":9000" # Bind to the used container port.
+      ED25519_PRIVATE_KEY_HEX: "${THELOUNGE_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${THELOUNGE_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://thelounge:9000" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      thelounge:
+        condition: service_healthy # Require The Lounge to be healthy.
+        restart: true # Restart when The Lounge restarts.
+
+  vaultwarden-anubis:
+    <<: *defaults
+    container_name: vaultwarden-anubis
+    hostname: vaultwarden-anubis
+    environment:
+      <<: *defaults-env
+      BIND: ":80" # Bind to the used container port..
+      ED25519_PRIVATE_KEY_HEX: "${VAULTWARDEN_ANUBIS_KEY}" # Sets the private key.
+      REDIRECT_DOMAINS: "*.${VAULTWARDEN_URL}" # Sets allowed redirect URLs.
+      TARGET: "http://vaultwarden:80" # Target the container.
+    depends_on:
+      <<: *defaults-depends
+      vaultwarden:
+        condition: service_healthy # Require Vaultwarden to be healthy.
+        restart: true # Restart when Vaultwarden restarts.

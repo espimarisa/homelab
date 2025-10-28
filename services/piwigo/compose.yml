@@ -75,45 +75,6 @@ services:
     healthcheck:
       test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1"]
 
-  ###########################################################################
-  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
-  ###########################################################################
-
-  piwigo-anubis:
-    <<: *defaults
-    image: ghcr.io/techarohq/anubis:latest
-    container_name: piwigo-anubis
-    hostname: piwigo-anubis
-    read_only: true # Prevent writing directly to the image.
-    user: "${PUID}:${PGID}" # Run as non-root user.
-    environment:
-      BIND: ":80" # Bind to the used container port.
-      ED25519_PRIVATE_KEY_HEX: "${PIWIGO_ANUBIS_KEY}" # Sets the private key.
-      REDIRECT_DOMAINS: "*.${PIWIGO_URL}" # Sets allowed redirect URLs.
-      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
-      SLOG_LEVEL: "DEBUG" # Log more things.
-      TARGET: "http://piwigo:80" # Target the container.
-      TZ: "${TZ}" # Sets the timezone.
-      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
-    networks:
-      - external
-    cap_drop:
-      - ALL # Drop all default capabilities.
-    depends_on:
-      caddy:
-        condition: service_healthy # Require Caddy to be healthy.
-        restart: true # Restart when Caddy restarts.
-      piwigo:
-        condition: service_healthy # Require Piwigo to be healthy.
-        restart: true # Restart when Piwigo restarts.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 64M # Allow up to 64MB of RAM.
-    healthcheck:
-      test: ["CMD", "anubis", "--healthcheck"]
-
 networks:
   external:
     external: true

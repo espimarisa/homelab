@@ -1,5 +1,6 @@
 ---
 include:
+  - ./services/anubis/compose.yml
   - ./services/autobrr/compose.yml
   - ./services/backrest/compose.yml
   - ./services/bazarr/compose.yml

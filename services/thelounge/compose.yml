@@ -37,39 +37,6 @@ services:
     healthcheck:
       test: "wget --spider http://127.0.0.1:9000 || exit 1"
 
-  ###########################################################################
-  # Anubis: Anti-bot/scraper tool - https://anubis.techaro.lol              #
-  ###########################################################################
-
-  thelounge-anubis:
-    <<: *defaults
-    image: ghcr.io/techarohq/anubis:latest
-    container_name: thelounge-anubis
-    hostname: thelounge-anubis
-    environment:
-      BIND: ":9000" # Bind to the used container port.
-      ED25519_PRIVATE_KEY_HEX: "${THELOUNGE_ANUBIS_KEY}" # Sets the private key.
-      REDIRECT_DOMAINS: "*.${THELOUNGE_URL}" # Sets allowed redirect URLs.
-      SERVE_ROBOTS_TXT: "true" # Serve a default robots.txt.
-      SLOG_LEVEL: "DEBUG" # Log more things.
-      TARGET: "http://thelounge:9000" # Target the container.
-      TZ: "${TZ}" # Sets the timezone.
-      WEBMASTER_EMAIL: "${ACME_EMAIL}" # Sets the webmaster email.
-    depends_on:
-      caddy:
-        condition: service_healthy # Require Caddy to be healthy.
-        restart: true # Restart when Caddy restarts.
-      thelounge:
-        condition: service_healthy # Require The Lounge to be healthy.
-        restart: true # Restart when The Lounge restarts.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.25 # Allow using 0.25 vCPUs.
-          memory: 64MB # Allow using 64MB of RAM.
-    healthcheck:
-      test: ["CMD", "anubis", "--healthcheck"]
-
 networks:
   external:
     external: true
