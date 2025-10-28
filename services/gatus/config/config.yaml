@@ -248,6 +248,18 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/byparr/json
 
+  # Cleanuparr.
+  - name: Cleanuparr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/cleanuparr/json
+
+  # Huntarr.
+  - name: Huntarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/huntarr/json
+
   # Lidarr.
   - name: Lidarr
     <<: *defaults-container
@@ -260,17 +272,17 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/mam-ip-helper/json
 
+  # Profilarr.
+  - name: Profilarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/profilarr/json
+
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/prowlarr/json
-
-  # Recyclarr.
-  - name: Recyclarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/recyclarr/json
 
   # Radarr.
   - name: Radarr

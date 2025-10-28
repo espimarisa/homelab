@@ -143,13 +143,28 @@ beszel.{$INTERNAL_DOMAIN} {
 	import security_headers
 }
 
+cleanuparr.{$INTERNAL_DOMAIN} {
+	import internal_proxy cleanuparr:11011
+	import security_headers
+}
+
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
 	import security_headers
 }
 
+huntarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy huntarr:9705
+	import security_headers
+}
+
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
+	import security_headers
+}
+
+profilarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy profilarr:6868
 	import security_headers
 }
 

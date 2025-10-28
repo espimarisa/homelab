@@ -1,0 +1,47 @@
+---
+services:
+  ###########################################################################
+  # Huntarr: Automated media library upgrade utility.                       #
+  ###########################################################################
+
+  huntarr:
+    image: ghcr.io/plexguide/huntarr:8.2.10
+    container_name: huntarr
+    env_file: ../../.env
+    hostname: huntarr
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: ${PUID}:${PGID} # Run as non-root user.
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+    expose:
+      - 9705/tcp # Web interface reverse proxied internally at huntarr.${INTERNAL_DOMAIN}.
+    networks:
+      external:
+      gluetun:
+        ipv4_address: 172.19.3.5
+        ipv6_address: fdad:21b2:bca9:3::25
+    volumes:
+      - huntarr:/config # Configuration and data.
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow up to 1 vCPU.
+          memory: 1G # Allow up to 1GB of RAM.
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+
+volumes:
+  huntarr:
+    external: true
+    name: huntarr-volume

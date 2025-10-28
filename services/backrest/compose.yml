@@ -69,7 +69,7 @@ volumes:
       o: bind
       type: none
   docker-volumes:
-    name: docker-volume-bind
+    name: docker-volumes-bind
     driver_opts:
       device: "${DOCKER_VOLUMES_PATH}"
       o: bind

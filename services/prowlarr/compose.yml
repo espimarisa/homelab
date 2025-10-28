@@ -56,8 +56,8 @@ services:
     networks:
       internal:
       gluetun:
-        ipv4_address: 172.19.3.31
-        ipv6_address: fdad:21b2:bca9:3::31
+        ipv4_address: 172.19.3.23
+        ipv6_address: fdad:21b2:bca9:3::23
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
