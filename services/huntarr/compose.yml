@@ -9,7 +9,6 @@ services:
     container_name: huntarr
     env_file: ../../.env
     hostname: huntarr
-    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: ${PUID}:${PGID} # Run as non-root user.
     environment:
