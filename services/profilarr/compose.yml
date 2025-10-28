@@ -39,7 +39,7 @@ services:
           cpus: 0.5 # Allow up to 0.5 vCPUs.
           memory: 512M # Allow up to 512MB of RAM.
     healthcheck:
-      test: "curl -f http://127.0.0.1:6868 || exit 1"
+      test: "wget --spider http://127.0.0.1:6868 || exit 1"
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 
