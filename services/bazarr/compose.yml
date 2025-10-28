@@ -24,11 +24,16 @@ services:
     container_name: bazarr
     hostname: bazarr
     environment:
-      PGID: "${PGID}" # Group ID to run as.
-      POSTGRES_URL: "postgres://postgres:${BAZARR_DB_PASSWORD}@bazarr-db:5432/postgres" # PostgreSQL connection URL.
-      PUID: "${PUID}" # User ID to run as.
-      TZ: "${TZ}" # Sets the timezone.
-      UMASK: "${UMASK}" # Umask to apply to newly created files.
+      PGID: "${PGID}"
+      POSTGRES_DATABASE: "postgres"
+      POSTGRES_ENABLED: "true"
+      POSTGRES_HOST: "bazarr-db"
+      POSTGRES_PASSWORD: "${BAZARR_DB_PASSWORD}"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: "postgres"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
       - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
     networks:
