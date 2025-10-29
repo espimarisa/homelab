@@ -110,7 +110,7 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 	"manga"      # Manga library.
 	"movies"     # Movies library.
 	"music"      # Music library.
-	"tv"         # TV library.
+	"tv-shows"   # TV library.
 )
 
 # Docker volumes to create.
