@@ -29,10 +29,10 @@ services:
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
     volumes:
-      - downloads:/downloads # Root downloads path.
-      - dl-cache:/dl-cache # Root downloads cache path.
-      - qbittorrent-config:/qbittorrent/etc # Configuration path.
-      - qbittorrent-data:/qbittorrent/var # Data path.
+      - downloads:/downloads:rw # Root downloads path.
+      - dl-cache-torrents:/dl-cache:rw # Root downloads cache path.
+      - qbittorrent-config:/qbittorrent/etc:rw # Configuration path.
+      - qbittorrent-data:/qbittorrent/var:rw # Data path.
     deploy:
       resources:
         limits:
@@ -55,8 +55,8 @@ services:
       QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}" # Session secret to use.
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - qui-config:/config # qui config and database.
-      - qui-logs:/config/logs # qui logs.
+      - qui-config:/config:rw # qui config and database.
+      - qui-logs:/config/logs:rw # qui logs.
     depends_on:
       gluetun:
         condition: service_healthy # Require Gluetun to be healthy before connecting.
@@ -83,10 +83,10 @@ volumes:
   qui-logs:
     name: qui-logs-volume
     external: true
-  dl-cache:
-    name: dl-cache-bind
+  dl-cache-torrents:
+    name: dl-cache-torrents-bind
     driver_opts:
-      device: "${DOWNLOADS_CACHE_PATH}"
+      device: "${DOWNLOADS_CACHE_PATH}/torrents-incomplete"
       o: bind
       type: none
   downloads:
