@@ -29,8 +29,8 @@ services:
       APP_URL: "https://beszel.${INTERNAL_DOMAIN}" # Configures the URL to bind to.
       USER_EMAIL: "${BESZEL_EMAIL}" # Admin account email to use.
       USER_PASSWORD: "${BESZEL_PASSWORD}" # Admin account password to use.
-    expose:
-      - 127.0.0.1:8090/tcp # Web interface reverse proxied internally at beszel.${INTERNAL_DOMAIN}.
+    ports:
+      - 127.0.0.1:8090:8090/tcp # Web interface reverse proxied internally at beszel.${INTERNAL_DOMAIN}.
     networks:
       - external
       - internal
