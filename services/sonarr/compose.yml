@@ -44,8 +44,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using 2 vCPUs.
-          memory: 2G # Allow using 2G.
+          cpus: 4 # Allow using 4 vCPUs.
+          memory: 4G # Allow using 2GB of RAM.
     healthcheck:
       test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
 
