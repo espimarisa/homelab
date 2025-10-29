@@ -88,12 +88,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/lidarr-db/json
 
-  # Piwigo DB.
-  - name: Piwigo - MariaDB
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/piwigo-db/json
-
   # Prowlarr DB.
   - name: Prowlarr - PostgreSQL
     <<: *defaults-container
@@ -311,12 +305,6 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
-
-  # Piwigo.
-  - name: Piwigo
-    <<: *defaults-http
-    group: Services
-    url: https://${PIWIGO_URL}
 
   # The Lounge.
   - name: The Lounge

@@ -73,9 +73,6 @@ readonly APPDATA_DIRECTORIES=(
 	"homarr/data"            # Homarr data.
 	"opencloud/config"       # OpenCloud configuration.
 	"opencloud/data"         # OpenCloud data.
-	"piwigo/config"          # Piwigo database.
-	"piwigo/db"              # Piwigo database.
-	"piwigo/gallery"         # Piwigo uploaded files.
 	"thelounge/data"         # The Lounge data.
 	"vaultwarden/data"       # Vaultwarden configuration.
 	"vaultwarden/db/backups" # Vaultwarden database backups.

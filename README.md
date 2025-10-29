@@ -21,7 +21,6 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Lidarr
 -   mam-ip-helper
 -   OpenCloud
--   Piwigo
 -   Profilarr
 -   Prowlarr
 -   qBittorrent

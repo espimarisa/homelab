@@ -17,7 +17,6 @@ include:
   - ./services/lidarr/compose.yml
   - ./services/mam-ip-helper/compose.yml
   - ./services/opencloud/compose.yml
-  - ./services/piwigo/compose.yml
   - ./services/profilarr/compose.yml
   - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
