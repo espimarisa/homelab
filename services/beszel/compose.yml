@@ -54,7 +54,7 @@ services:
     hostname: beszel-agent
     network_mode: host # Required for gathering network data.
     environment:
-      HUB_URL: "http://beszel:8090" # Listen to the beszel container.
+      HUB_URL: "http://127.0.0.1:8090" # Listen to the beszel container.
       KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
       LISTEN: "0.0.0.0:45876" # Bind to 0.0.0.0.
       TOKEN: "${BESZEL_TOKEN}" # Beszel token to authenticate with, configured in the hub post-deployment.
