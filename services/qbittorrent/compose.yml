@@ -36,8 +36,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 8 # Allow up to 8 vCPUs.
-          memory: 8G # Allow up to 8GB of RAM usage.
+          cpus: 6 # Allow up to 8 vCPUs.
+          memory: 4G # Allow up to 8GB of RAM usage.
 
   ###########################################################################
   # qui: Alternate web UI for qBittorrent - https://github.com/autobrr/qui  #

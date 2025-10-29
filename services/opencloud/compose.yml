@@ -55,7 +55,7 @@ services:
       resources:
         limits:
           cpus: 4 # Allow up to 4 vCPUs.
-          memory: 8G # Allow up to 8G of RAM.
+          memory: 4G # Allow up to 4G of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
 
