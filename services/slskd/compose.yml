@@ -29,7 +29,7 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     volumes:
       - slskd:/app:rw # Configuration and database.
-      - dl-cache:/dl-cache:rw # Root path to incomplete downloads.
+      - dl-cache-soulseek:/dl-cache:rw # Root path to incomplete downloads.
       - downloads:/downloads:rw # Root path to downloads.
       - media-library:/library:ro # Root path to the media library.
     cap_add:
