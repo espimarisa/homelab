@@ -76,12 +76,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/gatus-db/json
 
-  # Homarr DB.
-  - name: Homarr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/homarr-db/json
-
   # Lidarr DB.
   - name: Lidarr - PostgreSQL
     <<: *defaults-container
@@ -287,12 +281,6 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${CHHOTO_URL}
-
-  # Homarr.
-  - name: Homarr
-    <<: *defaults-http
-    group: Services
-    url: https://${HOMARR_URL}
 
   # Jellyfin.
   - name: Jellyfin

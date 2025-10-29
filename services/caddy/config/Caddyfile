@@ -81,11 +81,6 @@
 	import security_headers
 }
 
-{$HOMARR_URL} {
-	import external_proxy homarr:7575
-	import security_headers
-}
-
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
 	import security_headers

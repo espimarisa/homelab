@@ -15,7 +15,6 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Dozzle
 -   Gatus
 -   Gluetun
--   Homarr
 -   Huntarr
 -   Jellyfin
 -   Lidarr

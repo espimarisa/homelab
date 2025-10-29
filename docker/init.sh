@@ -70,7 +70,6 @@ readonly GLUETUN_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:3::1"
 readonly APPDATA_DIRECTORIES=(
 	"caddy/data"             # Caddy data and persistent certificates.
 	"chhoto/data"            # Chhoto URL shortener database.
-	"homarr/data"            # Homarr data.
 	"opencloud/config"       # OpenCloud configuration.
 	"opencloud/data"         # OpenCloud data.
 	"thelounge/data"         # The Lounge data.
@@ -141,9 +140,6 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"     # Gatus database configuration.
 	"gatus-db-data-volume"       # Gatus database data.
 	"gluetun-volume"             # Gluetun cache.
-	"homarr-db-backups-volume"   # Homarr database backups.
-	"homarr-db-config-volume"    # Homarr database configuration.
-	"homarr-db-data-volume"      # Homarr database data.
 	"huntarr-volume"             # Huntarr configuration and data.
 	"jellyfin-cache-volume"      # Jellyfin cache.
 	"jellyfin-config-volume"     # Jellyfin configuration and data.
