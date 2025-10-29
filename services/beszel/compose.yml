@@ -4,9 +4,6 @@ x-defaults: &defaults
   env_file: ../../.env
   read_only: true # Prevent writing directly to the image.
   restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  cap_drop:
-    - ALL # Drop all default capabilities.
   deploy:
     resources:
       limits:
@@ -25,6 +22,7 @@ services:
     image: ghcr.io/henrygd/beszel/beszel:0
     container_name: beszel
     hostname: beszel
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       APP_URL: "https://beszel.${INTERNAL_DOMAIN}" # Configures the URL to bind to.
       USER_EMAIL: "${BESZEL_EMAIL}" # Admin account email to use.
@@ -38,6 +36,8 @@ services:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
       - beszel-data:/beszel_data:rw # Configuration and database.
       - beszel-socket:/beszel_socket:rw # Beszel socket.
+    cap_drop:
+      - ALL # Drop all default capabilities.
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://127.0.0.1:8090"]
     tmpfs:
@@ -49,10 +49,12 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent:0
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host # Required for gathering network data.
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
     environment:
       HUB_URL: "http://127.0.0.1:8090" # Listen to the beszel container.
       KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
@@ -66,6 +68,14 @@ services:
       - beszel-agent:/var/lib/beszel-agent:rw # Besel agent.
       - beszel-socket:/beszel_socket:rw # Beszel socket.
       - /var/run/docker.sock:/var/run/docker.sock:ro # Socket volume, fuck it.
+    cap_add:
+      - PERFMON # needed for gpu
+      - SYS_ADMIN # needed for gpu
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       beszel:
         condition: service_healthy # Wait for Beszel to be healthy before connecting.
