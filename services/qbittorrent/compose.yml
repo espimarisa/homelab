@@ -84,7 +84,7 @@ volumes:
     name: qui-logs-volume
     external: true
   dl-cache:
-    name: dl-cache
+    name: dl-cache-bind
     driver_opts:
       device: "${DOWNLOADS_CACHE_PATH}"
       o: bind
