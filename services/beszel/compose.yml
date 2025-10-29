@@ -60,6 +60,7 @@ services:
       TOKEN: "${BESZEL_TOKEN}" # Beszel token to authenticate with, configured in the hub post-deployment.
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
+      - ${BACKREST_HDD_PATH}:/extra-filesystems/sdf:ro # lol
       - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/nvme1n1:ro # Downloads cache drive, change to be your path.
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive, change to be your path.
       - beszel-agent:/var/lib/beszel-agent:rw # Besel agent.
