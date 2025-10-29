@@ -25,7 +25,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.21
-        ipv6_address: fdad:21b2:bca9:3::21
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::21"
       internal:
     expose:
       - 7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
@@ -45,10 +45,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using 2 vCPUs.
-          memory: 2G # Allow using 2G.
+          cpus: 4 # Allow using 4 vCPUs.
+          memory: 4G # Allow using 4GB of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
 
   radarr-db:
     <<: *defaults
@@ -62,7 +62,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.22 # Static IPV4 from the internal subnet
-        ipv6_address: fdad:21b2:bca9:1::22 # Static IPV6 equivalent
+        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::22 # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.

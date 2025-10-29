@@ -55,9 +55,9 @@ services:
       resources:
         limits:
           cpus: 4 # Allow up to 4 vCPUs.
-          memory: 4G # Allow up to 4G of RAM.
+          memory: 8G # Allow up to 8G of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:9200 || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
 
 networks:
   external:
@@ -66,11 +66,14 @@ networks:
 
 volumes:
   opencloud-config:
-    name: opencloud-config-volume
-    external: true
+    name: opencloud-config-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/opencloud/config"
+      o: bind
+      type: none
   opencloud-data:
     name: opencloud-data-bind
     driver_opts:
-      device: "${APPDATA_PATH}/opencloud"
+      device: "${APPDATA_PATH}/opencloud/data"
       o: bind
       type: none

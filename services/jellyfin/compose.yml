@@ -42,7 +42,7 @@ services:
     group_add:
       - "${RENDER_GID}" # Adds user to the host render group.
     healthcheck:
-      test: "curl -f http://127.0.0.1:8096/health || exit 1"
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8096/health || exit 1"
 
 networks:
   external:

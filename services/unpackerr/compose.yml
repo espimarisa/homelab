@@ -45,7 +45,7 @@ services:
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
     healthcheck:
-      test: "curl -f http://127.0.0.1:5656 || exit 1"
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:5656 || exit 1"
 
 networks:
   internal:

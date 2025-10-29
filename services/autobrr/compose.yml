@@ -34,8 +34,8 @@ services:
       AUTOBRR__SESSION_SECRET: "${AUTOBRR_SESSION_SECRET}" # Session secret to use for Autobrr.
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - autobrr-logs:/logs
-      - autobrr:/config # Configuration and data.
+      - autobrr-logs:/logs:rw
+      - autobrr:/config:rw # Configuration and data.
     depends_on:
       autobrr-db:
         condition: service_healthy # Require autobrr-db to be healthy before starting.
@@ -49,7 +49,7 @@ services:
           cpus: 1 # Allow using up to 1 vCPUs.
           memory: 1G # Allow using 1G of RAM.
     healthcheck:
-      test: "curl -f http://127.0.0.1:7474 || exit 1"
+      test: "curl --fail --retry 0 --silent  http://127.0.0.1:7474 || exit 1"
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
 
@@ -62,21 +62,20 @@ services:
       POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}" # Sets the database password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      internal:
       gluetun:
-        ipv4_address: 172.19.3.30
-        ipv6_address: fdad:21b2:bca9:3::30
+        ipv4_address: 172.19.3.30 # Static Gluetun IPV4 address.
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::30" # Static Gluetun IPV6 address.
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - autobrr-db-backups:/postgres/backup # PostgreSQL backups.
-      - autobrr-db-config:/postgres/etc # PostgreSQL config.
-      - autobrr-db-data:/postgres/var # PostgreSQL data.
+      - autobrr-db-backups:/postgres/backup:rw # PostgreSQL backups.
+      - autobrr-db-config:/postgres/etc:rw # PostgreSQL config.
+      - autobrr-db-data:/postgres/var:rw # PostgreSQL data.
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using 1 vCPU.
+          cpus: 0.5 # Allow using 0.5 vCPUs.
           memory: 256M # Allow using 256M of RAM.
 
 networks:

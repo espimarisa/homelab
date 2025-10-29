@@ -43,7 +43,7 @@ services:
     networks:
       gluetun: # Internal Gluetun interface.
         ipv4_address: 172.19.3.10
-        ipv6_address: fdad:21b2:bca9:3::10
+        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:3::10
     volumes:
       - gluetun:/gluetun # Gluetun cache.
     cap_add:

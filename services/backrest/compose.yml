@@ -21,13 +21,13 @@ services:
     networks:
       - external
     volumes:
-      - appdata-data:/appdata-data # Local appdata directory.
-      - backrest-cache:/cache # Cache.
-      - backrest-config:/config # Config.
-      - backrest-data:/data # Data.
-      - backrest-hdd:/mnt/backrest-hdd # Local HDD repo.
-      - backrest-tmp:/tmp # Temp files.
-      - docker-volumes:/docker-volumes # Local Docker volumes.
+      - appdata-data:/appdata-data:rw # Local appdata directory.
+      - backrest-cache:/cache:rw # Cache.
+      - backrest-config:/config:rw # Config.
+      - backrest-data:/data:rw # Data.
+      - backrest-hdd:/mnt/backrest-hdd:rw # Local HDD repo.
+      - backrest-tmp:/tmp:rw # Temp files.
+      - docker-volumes:/docker-volumes:ro # Local Docker volumes.
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -40,7 +40,7 @@ services:
           cpus: 4 # Allow up to 4 vCPUs.
           memory: 4G # Allow up to 4G of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:9898"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9898 || exit 1"
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 

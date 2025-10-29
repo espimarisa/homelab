@@ -55,7 +55,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - vaultwarden:/data # Configuration and data.
+      - vaultwarden-data:/data # Configuration and data.
     deploy:
       resources:
         limits:
@@ -66,7 +66,7 @@ services:
         condition: service_healthy # Require vaultwarden-db to be ready before connecting.
         restart: true # Restart when vaultwarden-db is restarted.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:80/alive || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:80/alive || exit 1"
 
   vaultwarden-db:
     <<: *defaults
@@ -101,15 +101,27 @@ networks:
     name: internal-network
 
 volumes:
-  vaultwarden:
-    name: vaultwarden-volume
-    external: true
+  vaultwarden-data:
+    name: vaultwarden-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/vaultwarden/data"
+      o: bind
+      type: none
   vaultwarden-db-backups:
-    name: vaultwarden-db-backups-volume
-    external: true
+    name: vaultwarden-db-backups-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/vaultwarden/db/backups"
+      o: bind
+      type: none
   vaultwarden-db-config:
-    name: vaultwarden-db-config-volume
-    external: true
+    name: vaultwarden-db-config-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/vaultwarden/db/config"
+      o: bind
+      type: none
   vaultwarden-db-data:
-    name: vaultwarden-db-data-volume
-    external: true
+    name: vaultwarden-db-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/vaultwarden/db/data"
+      o: bind
+      type: none

@@ -27,10 +27,10 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - ./config/Caddyfile:/caddy/etc/Caddyfile:ro # Caddyfile mount.
-      - caddy-backups:/caddy/backup # Caddyfile backups.
-      - caddy-config:/caddy/etc # Caddy config.
-      - caddy-data:/caddy/var # Caddy data and certificates.
-      - caddy-logs:/caddy/logs # Caddy logs.
+      - caddy-backups:/caddy/backup:rw # Caddyfile backups.
+      - caddy-config:/caddy/etc:rw # Caddy config.
+      - caddy-data:/caddy/var:rw # Caddy data and certificates.
+      - caddy-logs:/caddy/logs:rw # Caddy logs.
     cap_add:
       - NET_BIND_SERVICE # Required for binding ports <= 1024.
       - NET_ADMIN # Improves HTTP3 performance.
@@ -60,15 +60,18 @@ networks:
     name: internal-network
 
 volumes:
+  caddy-data:
+    name: caddy-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/caddy/data"
+      o: bind
+      type: none
   caddy-backups:
     external: true
     name: caddy-backups-volume
   caddy-config:
     external: true
     name: caddy-config-volume
-  caddy-data:
-    external: true
-    name: caddy-data-volume
   caddy-logs:
     external: true
     name: caddy-logs-volume

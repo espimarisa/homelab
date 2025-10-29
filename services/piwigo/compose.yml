@@ -36,8 +36,8 @@ services:
       - external
       - internal
     volumes:
-      - piwigo:/config # Configuration and user data.
-      - piwigo-data:/gallery # Photo storage destination.
+      - piwigo-config:/config # Configuration and user data.
+      - piwigo-gallery:/gallery # Photo storage destination.
     deploy:
       resources:
         limits:
@@ -48,7 +48,7 @@ services:
         condition: service_healthy # Require piwigo-db to be healthy before connecting.
         restart: true # Restart when piwigo-db restarts.
     healthcheck:
-      test: "curl -f http://127.0.0.1:80 || exit 1"
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:80 || exit 1"
 
   piwigo-db:
     <<: *defaults
@@ -64,7 +64,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.43 # Static IPV4 from the internal subnet
-        ipv6_address: fdad:21b2:bca9:1::43 # Static IPV6 equivalent
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:1::43" # Static IPV6 equivalent
     volumes:
       - piwigo-db:/config # Piwigo database volume.
     deploy:
@@ -84,15 +84,21 @@ networks:
     name: internal-network
 
 volumes:
-  piwigo:
-    external: true
-    name: piwigo-volume
-  piwigo-db:
-    external: true
-    name: piwigo-db-volume
-  piwigo-data:
-    name: piwigo-data-bind
+  piwigo-config:
+    name: piwigo-config-bind
     driver_opts:
-      device: "${APPDATA_PATH}/piwigo"
+      device: "${APPDATA_PATH}/piwigo/config"
+      o: bind
+      type: none
+  piwigo-gallery:
+    name: piwigo-gallery-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/piwigo/gallery"
+      o: bind
+      type: none
+  piwigo-db:
+    name: piwigo-db-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/piwigo/db"
       o: bind
       type: none

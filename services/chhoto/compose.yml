@@ -1,44 +1,43 @@
 ---
-x-defaults: &defaults
-  env_file: ../../.env
-  read_only: true # Prevent writing directly to the image.
-  restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  networks:
-    - external
-  cap_drop:
-    - ALL # Drop all default capabilities.
-  deploy:
-    resources:
-      limits:
-        cpus: 0.25 # Allow up to 0.25 vCPUs.
-        memory: 128M # Allow up to 128MB of RAM.
-  security_opt:
-    - no-new-privileges:true # Do not allow privilege escalation.
-
 services:
   ###########################################################################
   # Chhoto URL: URL shortener - https://github.com/sintan1729/chhoto-url    #
   ###########################################################################
 
   chhoto:
-    <<: *defaults
     image: ghcr.io/sintan1729/chhoto-url:6-alpine
     container_name: chhoto
+    env_file: ../../.env
     hostname: chhoto
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       api_key: "${CHHOTO_API_KEY}" # Sets the API key.
       db_url: "/db/urls.sqlite" # Use urls.sqlite.
       password: "${CHHOTO_PASSWORD}" # Sets the password.
-      site_url: "https://${CHHOTO_URL}" # Sets the URL to use.
+      site_url: https://${CHHOTO_URL} # Sets the URL to use. NOTE: Cannot be enclosed by quotes, apparently.
       slug_style: "Pair" # Use a pair slug style.
+      use_wal_mode: "True" # Use WAL mode.
+      ensure_acid: "True" # Ensure ACID compliance.
       TZ: "${TZ}" # Sets the timezone.
     expose:
       - 4567/tcp # Web interface reverse proxied externally at ${CHHOTO_URL}.
+    networks:
+      - external
     volumes:
-      - chhoto:/db # Database.
+      - chhoto-data:/db:rw # Database.
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 64M # Allow up to 64MB of RAM.
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:4567 || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4567/api/whoami || exit 1"
 
 networks:
   external:
@@ -46,6 +45,9 @@ networks:
     name: external-network
 
 volumes:
-  chhoto:
-    external: true
-    name: chhoto-volume
+  chhoto-data:
+    name: chhoto-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/chhoto/data"
+      o: bind
+      type: none

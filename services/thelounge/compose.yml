@@ -28,14 +28,14 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - thelounge:/var/opt/thelounge # Configuration and data.
+      - thelounge-data:/var/opt/thelounge # Configuration and data.
     deploy:
       resources:
         limits:
           cpus: 0.5 # Allow up to 0.5 vCPUs.
           memory: 256M # Allow up to 256MB of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:9000 || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9000 || exit 1"
 
 networks:
   external:
@@ -43,6 +43,9 @@ networks:
     name: external-network
 
 volumes:
-  thelounge:
-    name: thelounge-volume
-    external: true
+  thelounge-data:
+    name: thelounge-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/thelounge/data"
+      o: bind
+      type: none

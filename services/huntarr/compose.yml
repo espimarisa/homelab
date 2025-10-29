@@ -19,7 +19,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.5
-        ipv6_address: fdad:21b2:bca9:3::25
+        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:3::25
     volumes:
       - huntarr:/config # Configuration and data.
     cap_drop:
@@ -27,8 +27,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow up to 1 vCPU.
-          memory: 1G # Allow up to 1GB of RAM.
+          cpus: 2 # Allow up to 2 vCPUs.
+          memory: 2G # Allow up to 2GB of RAM.
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 

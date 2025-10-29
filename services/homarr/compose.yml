@@ -40,7 +40,7 @@ services:
       - gluetun
       - internal
     volumes:
-      - homarr:/appdata # Configuration and data.
+      - homarr-data:/appdata # Configuration and data.
     depends_on:
       homarr-db:
         condition: service_healthy # Require homarr-db to be healthy before connecting.
@@ -54,7 +54,7 @@ services:
           cpus: 0.5 # Allow using up to 0.5 vCPUs.
           memory: 1G # Allow using 1G of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:7575 || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
 
   homarr-db:
     <<: *defaults
@@ -69,7 +69,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.42 # Static IPV4 from the internal subnet
-        ipv6_address: fdad:21b2:bca9:1::42 # Static IPV6 equivalent
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:1::42" # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
@@ -97,9 +97,12 @@ networks:
     name: internal-network
 
 volumes:
-  homarr:
-    name: homarr-volume
-    external: true
+  homarr-data:
+    name: homarr-data-bind
+    driver_opts:
+      device: "${APPDATA_PATH}/homarr/data"
+      o: bind
+      type: none
   homarr-db-data:
     name: homarr-db-data-volume
     external: true

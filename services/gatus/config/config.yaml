@@ -55,58 +55,6 @@ ui:
 
 endpoints:
   ###########################################################################
-  # Anubis.                                                                 #
-  ###########################################################################
-
-  # Chhoto - Anubis.
-  - name: Anubis - Chhoto
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/chhoto-anubis/json
-
-  # Homarr - Anubis.
-  - name: Anubis - Homarr
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/homarr-anubis/json
-
-  # Jellyfin - Anubis.
-  - name: Anubis - Jellyfin
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/jellyfin-anubis/json
-
-  # OpenCloud - Anubis.
-  - name: Anubis - OpenCloud
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/opencloud-anubis/json
-
-  # Piwigo - Anubis.
-  - name: Anubis - Piwigo
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/piwigo-anubis/json
-
-  # Seerr - Anubis.
-  - name: Anubis - Seerr
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/seerr-anubis/json
-
-  # The Lounge - Anubis.
-  - name: Anubis - The Lounge
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/thelounge-anubis/json
-
-  # Vaultwarden - Anubis.
-  - name: Anubis - Vaultwarden
-    <<: *defaults-container
-    group: Anubis
-    url: ${SOCKET_PROXY_URL}/vaultwarden-anubis/json
-
-  ###########################################################################
   # Databases.                                                              #
   ###########################################################################
 

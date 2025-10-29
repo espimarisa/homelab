@@ -38,12 +38,12 @@ services:
       - media-library:/library:rw # Root media library directory.
       - prowlarr:/prowlarr/etc:rw # Configuration and data.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow up to 1 vCPUs.
-          memory: 1G # Allow up to 1G of RAM.
+          cpus: 2 # Allow using 2 vCPUs.
+          memory: 2G # Allow using 2GB of RAM.
 
   prowlarr-db:
     <<: *defaults
@@ -54,10 +54,9 @@ services:
       POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Configures the default PostgreSQL password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      internal:
       gluetun:
         ipv4_address: 172.19.3.31
-        ipv6_address: fdad:21b2:bca9:3::31
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::31"
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.

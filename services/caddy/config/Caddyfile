@@ -72,47 +72,47 @@
 ###########################################################################
 
 {$CHHOTO_URL} {
-	import external_proxy chhoto-anubis:4567
+	import external_proxy chhoto:4567
 	import security_headers
 }
 
 {$GATUS_URL} {
-	import external_proxy gatus-anubis:8080
+	import external_proxy gatus:8080
 	import security_headers
 }
 
 {$HOMARR_URL} {
-	import external_proxy homarr-anubis:7575
+	import external_proxy homarr:7575
 	import security_headers
 }
 
 {$JELLYFIN_URL} {
-	import external_proxy jellyfin-anubis:8096
+	import external_proxy jellyfin:8096
 	import security_headers
 }
 
 {$OPENCLOUD_URL} {
-	import external_proxy opencloud-anubis:9200
+	import external_proxy opencloud:9200
 	import security_headers
 }
 
 {$PIWIGO_URL} {
-	import external_proxy piwigo-anubis:80
+	import external_proxy piwigo:80
 	import security_headers
 }
 
 {$SEERR_URL} {
-	import external_proxy seerr-anubis:5055
+	import external_proxy seerr:5055
 	import security_headers
 }
 
 {$THELOUNGE_URL} {
-	import external_proxy thelounge-anubis:9000
+	import external_proxy thelounge:9000
 	import security_headers
 }
 
 {$VAULTWARDEN_URL} {
-	import external_proxy vaultwarden-anubis:80
+	import external_proxy vaultwarden:80
 
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"

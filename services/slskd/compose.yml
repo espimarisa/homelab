@@ -28,9 +28,9 @@ services:
       SOULSEEK_PASSWORD: "${SOULSEEK_PASSWORD}" # Web interface password to set.
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - slskd:/app # Configuration and database.
-      - dl-cache:/dl-cache # Root path to incomplete downloads.
-      - downloads:/downloads # Root path to downloads.
+      - slskd:/app:rw # Configuration and database.
+      - dl-cache:/dl-cache:rw # Root path to incomplete downloads.
+      - downloads:/downloads:rw # Root path to downloads.
       - media-library:/library:ro # Root path to the media library.
     cap_add:
       - CHOWN # Required for taking ownership.
@@ -46,7 +46,7 @@ services:
           cpus: 1 # Allow up to 1 vCPU.
           memory: 1G # Allow up to 1G of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:5030/health || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

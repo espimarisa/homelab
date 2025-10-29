@@ -25,7 +25,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.22
-        ipv6_address: fdad:21b2:bca9:3::22
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::22"
       internal:
     expose:
       - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
@@ -45,9 +45,9 @@ services:
       resources:
         limits:
           cpus: 4 # Allow using 4 vCPUs.
-          memory: 4G # Allow using 2GB of RAM.
+          memory: 4G # Allow using 4GB of RAM.
     healthcheck:
-      test: "wget --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
 
   sonarr-db:
     <<: *defaults
@@ -61,7 +61,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.23 # Static IPV4 from the internal subnet
-        ipv6_address: fdad:21b2:bca9:1::23 # Static IPV6 equivalent
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:1::23" # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.

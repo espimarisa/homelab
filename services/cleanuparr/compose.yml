@@ -22,7 +22,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.24
-        ipv6_address: fdad:21b2:bca9:3::24
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::24"
     volumes:
       - cleanuparr:/config # Configuration and data.
     cap_drop:
@@ -39,7 +39,7 @@ services:
           cpus: 0.5 # Allow up to 0.5 vCPUs.
           memory: 1G # Allow up to 1GB of RAM.
     healthcheck:
-      test: "curl -f http://127.0.0.1:11011 || exit 1"
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:11011 || exit 1"
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 

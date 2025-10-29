@@ -3,134 +3,181 @@
 # Exit immediately if a command exits with a non-zero status.
 set -euo pipefail
 
-# ULA Base: fdad:21b2:bca9::/48
+# Required environment variables.
+readonly REQUIRED_VARS=(
+	"APPDATA_PATH"         # Path to store application data.
+	"DOCKER_GID"           # Docker host group ID.
+	"DOCKER_IPV6_ULA_BASE" # Docker IPV6 ULA base.
+	"DOCKER_VOLUMES_PATH"  # Docker volumes path.
+	"DOWNLOADS_CACHE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
+	"DOWNLOADS_PATH"       # Path to store downloads.
+	"MEDIA_LIBRARY_PATH"   # Path to store the media library.
+	"PGID"                 # Group ID to run as.
+	"PUID"                 # User ID to run as.
+	"STORAGE_PATH"         # Path to the storage directory.
+	"UMASK"                # Umask to apply to files. TODO: MAKE SCRIPT SET UMASK!
+)
 
-# Internal (Subnet #1): Used for isolated services (DBs, Socket Proxy).
+# Source environment variables from .env file.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ENV_FILE="${SCRIPT_DIR}/../.env"
+SUDO=""
+
+if [ -f "$ENV_FILE" ]; then
+	echo "Sourcing environment variables from ${ENV_FILE}."
+	set -a
+	# shellcheck disable=SC1090
+	. "$ENV_FILE"
+	set +a
+else
+	echo "Error: Environment file not found at ${ENV_FILE}." >&2
+	exit 1
+fi
+
+# Validates required environment variables.
+for var in "${REQUIRED_VARS[@]}"; do
+	if [ -z "${!var-}" ]; then
+		echo "Error: Required environment variable '$var' is not set in ${ENV_FILE}." >&2
+		exit 1
+	fi
+done
+
+# Use sudo for privileged commands if not running as root.
+if [ "$(id -u)" -ne 0 ]; then
+	SUDO="sudo"
+	echo "Script not run as root. Using 'sudo' for privileged commands."
+fi
+
+# Internal network, subnet #1.
 readonly INTERNAL_IPV4_SUBNET="172.19.2.0/24"
 readonly INTERNAL_IPV4_GATEWAY="172.19.2.1"
-readonly INTERNAL_IPV6_SUBNET="fdad:21b2:bca9:1::/64"
-readonly INTERNAL_IPV6_GATEWAY="fdad:21b2:bca9:1::1"
+readonly INTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:1::/64"
+readonly INTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:1::1"
 
-# External (Subnet #2): Used for Caddy/general external access.
+# External network, subnet #2.
 readonly EXTERNAL_IPV4_SUBNET="172.19.1.0/24"
 readonly EXTERNAL_IPV4_GATEWAY="172.19.1.1"
-readonly EXTERNAL_IPV6_SUBNET="fdad:21b2:bca9:2::/64"
-readonly EXTERNAL_IPV6_GATEWAY="fdad:21b2:bca9:2::1"
+readonly EXTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:2::/64"
+readonly EXTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:2::1"
 
-# Gluetun (Subnet #3): Used for VPN-routed apps.
+# Gluetun network, subnet #3.
 readonly GLUETUN_IPV4_SUBNET="172.19.3.0/24"
 readonly GLUETUN_IPV4_GATEWAY="172.19.3.1"
-readonly GLUETUN_IPV6_SUBNET="fdad:21b2:bca9:3::/64"
-readonly GLUETUN_IPV6_GATEWAY="fdad:21b2:bca9:3::1"
+readonly GLUETUN_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:3::/64"
+readonly GLUETUN_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:3::1"
 
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
-	"opencloud"
-	"piwigo"
+	"caddy/data"             # Caddy data and persistent certificates.
+	"chhoto/data"            # Chhoto URL shortener database.
+	"homarr/data"            # Homarr data.
+	"opencloud/config"       # OpenCloud configuration.
+	"opencloud/data"         # OpenCloud data.
+	"piwigo/config"          # Piwigo database.
+	"piwigo/db"              # Piwigo database.
+	"piwigo/gallery"         # Piwigo uploaded files.
+	"thelounge/data"         # The Lounge data.
+	"vaultwarden/data"       # Vaultwarden configuration.
+	"vaultwarden/db/backups" # Vaultwarden database backups.
+	"vaultwarden/db/config"  # Vaultwarden database config.
+	"vaultwarden/db/data"    # Vaultwarden database data.
+)
+
+# Files/directories to touch.
+readonly APPDATA_TOUCH_PATHS=(
+	"chhoto/data/urls.sqlite" # Initialize the chhoto database.
 )
 
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
-	".torrent-files"
-	"deezer"
-	"soulseek"
-	"torrents/sonarr"
-	"torrents/radarr"
-	"torrents/lidarr"
-	"torrents/prowlarr"
-	"uncategorized"
+	"soulseek"                # Soulseek downloads.
+	"torrents/.torrent-files" # .torrent file storage.
+	"torrents/lidarr"         # Lidarr torrents.
+	"torrents/prowlarr"       # Prowlarr torrents.
+	"torrents/radarr"         # Radarr torrents.
+	"torrents/sonarr"         # Sonarr torrents.
+	"torrents/uncategorized"  # Uncategorized torrents.
 )
 
 # Incomplete download directories to create.
 readonly DOWNLOADS_CACHE_DIRECTORIES=(
-	"soulseek"
-	"torrents"
+	"soulseek-incomplete" # Incomplete soulseek downloads.
+	"torrents-incomplete" # Incomplete torrents downloads.
 )
 
 # Media library directories to create.
 readonly MEDIA_LIBRARY_DIRECTORIES=(
-	"anime"
-	"audiobooks"
-	"books"
-	"comics"
-	"manga"
-	"movies"
-	"music"
-	"tv-shows"
+	"anime"      # Anime library.
+	"audiobooks" # Audiobooks library.
+	"books"      # Books library.
+	"comics"     # Comics library.
+	"manga"      # Manga library.
+	"movies"     # Movies library.
+	"music"      # Music library.
+	"tv"         # TV library.
 )
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-db-backups-volume"
-	"autobrr-db-config-volume"
-	"autobrr-db-data-volume"
-	"autobrr-logs-volume"
-	"autobrr-volume"
-	"backrest-cache-volume"
-	"backrest-config-volume"
-	"backrest-data-volume"
-	"backrest-tmp-volume"
-	"bazarr-db-backups-volume"
-	"bazarr-db-config-volume"
-	"bazarr-db-data-volume"
-	"bazarr-volume"
-	"beszel-agent-volume"
-	"beszel-data-volume"
-	"beszel-socket-volume"
-	"caddy-backups-volume"
-	"caddy-config-volume"
-	"caddy-data-volume"
-	"caddy-logs-volume"
-	"chhoto-volume"
-	"cleanuparr-volume"
-	"dozzle-volume"
-	"gatus-db-backups-volume"
-	"gatus-db-config-volume"
-	"gatus-db-data-volume"
-	"gluetun-volume"
-	"homarr-db-backups-volume"
-	"homarr-db-config-volume"
-	"homarr-db-data-volume"
-	"homarr-volume"
-	"huntarr-volume"
-	"jellyfin-cache-volume"
-	"jellyfin-config-volume"
-	"lidarr-db-backups-volume"
-	"lidarr-db-config-volume"
-	"lidarr-db-data-volume"
-	"lidarr-volume"
-	"opencloud-config-volume"
-	"piwigo-db-volume"
-	"piwigo-volume"
-	"profilarr-volume"
-	"prowlarr-db-backups-volume"
-	"prowlarr-db-config-volume"
-	"prowlarr-db-data-volume"
-	"prowlarr-volume"
-	"qbittorrent-config-volume"
-	"qbittorrent-data-volume"
-	"qui-config-volume"
-	"qui-logs-volume"
-	"radarr-db-backups-volume"
-	"radarr-db-config-volume"
-	"radarr-db-data-volume"
-	"radarr-volume"
-	"seerr-db-backups-volume"
-	"seerr-db-config-volume"
-	"seerr-db-data-volume"
-	"seerr-volume"
-	"slskd-volume"
-	"socket-proxy-volume"
-	"sonarr-db-backups-volume"
-	"sonarr-db-config-volume"
-	"sonarr-db-data-volume"
-	"sonarr-volume"
-	"thelounge-volume"
-	"unpackerr-volume"
-	"vaultwarden-db-backups-volume"
-	"vaultwarden-db-config-volume"
-	"vaultwarden-db-data-volume"
-	"vaultwarden-volume"
+	"autobrr-db-backups-volume"  # Autobrr database backups.
+	"autobrr-db-config-volume"   # Autobrr database configuration.
+	"autobrr-db-data-volume"     # Autobrr database data.
+	"autobrr-logs-volume"        # Autobrr logs.
+	"autobrr-volume"             # Autoborr configuration and data.
+	"backrest-cache-volume"      # Backrest cache.
+	"backrest-config-volume"     # Backrest configuration.
+	"backrest-data-volume"       # Backrest data.
+	"backrest-tmp-volume"        # Backrest cache.
+	"bazarr-db-backups-volume"   # Bazarr database backups.
+	"bazarr-db-config-volume"    # Bazarr database configuration.
+	"bazarr-db-data-volume"      # Bazarr database data.
+	"bazarr-volume"              # Bazarr configuration and data.
+	"beszel-agent-volume"        # Beszel agent cache.
+	"beszel-data-volume"         # Beszel data.
+	"beszel-socket-volume"       # Beszel socket cache.
+	"caddy-backups-volume"       # Caddyfile backups.
+	"caddy-config-volume"        # Caddy configuration.
+	"caddy-logs-volume"          # Caddy logs.
+	"cleanuparr-volume"          # Cleanuparr configuration and data.
+	"dozzle-volume"              # Dozzle configuration and data.
+	"gatus-db-backups-volume"    # Gatus database backups.
+	"gatus-db-config-volume"     # Gatus database configuration.
+	"gatus-db-data-volume"       # Gatus database data.
+	"gluetun-volume"             # Gluetun cache.
+	"homarr-db-backups-volume"   # Homarr database backups.
+	"homarr-db-config-volume"    # Homarr database configuration.
+	"homarr-db-data-volume"      # Homarr database data.
+	"huntarr-volume"             # Huntarr configuration and data.
+	"jellyfin-cache-volume"      # Jellyfin cache.
+	"jellyfin-config-volume"     # Jellyfin configuration and data.
+	"lidarr-db-backups-volume"   # Lidarr database backups.
+	"lidarr-db-config-volume"    # Lidarr database configuration.
+	"lidarr-db-data-volume"      # Lidarr database data.
+	"lidarr-volume"              # Lidarr configuration and data.
+	"profilarr-volume"           # Profilarr configuration and data.
+	"prowlarr-db-backups-volume" # Prowlarr database backups.
+	"prowlarr-db-config-volume"  # Prowlarr database configuration.
+	"prowlarr-db-data-volume"    # Prowlarr database data.
+	"prowlarr-volume"            # Prowlarr configuration and data.
+	"qbittorrent-config-volume"  # qBittorrent configuration.
+	"qbittorrent-data-volume"    # qBittorrent data.
+	"qui-config-volume"          # qui configuration.
+	"qui-logs-volume"            # qui logs.
+	"radarr-db-backups-volume"   # Radarr database backups.
+	"radarr-db-config-volume"    # Radarr database configuration.
+	"radarr-db-data-volume"      # Radarr database data.
+	"radarr-volume"              # Radarr configuration and data.
+	"seerr-db-backups-volume"    # Seerr database backups.
+	"seerr-db-config-volume"     # Seerr database configuraton.
+	"seerr-db-data-volume"       # Seerr database data.
+	"seerr-volume"               # Seerr configuration and data.
+	"slskd-volume"               # slskd configuration and data.
+	"socket-proxy-volume"        # Socket proxy mount.
+	"sonarr-db-backups-volume"   # Sonarr database backups.
+	"sonarr-db-config-volume"    # Sonarr database configuration.
+	"sonarr-db-data-volume"      # Sonarr database data.
+	"sonarr-volume"              # Sonarr configuration and data.
+	"unpackerr-volume"           # Unpackerr data.
 )
 
 # Docker volumes to take ownership of.
@@ -141,22 +188,16 @@ readonly CHOWN_VOLUMES=(
 	"beszel-data-volume"
 	"caddy-backups-volume"
 	"caddy-config-volume"
-	"caddy-data-volume"
 	"caddy-logs-volume"
-	"chhoto-volume"
 	"dozzle-volume"
-	"homarr-volume"
 	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"opencloud-config-volume"
 	"qui-config-volume"
 	"qui-logs-volume"
 	"seerr-volume"
 	"slskd-volume"
-	"thelounge-volume"
 	"unpackerr-volume"
-	"vaultwarden-volume"
 )
 
 # Function to ensure a directory exists.
@@ -181,18 +222,15 @@ create_dual_stack_network() {
 
 	if ! docker network inspect "$network_name" &>/dev/null; then
 		echo "Creating dual-stack network: $network_name (IPv6: $ipv6_subnet, Internal: $internal_flag)"
-
 		local command="docker network create --driver=bridge --ipv6 "
 
-		# The internal network requires the internal flag and gateway defined for static IPs
+		# The internal network requires the internal flag and gateway defined for static IPs.
 		if [ "$internal_flag" = "true" ]; then
 			command+="--internal "
 		fi
 
-		# We specify subnet and gateway for all, even internal, to ensure static IPs work
+		# Creates the Docker network.
 		command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} --subnet=${ipv6_subnet} --gateway=${ipv6_gateway} "
-
-		# Append network name and execute
 		eval "$command" "$network_name"
 
 	else
@@ -211,36 +249,6 @@ create_volume() {
 	fi
 }
 
-# Use sudo for privileged commands if not running as root.
-SUDO=""
-if [ "$(id -u)" -ne 0 ]; then
-	SUDO="sudo"
-	echo "Script not run as root. Using 'sudo' for privileged commands."
-fi
-
-# Source environment variables from .env file.
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="${SCRIPT_DIR}/../.env"
-if [ -f "$ENV_FILE" ]; then
-	echo "Sourcing environment variables from ${ENV_FILE}."
-	set -a
-	# shellcheck disable=SC1090
-	. "$ENV_FILE"
-	set +a
-else
-	echo "Error: Environment file not found at ${ENV_FILE}." >&2
-	exit 1
-fi
-
-# Validate that required environment variables are set.
-readonly REQUIRED_VARS=("APPDATA_PATH" "DOWNLOADS_PATH" "DOWNLOADS_CACHE_PATH" "MEDIA_LIBRARY_PATH" "PUID" "PGID")
-for var in "${REQUIRED_VARS[@]}"; do
-	if [ -z "${!var-}" ]; then
-		echo "Error: Required environment variable '$var' is not set in ${ENV_FILE}." >&2
-		exit 1
-	fi
-done
-
 # Create bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
 create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
@@ -251,17 +259,17 @@ create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
 
-# 1. EXTERNAL (Routable for Internet/Caddy)
+# Creates the external network.
 create_dual_stack_network "external-network" \
 	"$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" \
 	"$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
 
-# 2. INTERNAL (Isolated for internal-only traffic).
+# Creates the internal network.
 create_dual_stack_network "internal-network" \
 	"$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" \
 	"$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
 
-# 3. GLUETUN (VPN)
+# Creates the Gluetun network.
 create_dual_stack_network "gluetun-network" \
 	"$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" \
 	"$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
@@ -272,23 +280,10 @@ for volume in "${VOLUMES[@]}"; do
 	create_volume "$volume"
 done
 
-# Initialize files in volumes using a temporary container.
-echo -e "\nInitializing files in volumes..."
-docker run --rm -v "chhoto-volume:/data" alpine:3 touch /data/urls.sqlite
-docker run --rm -v "homarr-volume:/data" alpine:3 mkdir /data/redis
-
-# Get Docker's root directory
-DOCKER_ROOT=$($SUDO docker info -f '{{ .DockerRootDir }}')
-if [ -z "$DOCKER_ROOT" ]; then
-	echo "Error: Could not determine Docker root directory." >&2
-	exit 1
-fi
-
 # Set ownership of volumes by chowning their _data directory on the host
-VOLUMES_PATH="${DOCKER_ROOT}/volumes"
 echo -e "\nSetting volume permissions..."
 for volume in "${CHOWN_VOLUMES[@]}"; do
-	VOLUME_DATA_PATH="${VOLUMES_PATH}/${volume}/_data"
+	VOLUME_DATA_PATH="${DOCKER_VOLUMES_PATH}/${volume}/_data"
 	if $SUDO [ -d "$VOLUME_DATA_PATH" ]; then
 		echo "Setting ownership for volume: '$volume' to ${PUID}:${PGID}"
 		$SUDO chown -R "${PUID}:${PGID}" "$VOLUME_DATA_PATH"
@@ -305,5 +300,11 @@ $SUDO chown -R "${PUID}:${PGID}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_CACHE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
+
+# Initialize files if they don't exist.
+for file in "${APPDATA_TOUCH_PATHS[@]}"; do
+	echo "Creating ${file} if it doesn't exist at ${APPDATA_PATH}/${file}..."
+	touch "${APPDATA_PATH}/${file}"
+done
 
 echo -e "\nInitial setup complete!"

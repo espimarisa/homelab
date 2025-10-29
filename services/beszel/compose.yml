@@ -30,14 +30,14 @@ services:
       USER_EMAIL: "${BESZEL_EMAIL}" # Admin account email to use.
       USER_PASSWORD: "${BESZEL_PASSWORD}" # Admin account password to use.
     expose:
-      - 8090/tcp # Web interface reverse proxied internally at beszel.${INTERNAL_DOMAIN}.
+      - 127.0.0.1:8090/tcp # Web interface reverse proxied internally at beszel.${INTERNAL_DOMAIN}.
     networks:
       - external
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - beszel-data:/beszel_data # Configuration and database.
-      - beszel-socket:/beszel_socket # Beszel socket.
+      - beszel-data:/beszel_data:rw # Configuration and database.
+      - beszel-socket:/beszel_socket:rw # Beszel socket.
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://127.0.0.1:8090"]
     tmpfs:
@@ -52,21 +52,18 @@ services:
     image: ghcr.io/henrygd/beszel/beszel-agent:0
     container_name: beszel-agent
     hostname: beszel-agent
+    network_mode: host # Required for gathering network data.
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       HUB_URL: "http://beszel:8090" # Listen to the beszel container.
       KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
       LISTEN: "0.0.0.0:45876" # Bind to 0.0.0.0.
       TOKEN: "${BESZEL_TOKEN}" # Beszel token to authenticate with, configured in the hub post-deployment.
-    networks:
-      - external
-      - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
       - ${DOWNLOADS_CACHE_PATH}:/extra-filesystems/nvme1n1:ro # Downloads cache drive, change to be your path.
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive, change to be your path.
-      - beszel-agent:/var/lib/beszel-agent # Besel agent.
-      - beszel-socket:/beszel_socket # Beszel socket.
+      - beszel-agent:/var/lib/beszel-agent:rw # Besel agent.
+      - beszel-socket:/beszel_socket:rw # Beszel socket.
       - socket-proxy:/var/run/docker.sock:ro # Socket proxy volume.
     depends_on:
       beszel:
