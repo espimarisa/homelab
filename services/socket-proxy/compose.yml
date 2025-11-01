@@ -1,41 +1,47 @@
+###########################################################################
+# Socket Proxy: Proxy wrapper for the Docker socket for secure access.    #
+###########################################################################
+
 ---
 services:
-  ###########################################################################
-  # Socket Proxy: Proxy wrapper for the Docker socket for secure access.    #
-  ###########################################################################
-
   socket-proxy:
-    image: ghcr.io/11notes/socket-proxy:2
+    image: lscr.io/linuxserver/socket-proxy:3.2.6
     container_name: socket-proxy
-    env_file: ../../.env
     hostname: socket-proxy
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "0:${DOCKER_GID}" # Run with the host Docker group.
     environment:
-      SOCKET_PROXY_UID: "${PUID}" # User to run as.
-      SOCKET_PROXY_GID: "${PGID}" # Group to run as.
+      ALLOW_RESTARTS: "1" # Allow restarting containers.
+      ALLOW_START: "1" # Allow starting containers.
+      ALLOW_STOP: "1" # Allow stopping containers.
+      CONTAINERS: "1" # Allow containers endpoint.
+      EVENTS: "1" # Allow event logging.
+      NETWORKS: "1" # Allow networks endpoint.
+      INFO: "1" # Allow info endpoint.
+      NODES: "1" # Allow nodes endpoint.
+      IMAGES: "1" # Allows images endpoint.
+      PING: "1" # Allow ping endpoint.
+      SERVICES: "1" # Allow services endpoint.
+      SWARM: "1" # Allow swarm checking.
       TZ: "${TZ}" # Sets the timezone.
-    expose:
-      - 2375/tcp # Socket-proxy network access.
     networks:
       - internal
     volumes:
-      - /run/docker.sock:/run/docker.sock:ro # Host Docker socket mount.
-      - socket-proxy:/run/proxy # Socket-proxy volume.
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount.
+    tmpfs:
+      - /run # Required for read-only image.
     cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SETPCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
           cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 32M # Allow up to 64MB of RAM.
+          memory: 64M # Allow up to 64MB of RAM.
+        reservations:
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 32M # Reserve 32MB of RAM.
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:2375/_ping || exit 1"
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 
@@ -43,8 +49,3 @@ networks:
   internal:
     external: true
     name: internal-network
-
-volumes:
-  socket-proxy:
-    external: true
-    name: socket-proxy-volume

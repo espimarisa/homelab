@@ -1,23 +1,25 @@
+###########################################################################
+# Gluetun: VPN. I use AirVPN. - https://github.com/qdm12/gluetun          #
+###########################################################################
+
 ---
 services:
-  ###########################################################################
-  # Gluetun: VPN (I use AirVPN) - https://github.com/qdm12/gluetun          #
-  ###########################################################################
-
   gluetun:
-    image: ghcr.io/qdm12/gluetun:latest
+    image: ghcr.io/qdm12/gluetun:v3
     container_name: gluetun
-    env_file: ../../.env
     hostname: gluetun
     restart: unless-stopped
     devices:
       - /dev/net/tun:/dev/net/tun # TUN/TAP device passthrough.
     environment:
+      BLOCK_ADS: "off" # Disable unbound blocking; lowers resource usage.
+      BLOCK_MALICIOUS: "off" # Disable unbound blocking; lowers resource usage.
+      BLOCK_SURVEILLANCE: "off" # Disable unbound blocking; lowers resource usage.
+      DOT_IPV6: "on" # Enable DOT for IPV6.
       DOT_PROVIDERS: "quad9" # Use Quad9 for DOT.
       DOT: "on" # Enable DOT.
-      DOT_IPV6: "on" # Enable DOT for IPV6.
-      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/8,fc00::/7"
-      FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
+      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/8,fc00::/7" # Subnets to allow in.
+      FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # Server-side ports to allow in; for AirVPN this is your forwarded ports.
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443" # Use Quad9 for healthchecks.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
@@ -29,26 +31,25 @@ services:
       VPN_TYPE: "wireguard" # Use Wireguard.
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # Address(es) from wg0.conf.
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # Port from wg0.conf.
-      WIREGUARD_MTU: "1420" # MTU to use.
+      WIREGUARD_MTU: "1420" # MTU to use. 1420 is the highest I could get stable.
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # PresharedKey from wg0.conf.
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
     expose:
       - 5030/tcp # slskd web interface reverse proxied internally at slskd.${INTERNAL_DOMAIN}.
       - 7474/tcp # Autobrr web interface reverse proxied internally at autobrr.${INTERNAL_DOMAIN}.
-      - 7476/tcp # qui web interface reverse proxied internally at qui.${INTERNAL_DOMAIN}.
       - 8080/tcp # qBittorrent web interface reverse proxied internally at qbittorrent.${INTERNAL_DOMAIN}.
       - 8191/tcp # Byparr API.
       - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${INTERNAL_DOMAIN}.
     networks:
-      gluetun: # Internal Gluetun interface.
+      gluetun:
         ipv4_address: 172.19.3.10
         ipv6_address: ${DOCKER_IPV6_ULA_BASE}:3::10
     volumes:
       - gluetun:/gluetun # Gluetun cache.
     cap_add:
       - NET_ADMIN # Required for configuring Wireguard.
-      - NET_RAW # Helps with healthchecks and TCP speed.
+      - NET_RAW # Helps with raw TCP traffic.
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -60,8 +61,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using up to 2 vCPUs.
-          memory: 2G # Allow using 2G of RAM.
+          cpus: 1 # Allow using up to 1 vCPUs.
+          memory: 1G # Allow using 1GB of RAM.
+        reservations:
+          cpus: 0.25 # Reserve 0.25 vCPUs.
+          memory: 256M # Reserve 256MB of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

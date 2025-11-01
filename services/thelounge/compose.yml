@@ -1,41 +1,40 @@
+###########################################################################
+# The Lounge: Web-based IRC client - https://thelounge.chat               #
+###########################################################################
+
 ---
-x-defaults: &defaults
-  env_file: ../../.env
-  read_only: true # Prevent writing directly to the image.
-  restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  environment:
-    TZ: "${TZ}" # Sets the timezone.
-  networks:
-    - external
-  cap_drop:
-    - ALL # Drop all default capabilities.
-  security_opt:
-    - no-new-privileges:true # Do not allow privilege escalation.
-
 services:
-  ###########################################################################
-  # The Lounge: IRC Client - https://thelounge.chat                         #
-  ###########################################################################
-
   thelounge:
-    <<: *defaults
     image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
     hostname: thelounge
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - external
     expose:
       - 9000/tcp # Web interface reverse proxied externally at ${THELOUNGE_URL}.
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - thelounge-data:/var/opt/thelounge # Configuration and data.
+      - thelounge:/var/opt/thelounge # Configuration and data.
+    cap_drop:
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
           cpus: 0.5 # Allow up to 0.5 vCPUs.
           memory: 256M # Allow up to 256MB of RAM.
+        reservations:
+          cpus: 0.25 # Reserve 0.25 vCPUs.
+          memory: 64M # Reserve 64MB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9000 || exit 1"
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:
@@ -43,9 +42,6 @@ networks:
     name: external-network
 
 volumes:
-  thelounge-data:
-    name: thelounge-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/thelounge/data"
-      o: bind
-      type: none
+  thelounge:
+    external: true
+    name: thelounge-volume

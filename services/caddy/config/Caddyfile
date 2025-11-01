@@ -71,43 +71,38 @@
 # Externally accessible services.                                         #
 ###########################################################################
 
-{$CHHOTO_URL} {
-	import external_proxy chhoto:4567
-	import security_headers
-}
+# {$CHHOTO_URL} {
+# 	import external_proxy chhoto:4567
+# 	import security_headers
+# }
 
-{$GATUS_URL} {
-	import external_proxy gatus:8080
-	import security_headers
-}
+# {$GATUS_URL} {
+# 	import external_proxy gatus:8080
+# 	import security_headers
+# }
 
-{$JELLYFIN_URL} {
-	import external_proxy jellyfin:8096
-	import security_headers
-}
+# {$JELLYFIN_URL} {
+# 	import external_proxy jellyfin:8096
+# 	import security_headers
+# }
 
-{$OPENCLOUD_URL} {
-	import external_proxy opencloud:9200
-	import security_headers
-}
+# {$OPENCLOUD_URL} {
+# 	import external_proxy opencloud:9200
+# 	import security_headers
+# }
 
-{$SEERR_URL} {
-	import external_proxy seerr:5055
-	import security_headers
-}
+# {$THELOUNGE_URL} {
+# 	import external_proxy thelounge:9000
+# 	import security_headers
+# }
 
-{$THELOUNGE_URL} {
-	import external_proxy thelounge:9000
-	import security_headers
-}
+# {$VAULTWARDEN_URL} {
+# 	import external_proxy vaultwarden:80
 
-{$VAULTWARDEN_URL} {
-	import external_proxy vaultwarden:80
-
-	header {
-		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-	}
-}
+# 	header {
+# 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+# 	}
+# }
 
 ###########################################################################
 # Internal-only services; need DNS rewrites + Caddy CA cert installed.    #
@@ -115,97 +110,40 @@
 
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474
-	import security_headers
-}
-
-backrest.{$INTERNAL_DOMAIN} {
-	import internal_proxy backrest:9898
-	import security_headers
 }
 
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767
-	import security_headers
 }
 
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
-	import security_headers
-}
-
-cleanuparr.{$INTERNAL_DOMAIN} {
-	import internal_proxy cleanuparr:11011
-	import security_headers
 }
 
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
-	import security_headers
-}
-
-huntarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy huntarr:9705
-	import security_headers
 }
 
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
-	import security_headers
-}
-
-profilarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy profilarr:6868
-	import security_headers
 }
 
 prowlarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:9696
-	import security_headers
 }
 
 qbittorrent.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:8080
-	import security_headers
-}
-
-qui.{$INTERNAL_DOMAIN} {
-	import internal_proxy gluetun:7476
-	import security_headers
-}
-
-seerr.{$INTERNAL_DOMAIN} {
-	import internal_proxy seerr:5055
-	import security_headers
 }
 
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
-	import security_headers
 }
 
 slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
-	import security_headers
 }
 
 sonarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy sonarr:8989
-	import security_headers
-}
-
-###########################################################################
-# Catch-all block to reduce spam and annoyance. (MUST BE LAST!)           #
-###########################################################################
-
-* {
-	# Log and abort any requests that don't match the sites above.
-	log {
-		output file /caddy/logs/unmatched.log {
-			roll_keep 5
-			roll_keep_for 720h
-			roll_size 10mb
-		}
-	}
-
-	abort
 }

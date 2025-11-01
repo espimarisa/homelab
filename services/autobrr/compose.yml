@@ -1,24 +1,23 @@
+###########################################################################
+# autobrr: Download automation and ratio manager - https://autobrr.com    #
+###########################################################################
+
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true # Prevent writing directly to the image.
   restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
   cap_drop:
     - ALL # Drop all default capabilities.
   security_opt:
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # autobrr: Download automation utility - https://autobrr.com/             #
-  ###########################################################################
-
   autobrr:
     <<: *defaults
-    image: ghcr.io/autobrr/autobrr:latest
+    image: ghcr.io/autobrr/autobrr:v1.68
     container_name: autobrr
     network_mode: service:gluetun # Route all traffic through Gluetun.
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       AUTOBRR__CHECK_FOR_UPDATES: "false" # Do not check for updates.
       AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
@@ -31,7 +30,6 @@ services:
       AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Connect with PostgreSQL password.
       AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
       AUTOBRR__POSTGRES_USER: "postgres" # Use default user.
-      AUTOBRR__SESSION_SECRET: "${AUTOBRR_SESSION_SECRET}" # Session secret to use for Autobrr.
       TZ: "${TZ}" # Sets the timezone.
     volumes:
       - autobrr-logs:/logs:rw

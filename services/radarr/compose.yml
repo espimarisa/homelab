@@ -1,9 +1,11 @@
+###########################################################################
+# Radarr: Movie manager, organizer, and PVR - https://radarr.tv           #
+###########################################################################
+
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true # Prevent writing directly to the image.
   restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
   environment:
     TZ: "${TZ}" # Sets the timezone.
   cap_drop:
@@ -12,10 +14,6 @@ x-defaults: &defaults
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # Radarr: Movie manager, organizer, and PVR - https://radarr.tv           #
-  ###########################################################################
-
   radarr:
     <<: *defaults
     image: ghcr.io/11notes/radarr:5
@@ -28,7 +26,7 @@ services:
         ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::21"
       internal:
     expose:
-      - 7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
+      - 7878:7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
     volumes:

@@ -1,18 +1,21 @@
+###########################################################################
+# Byparr: Captcha solver - https://github.com/ThePhaseless/Byparr         #
+###########################################################################
+
 ---
 services:
-  ###########################################################################
-  # Byparr: Captcha solver - https://github.com/ThePhaseless/Byparr         #
-  ###########################################################################
-
   byparr:
     image: ghcr.io/thephaseless/byparr:main
     container_name: byparr
-    env_file: ../../.env
     network_mode: service:gluetun
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       TZ: "${TZ}" # Sets the timezone.
+    tmpfs:
+      - "/var:uid=${PUID},gid=${PGID},exec" # Required for read_only image.
+      - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read_only image.
     cap_add:
       - CHOWN
     cap_drop:

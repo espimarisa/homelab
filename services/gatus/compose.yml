@@ -1,11 +1,12 @@
+###########################################################################
+# Gatus: Status page and uptime monitoring - https://gatus.io             #
+###########################################################################
+
 ---
 x-defaults: &defaults
-  env_file: ../../.env
+  env_file: ../../.env # Needed to force YAML parsing.
   read_only: true # Prevent writing directly to the image.
   restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  environment:
-    TZ: "${TZ}" # Sets the timezone.
   cap_drop:
     - ALL # Drop all default capabilities.
   deploy:
@@ -17,15 +18,12 @@ x-defaults: &defaults
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # Gatus: Status and uptime monitoring - https://gatus.io                  #
-  ###########################################################################
-
   gatus:
     <<: *defaults
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
     hostname: gatus
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.

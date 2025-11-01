@@ -1,13 +1,12 @@
+###########################################################################
+# Chhoto URL: URL shortener - https://github.com/sintan1729/chhoto-url    #
+###########################################################################
+
 ---
 services:
-  ###########################################################################
-  # Chhoto URL: URL shortener - https://github.com/sintan1729/chhoto-url    #
-  ###########################################################################
-
   chhoto:
     image: ghcr.io/sintan1729/chhoto-url:6-alpine
     container_name: chhoto
-    env_file: ../../.env
     hostname: chhoto
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
@@ -26,7 +25,7 @@ services:
     networks:
       - external
     volumes:
-      - chhoto-data:/db:rw # Database.
+      - chhoto:/db:rw # Database.
     cap_drop:
       - ALL # Drop all default capabilities.
     deploy:
@@ -45,9 +44,6 @@ networks:
     name: external-network
 
 volumes:
-  chhoto-data:
-    name: chhoto-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/chhoto/data"
-      o: bind
-      type: none
+  chhoto:
+    name: chhoto-volume
+    external: true

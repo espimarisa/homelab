@@ -1,28 +1,18 @@
+###########################################################################
+# OpenCloud: Self-hosted cloud storage service - https://opencloud.eu/en  #
+###########################################################################
+
 ---
-x-defaults: &defaults
-  env_file: ../../.env
-  read_only: true # Prevent writing directly to the image.
-  restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  networks:
-    - external
-  cap_drop:
-    - ALL # Drop all default capabilities.
-  security_opt:
-    - no-new-privileges:true # Do not allow privilege escalation.
-
 services:
-  ###########################################################################
-  # OpenCloud: Self-hosted cloud storage service - https://opencloud.eu/en  #
-  ###########################################################################
-
   opencloud:
-    <<: *defaults
     image: opencloudeu/opencloud-rolling:3
-    command: ["-c", "opencloud init --insecure true || true; opencloud server"]
+    command: ["-c", "opencloud init --insecure true || true; opencloud server"] # Needed for initial setup.
     container_name: opencloud
     entrypoint: /bin/sh # Enter in /bin/sh for CLI commands.
     hostname: opencloud
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       FRONTEND_ARCHIVER_MAX_SIZE: "10000000000" # Sets the max archive size.
       IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}" # Sets the admin password.
@@ -46,18 +36,27 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     expose:
       - 9200/tcp # Web interface reverse proxied externally at ${OPENCLOUD_URL}.
+    networks:
+      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - opencloud-config:/etc/opencloud # Configuration and data.
-      - opencloud-data:/var/lib/opencloud # User data.
+      - opencloud-config:/etc/opencloud:rw # Configuration and data.
+      - opencloud-data:/var/lib/opencloud:rw # User data.
+    cap_drop:
+      - ALL # Drop all default capabilities.
     deploy:
       resources:
         limits:
           cpus: 4 # Allow up to 4 vCPUs.
           memory: 4G # Allow up to 4G of RAM.
+        reservations:
+          cpus: 2 # Reserve 1 vCPU.
+          memory: 1G # Reserve 1GB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 networks:
   external:
@@ -66,11 +65,8 @@ networks:
 
 volumes:
   opencloud-config:
-    name: opencloud-config-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/opencloud/config"
-      o: bind
-      type: none
+    name: opencloud-config-volume
+    external: true
   opencloud-data:
     name: opencloud-data-bind
     driver_opts:

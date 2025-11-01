@@ -1,14 +1,14 @@
+###########################################################################
+# Caddy: Reverse proxy and web server - https://caddyserver.com/          #
+###########################################################################
+
 ---
 services:
-  ###########################################################################
-  # Caddy: Reverse proxy and web server - https://caddyserver.com/          #
-  ###########################################################################
-
   caddy:
     image: ghcr.io/11notes/caddy:2
     container_name: caddy
     command: ["run", "--config", "/caddy/etc/Caddyfile"] # Use the Caddyfile.
-    env_file: ../../.env
+    env_file: ../../.env # Needed to force Caddyfile parsing.
     hostname: caddy
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
@@ -45,6 +45,9 @@ services:
         limits:
           cpus: 1 # Allow up to 1 vCPU.
           memory: 512M # Allow up to 512MB of RAM usage.
+        reservations:
+          cpus: 0.5 # Reserve 0.5 vCPUs.
+          memory: 128MB # Reserve 128MB of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 
@@ -60,18 +63,15 @@ networks:
     name: internal-network
 
 volumes:
-  caddy-data:
-    name: caddy-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/caddy/data"
-      o: bind
-      type: none
   caddy-backups:
-    external: true
     name: caddy-backups-volume
+    external: true
   caddy-config:
-    external: true
     name: caddy-config-volume
-  caddy-logs:
     external: true
+  caddy-data:
+    name: caddy-data-volume
+    external: true
+  caddy-logs:
     name: caddy-logs-volume
+    external: true

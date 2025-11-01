@@ -1,23 +1,14 @@
+###########################################################################
+# Bazarr: Subtitle manager - https://wiki.bazarr.media                    #
+###########################################################################
+
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   restart: unless-stopped
-  cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SETFCAP
-    - SETPCAP
-    - SYS_ADMIN
-    - SYS_CHROOT
-    - SYS_PTRACE
   security_opt:
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # Bazarr: Subtitle manager - https://wiki.bazarr.media                    #
-  ###########################################################################
-
   bazarr:
     <<: *defaults
     image: ghcr.io/hotio/bazarr:release
@@ -42,6 +33,14 @@ services:
     volumes:
       - media-library:/library:rw # Root media library directory.
       - bazarr:/config:rw # Configuration and data.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       bazarr-db:
         condition: service_healthy # Wait for bazarr-db to be healthy before starting.

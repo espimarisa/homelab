@@ -1,12 +1,12 @@
-services:
-  ###########################################################################
-  # Dozzle: Docker log viewer - https://dozzle.dev/                         #
-  ###########################################################################
+###########################################################################
+# Dozzle: Docker log viewer - https://dozzle.dev/                         #
+###########################################################################
 
+---
+services:
   dozzle:
     image: ghcr.io/amir20/dozzle:v8
     container_name: dozzle
-    env_file: ../../.env
     hostname: dozzle
     read_only: true # Prevent writing to the image.
     restart: unless-stopped

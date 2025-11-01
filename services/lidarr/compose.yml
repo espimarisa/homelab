@@ -1,23 +1,14 @@
+###########################################################################
+# Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
+###########################################################################
+
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   restart: unless-stopped
-  cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SETFCAP
-    - SETPCAP
-    - SYS_ADMIN
-    - SYS_CHROOT
-    - SYS_PTRACE
   security_opt:
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # Lidarr: Music manager, organizer, and PVR - https://lidarr.audio        #
-  ###########################################################################
-
   lidarr:
     <<: *defaults
     image: ghcr.io/hotio/lidarr:pr-plugins
@@ -40,6 +31,14 @@ services:
       - downloads:/downloads:rw # Root downloads directory.
       - media-library:/library:rw # Root media library directory.
       - lidarr:/config:rw # Configuration and data.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       lidarr-db:
         condition: service_healthy # Wait for lidarr-db to be healthy before starting.

@@ -1,23 +1,23 @@
+###########################################################################
+# Vaultwarden: Unofficial Bitwarden-compatible server.                    #
+###########################################################################
+
 ---
 x-defaults: &defaults
   restart: unless-stopped
   read_only: true # Prevent writing to the image directly.
-  user: "${PUID}:${PGID}" # Run as non-root user.
   cap_drop:
     - ALL # Drop all default capabilities.
   security_opt:
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # Vaultwarden: BW server - https://github.com/dani-garcia/vaultwarden     #
-  ###########################################################################
-
   vaultwarden:
     <<: *defaults
     image: ghcr.io/dani-garcia/vaultwarden:latest-alpine
     container_name: vaultwarden
     hostname: vaultwarden
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       ADMIN_RATELIMIT_MAX_BURST: "3" # Configures admin burst ratelimit settings.
       ADMIN_RATELIMIT_SECONDS: "300" # Configures how long to ratelimit the admin account for.
@@ -30,9 +30,9 @@ services:
       IP_HEADER: "X-Forwarded-For" # Required for reverse proxy.
       LOGIN_RATELIMIT_MAX_BURST: "10" # Configures max burst ratelimit.
       LOGIN_RATELIMIT_SECONDS: "60" # Ratelimit for 60 seconds.
-      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles support for push notifications.
-      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # Bitwarden installation ID for push notifications.
-      PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # Bitwarden installation key for push notifications.
+      # PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles support for push notifications.
+      # PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # Bitwarden installation ID for push notifications.
+      # PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # Bitwarden installation key for push notifications.
       REQUIRE_DEVICE_EMAIL: "true" # Require email verification.
       SENDS_ALLOWED: "true" # Allow usage of the send feature.
       SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles support for signing up.
@@ -55,12 +55,15 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - vaultwarden-data:/data # Configuration and data.
+      - vaultwarden:/data # Configuration and data.
     deploy:
       resources:
         limits:
-          cpus: 0.5 # Allow up to 0.5 vCPUs.
-          memory: 256M # Allow up to 256M of RAM.
+          cpus: 0.5 # Allow up to 1 vCPUs.
+          memory: 512M # Allow up to 512MB of RAM.
+        reservations:
+          cpus: 0.5 # Reserve 0.5 vCPUs.
+          memory: 256M # Reserve 256MB of RAM.
     depends_on:
       vaultwarden-db:
         condition: service_healthy # Require vaultwarden-db to be ready before connecting.
@@ -91,6 +94,9 @@ services:
         limits:
           cpus: 0.5 # Allow using 0.5 vCPUs.
           memory: 256M # Allow using 256M of RAM.
+        reservations:
+          cpus: 0.25 # Reserve 0.25 vCPUs.
+          memory: 256M # Reserve 128MB of RAM.
 
 networks:
   external:
@@ -101,27 +107,15 @@ networks:
     name: internal-network
 
 volumes:
-  vaultwarden-data:
-    name: vaultwarden-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/vaultwarden/data"
-      o: bind
-      type: none
+  vaultwarden:
+    name: vaultwarden-volume
+    external: true
   vaultwarden-db-backups:
-    name: vaultwarden-db-backups-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/vaultwarden/db/backups"
-      o: bind
-      type: none
+    name: vaultwarden-db-backups-volume
+    external: true
   vaultwarden-db-config:
-    name: vaultwarden-db-config-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/vaultwarden/db/config"
-      o: bind
-      type: none
+    name: vaultwarden-db-config-volume
+    external: true
   vaultwarden-db-data:
-    name: vaultwarden-db-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/vaultwarden/db/data"
-      o: bind
-      type: none
+    name: vaultwarden-db-data-volume
+    external: true

@@ -1,20 +1,20 @@
+###########################################################################
+# slskd: Web-based Soulseek client - https://github.com/slskd/slskd       #
+###########################################################################
+
 ---
 services:
-  ###########################################################################
-  # slskd: Soulseek client - https://github.com/slskd/slskd                 #
-  ###########################################################################
-
   slskd:
     image: ghcr.io/slskd/slskd:latest
     container_name: slskd
-    env_file: ../../.env
     network_mode: service:gluetun # Route all traffic through Gluetun.
     restart: unless-stopped
+    read_only: true # Prevent writing directly to the image.
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       SLSKD_DISK_LOGGER: "true" # Log files to the disk.
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Sets the downloads directory.
-      SLSKD_INCOMPLETE_DIR: "/dl-cache" # Sets the incomplete downloads directory.
+      SLSKD_INCOMPLETE_DIR: "/incomplete/soulseek" # Sets the incomplete downloads directory.
       SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # Sets the JWT API key.
       SLSKD_JWT_TTL: "604800000" # Sets the JWT API TTL.
       SLSKD_REMOTE_CONFIGURATION: "true" # Enables editing the configuration.
@@ -27,9 +27,11 @@ services:
       SLSKD_USERNAME: "${SLSKD_USERNAME}" # Web interface username to set.
       SOULSEEK_PASSWORD: "${SOULSEEK_PASSWORD}" # Web interface password to set.
       TZ: "${TZ}" # Sets the timezone.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - slskd:/app:rw # Configuration and database.
-      - dl-cache-soulseek:/dl-cache:rw # Root path to incomplete downloads.
+      - downloads-incomplete:/incomplete:rw # Root path to incomplete downloads.
       - downloads:/downloads:rw # Root path to downloads.
       - media-library:/library:ro # Root path to the media library.
     cap_add:
@@ -54,12 +56,6 @@ volumes:
   slskd:
     name: slskd-volume
     external: true
-  dl-cache-soulseek:
-    name: dl-cache-soulseek-bind
-    driver_opts:
-      device: "${DOWNLOADS_CACHE_PATH}/soulseek-incomplete"
-      o: bind
-      type: none
   downloads:
     name: downloads-bind
     driver_opts:
@@ -70,5 +66,11 @@ volumes:
     name: media-library-bind
     driver_opts:
       device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none
+  downloads-incomplete:
+    name: downloads-incomplete-bind
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none

@@ -1,44 +1,43 @@
+###########################################################################
+# Jellyfin: Media Server - https://jellyfin.org                           #
+###########################################################################
+
 ---
-x-defaults: &defaults
-  env_file: ../../.env
-  read_only: true # Prevent writing directly to the image.
-  restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  networks:
-    - external
-  cap_drop:
-    - ALL # Drop all default capabilities.
-  security_opt:
-    - no-new-privileges:true # Do not allow privilege escalation.
-
 services:
-  ###########################################################################
-  # Jellyfin: Media Server - https://jellyfin.org                           #
-  ###########################################################################
-
   jellyfin:
-    <<: *defaults
-    image: ghcr.io/jellyfin/jellyfin:10
+    image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
     hostname: jellyfin
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128:ro
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures autodiscovery.
     expose:
       - 8096/tcp # Web interface reverse proxied externally at ${JELLYFIN_URL}.
+    networks:
+      - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - jellyfin-cache:/cache # Cache volume.
-      - jellyfin-config:/config # Configuration and database.
+      - jellyfin-cache:/cache:rw # Cache volume.
+      - jellyfin-config:/config:rw # Configuration and database.
       - media-library:/library:ro # Read-only media library mount.
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
     deploy:
       resources:
         limits:
           cpus: 4 # Allow up to 4 vCPUs.
           memory: 4G # Allow up to 4GB of RAM usage.
+        reservations:
+          cpus: 2 # Reserve 1 vCPU.
+          memory: 1G # Reserve 1GB of RAM.
     group_add:
       - "${RENDER_GID}" # Adds user to the host render group.
     healthcheck:

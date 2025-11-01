@@ -1,74 +1,40 @@
+###########################################################################
+# qBittorrent: BitTorrent client - https://www.qbittorrent.org/           #
+###########################################################################
+
 ---
-# Default container settings.
-x-defaults: &defaults
-  env_file: ../../.env
-  network_mode: service:gluetun # Route all traffic through Gluetun.
-  read_only: true # Prevent writing directly to the image.
-  restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
-  environment:
-    TZ: "${TZ}" # Sets the timezone.
-  cap_add:
-    - CHOWN # Required for taking ownership.
-  cap_drop:
-    - ALL # Drop all default capabilities.
-  depends_on:
-    gluetun:
-      condition: service_healthy # Wait for Gluetun to be healthy before connecting.
-      restart: true # Restart when Gluetun restarts.
-  security_opt:
-    - no-new-privileges:true # Do not allow privilege escalation.
-
 services:
-  ###########################################################################
-  # qBittorrent: BitTorrent client - https://www.qbittorrent.org/           #
-  ###########################################################################
-
   qbittorrent:
-    <<: *defaults
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
+    network_mode: service:gluetun # Route all traffic through Gluetun.
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
     volumes:
       - downloads:/downloads:rw # Root downloads path.
-      - dl-cache-torrents:/dl-cache:rw # Root downloads cache path.
+      - downloads-incomplete:/incomplete:rw # Root downloads cache path.
       - qbittorrent-config:/qbittorrent/etc:rw # Configuration path.
       - qbittorrent-data:/qbittorrent/var:rw # Data path.
+    cap_add:
+      - CHOWN # Required for taking ownership.
+    cap_drop:
+      - ALL # Drop all default capabilities.
+    depends_on:
+      gluetun:
+        condition: service_healthy # Wait for Gluetun to be healthy before connecting.
+        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
           cpus: 6 # Allow up to 8 vCPUs.
           memory: 4G # Allow up to 8GB of RAM usage.
-
-  ###########################################################################
-  # qui: Alternate web UI for qBittorrent - https://github.com/autobrr/qui  #
-  ###########################################################################
-
-  qui:
-    <<: *defaults
-    image: ghcr.io/autobrr/qui:latest
-    container_name: qui
-    environment:
-      QUI__LOG_LEVEL: "info" # Log at the info level.
-      QUI__LOG_MAX_SIZE: "10" # Rotate 10mb per file.
-      QUI__LOG_PATH: "/config/logs/qui.log" # Log path.
-      QUI__PORT: "7476" # Sets the port.
-      QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}" # Session secret to use.
-      TZ: "${TZ}" # Sets the timezone.
-    volumes:
-      - qui-config:/config:rw # qui config and database.
-      - qui-logs:/config/logs:rw # qui logs.
-    depends_on:
-      gluetun:
-        condition: service_healthy # Require Gluetun to be healthy before connecting.
-        restart: true # Restart when Gluetun is restarted.
-      qbittorrent:
-        condition: service_healthy # Require qBittorrent to be healthy before connecting.
-        restart: true # Restart when qBittorrent restarts.
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5 # Allow up to 0.5 vCPUs.
-          memory: 512M # Allow up to 512MB of RAM usage.
+        reservations:
+          cpus: 1 # Reserve 1 vCPU.
+          memory: 1G # Reserve 1GB of RAM.
+    security_opt:
+      - no-new-privileges:true # Do not allow privilege escalation.
 
 volumes:
   qbittorrent-config:
@@ -77,21 +43,15 @@ volumes:
   qbittorrent-data:
     name: qbittorrent-data-volume
     external: true
-  qui-config:
-    name: qui-config-volume
-    external: true
-  qui-logs:
-    name: qui-logs-volume
-    external: true
-  dl-cache-torrents:
-    name: dl-cache-torrents-bind
-    driver_opts:
-      device: "${DOWNLOADS_CACHE_PATH}/torrents-incomplete"
-      o: bind
-      type: none
   downloads:
     name: downloads-bind
     driver_opts:
       device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  downloads-incomplete:
+    name: downloads-incomplete-bind
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none

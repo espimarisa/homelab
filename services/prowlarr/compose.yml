@@ -1,25 +1,19 @@
+###########################################################################
+# Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
+###########################################################################
+
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true # Prevent writing directly to the image.
   restart: unless-stopped
-  user: "${PUID}:${PGID}" # Run as non-root user.
   environment:
     TZ: "${TZ}" # Sets the timezone.
   cap_drop:
     - ALL # Drop all default capabilities.
-  depends_on:
-    gluetun:
-      condition: service_healthy # Wait for Gluetun to be healthy before starting.
-      restart: true # Restart when Gluetun restarts.
   security_opt:
     - no-new-privileges:true # Do not allow privilege escalation.
 
 services:
-  ###########################################################################
-  # Prowlarr: Indexer manager for PVRs - https://prowlarr.com               #
-  ###########################################################################
-
   prowlarr:
     <<: *defaults
     image: ghcr.io/11notes/prowlarr:2

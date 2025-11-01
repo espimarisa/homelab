@@ -5,17 +5,14 @@ set -euo pipefail
 
 # Required environment variables.
 readonly REQUIRED_VARS=(
-	"APPDATA_PATH"         # Path to store application data.
-	"DOCKER_GID"           # Docker host group ID.
-	"DOCKER_IPV6_ULA_BASE" # Docker IPV6 ULA base.
-	"DOCKER_VOLUMES_PATH"  # Docker volumes path.
-	"DOWNLOADS_CACHE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
-	"DOWNLOADS_PATH"       # Path to store downloads.
-	"MEDIA_LIBRARY_PATH"   # Path to store the media library.
-	"PGID"                 # Group ID to run as.
-	"PUID"                 # User ID to run as.
-	"STORAGE_PATH"         # Path to the storage directory.
-	"UMASK"                # Umask to apply to files. TODO: MAKE SCRIPT SET UMASK!
+	"APPDATA_PATH"              # Path to store application data.
+	"DOCKER_IPV6_ULA_BASE"      # Docker IPV6 ULA base.
+	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
+	"DOWNLOADS_PATH"            # Path to store downloads.
+	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
+	"PGID"                      # Group ID to run as.
+	"PUID"                      # User ID to run as.
+	"STORAGE_PATH"              # Path to the storage directory.
 )
 
 # Source environment variables from .env file.
@@ -68,20 +65,7 @@ readonly GLUETUN_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:3::1"
 
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
-	"caddy/data"             # Caddy data and persistent certificates.
-	"chhoto/data"            # Chhoto URL shortener database.
-	"opencloud/config"       # OpenCloud configuration.
-	"opencloud/data"         # OpenCloud data.
-	"thelounge/data"         # The Lounge data.
-	"vaultwarden/data"       # Vaultwarden configuration.
-	"vaultwarden/db/backups" # Vaultwarden database backups.
-	"vaultwarden/db/config"  # Vaultwarden database config.
-	"vaultwarden/db/data"    # Vaultwarden database data.
-)
-
-# Files/directories to touch.
-readonly APPDATA_TOUCH_PATHS=(
-	"chhoto/data/urls.sqlite" # Initialize the chhoto database.
+	"opencloud/data" # OpenCloud data.
 )
 
 # Download directories to create.
@@ -96,9 +80,9 @@ readonly DOWNLOADS_DIRECTORIES=(
 )
 
 # Incomplete download directories to create.
-readonly DOWNLOADS_CACHE_DIRECTORIES=(
-	"soulseek-incomplete" # Incomplete soulseek downloads.
-	"torrents-incomplete" # Incomplete torrents downloads.
+readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
+	"soulseek" # Incomplete soulseek downloads.
+	"torrents" # Incomplete torrents downloads.
 )
 
 # Media library directories to create.
@@ -115,62 +99,57 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-db-backups-volume"  # Autobrr database backups.
-	"autobrr-db-config-volume"   # Autobrr database configuration.
-	"autobrr-db-data-volume"     # Autobrr database data.
-	"autobrr-logs-volume"        # Autobrr logs.
-	"autobrr-volume"             # Autoborr configuration and data.
-	"backrest-cache-volume"      # Backrest cache.
-	"backrest-config-volume"     # Backrest configuration.
-	"backrest-data-volume"       # Backrest data.
-	"backrest-tmp-volume"        # Backrest cache.
-	"bazarr-db-backups-volume"   # Bazarr database backups.
-	"bazarr-db-config-volume"    # Bazarr database configuration.
-	"bazarr-db-data-volume"      # Bazarr database data.
-	"bazarr-volume"              # Bazarr configuration and data.
-	"beszel-agent-volume"        # Beszel agent cache.
-	"beszel-data-volume"         # Beszel data.
-	"beszel-socket-volume"       # Beszel socket cache.
-	"caddy-backups-volume"       # Caddyfile backups.
-	"caddy-config-volume"        # Caddy configuration.
-	"caddy-logs-volume"          # Caddy logs.
-	"cleanuparr-volume"          # Cleanuparr configuration and data.
-	"dozzle-volume"              # Dozzle configuration and data.
-	"gatus-db-backups-volume"    # Gatus database backups.
-	"gatus-db-config-volume"     # Gatus database configuration.
-	"gatus-db-data-volume"       # Gatus database data.
-	"gluetun-volume"             # Gluetun cache.
-	"huntarr-volume"             # Huntarr configuration and data.
-	"jellyfin-cache-volume"      # Jellyfin cache.
-	"jellyfin-config-volume"     # Jellyfin configuration and data.
-	"lidarr-db-backups-volume"   # Lidarr database backups.
-	"lidarr-db-config-volume"    # Lidarr database configuration.
-	"lidarr-db-data-volume"      # Lidarr database data.
-	"lidarr-volume"              # Lidarr configuration and data.
-	"profilarr-volume"           # Profilarr configuration and data.
-	"prowlarr-db-backups-volume" # Prowlarr database backups.
-	"prowlarr-db-config-volume"  # Prowlarr database configuration.
-	"prowlarr-db-data-volume"    # Prowlarr database data.
-	"prowlarr-volume"            # Prowlarr configuration and data.
-	"qbittorrent-config-volume"  # qBittorrent configuration.
-	"qbittorrent-data-volume"    # qBittorrent data.
-	"qui-config-volume"          # qui configuration.
-	"qui-logs-volume"            # qui logs.
-	"radarr-db-backups-volume"   # Radarr database backups.
-	"radarr-db-config-volume"    # Radarr database configuration.
-	"radarr-db-data-volume"      # Radarr database data.
-	"radarr-volume"              # Radarr configuration and data.
-	"seerr-db-backups-volume"    # Seerr database backups.
-	"seerr-db-config-volume"     # Seerr database configuraton.
-	"seerr-db-data-volume"       # Seerr database data.
-	"seerr-volume"               # Seerr configuration and data.
-	"slskd-volume"               # slskd configuration and data.
-	"socket-proxy-volume"        # Socket proxy mount.
-	"sonarr-db-backups-volume"   # Sonarr database backups.
-	"sonarr-db-config-volume"    # Sonarr database configuration.
-	"sonarr-db-data-volume"      # Sonarr database data.
-	"sonarr-volume"              # Sonarr configuration and data.
-	"unpackerr-volume"           # Unpackerr data.
+	"autobrr-db-backups-volume"     # Autobrr database backups.
+	"autobrr-db-config-volume"      # Autobrr database configuration.
+	"autobrr-db-data-volume"        # Autobrr database data.
+	"autobrr-logs-volume"           # Autobrr logs.
+	"autobrr-volume"                # Autobrr configuration and data.
+	"bazarr-db-backups-volume"      # Bazarr database backups.
+	"bazarr-db-config-volume"       # Bazarr database configuration.
+	"bazarr-db-data-volume"         # Bazarr database data.
+	"bazarr-volume"                 # Bazarr configuration and data.
+	"beszel-agent-volume"           # Beszel agent cache.
+	"beszel-data-volume"            # Beszel data.
+	"beszel-socket-volume"          # Beszel socket cache.
+	"caddy-backups-volume"          # Caddyfile backups.
+	"caddy-config-volume"           # Caddy configuration.
+	"caddy-data-volume"             # Caddy data.
+	"caddy-logs-volume"             # Caddy logs.
+	"chhoto-volume"                 # Chhoto database.
+	"configarr-volume"              # Configarr cloned data,
+	"dozzle-volume"                 # Dozzle configuration and data.
+	"gatus-db-backups-volume"       # Gatus database backups.
+	"gatus-db-config-volume"        # Gatus database configuration.
+	"gatus-db-data-volume"          # Gatus database data.
+	"gluetun-volume"                # Gluetun cache.
+	"jellyfin-cache-volume"         # Jellyfin cache.
+	"jellyfin-config-volume"        # Jellyfin configuration and data.
+	"lidarr-db-backups-volume"      # Lidarr database backups.
+	"lidarr-db-config-volume"       # Lidarr database configuration.
+	"lidarr-db-data-volume"         # Lidarr database data.
+	"lidarr-volume"                 # Lidarr configuration and data.
+	"opencloud-config-volume"       # OpenCloud configuration.
+	"prowlarr-db-backups-volume"    # Prowlarr database backups.
+	"prowlarr-db-config-volume"     # Prowlarr database configuration.
+	"prowlarr-db-data-volume"       # Prowlarr database data.
+	"prowlarr-volume"               # Prowlarr configuration and data.
+	"qbittorrent-config-volume"     # qBittorrent configuration.
+	"qbittorrent-data-volume"       # qBittorrent data.
+	"radarr-db-backups-volume"      # Radarr database backups.
+	"radarr-db-config-volume"       # Radarr database configuration.
+	"radarr-db-data-volume"         # Radarr database data.
+	"radarr-volume"                 # Radarr configuration and data.
+	"slskd-volume"                  # slskd configuration and data.
+	"sonarr-db-backups-volume"      # Sonarr database backups.
+	"sonarr-db-config-volume"       # Sonarr database configuration.
+	"sonarr-db-data-volume"         # Sonarr database data.
+	"sonarr-volume"                 # Sonarr configuration and data.
+	"thelounge-volume"              # The Lounge configuration and data.
+	"unpackerr-volume"              # Unpackerr data.
+	"vaultwarden-db-backups-volume" # Vaultwarden database backups.
+	"vaultwarden-db-config-volume"  # Vaultwarden database configuration.
+	"vaultwarden-db-data-volume"    # vaultwarden database data.
+	"vaultwarden-volume"            # Vaultwarden data.
 )
 
 # Docker volumes to take ownership of.
@@ -179,18 +158,20 @@ readonly CHOWN_VOLUMES=(
 	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
+	"chhoto-volume"
 	"caddy-backups-volume"
 	"caddy-config-volume"
+	"caddy-data-volume"
 	"caddy-logs-volume"
+	"configarr-volume"
 	"dozzle-volume"
-	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"qui-config-volume"
-	"qui-logs-volume"
-	"seerr-volume"
+	"opencloud-config-volume"
 	"slskd-volume"
+	"thelounge-volume"
 	"unpackerr-volume"
+	"vaultwarden-volume"
 )
 
 # Function to ensure a directory exists.
@@ -247,7 +228,7 @@ echo -e "\nCreating bind mount directories..."
 create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
-create_dirs "$DOWNLOADS_CACHE_PATH" "${DOWNLOADS_CACHE_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
@@ -273,6 +254,10 @@ for volume in "${VOLUMES[@]}"; do
 	create_volume "$volume"
 done
 
+# Create Chhoto database.
+CHHOTO_DATA_PATH="${DOCKER_VOLUMES_PATH}/chhoto-volume/_data"
+$SUDO touch "${CHHOTO_DATA_PATH}/urls.sqlite"
+
 # Set ownership of volumes by chowning their _data directory on the host
 echo -e "\nSetting volume permissions..."
 for volume in "${CHOWN_VOLUMES[@]}"; do
@@ -291,13 +276,15 @@ echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${APPDATA_PATH}" \
 	"${DOWNLOADS_PATH}" \
-	"${DOWNLOADS_CACHE_PATH}" \
+	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
-# Initialize files if they don't exist.
-for file in "${APPDATA_TOUCH_PATHS[@]}"; do
-	echo "Creating ${file} if it doesn't exist at ${APPDATA_PATH}/${file}..."
-	touch "${APPDATA_PATH}/${file}"
-done
+# Set permissions of the main bind mount directories on the host.
+echo "Setting permissions for host directories..."
+$SUDO chmod -R 775 \
+	"${APPDATA_PATH}" \
+	"${DOWNLOADS_PATH}" \
+	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${MEDIA_LIBRARY_PATH}"
 
 echo -e "\nInitial setup complete!"

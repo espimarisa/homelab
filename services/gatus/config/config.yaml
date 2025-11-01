@@ -1,57 +1,48 @@
 ---
 # Default alert options.
 x-defaults-alerts: &defaults-alerts
-  - type: discord
+  - type: discord # Use Discord by default.
     send-on-resolved: true
-
-# Default conditions.
-x-defaults-conditions: &defaults-conditions
-  - "[STATUS] == 200"
-  - "[RESPONSE_TIME] < 1000"
-
-# Default options.
-x-defaults: &defaults
-  alerts: *defaults-alerts
-  conditions: *defaults-conditions
-  interval: 5m
 
 # Default HTTP options.
 x-defaults-http: &defaults-http
-  <<: *defaults
+  alerts: *defaults-alerts
+  interval: 5m
   conditions:
-    - "[CERTIFICATE_EXPIRATION] > 240h"
-    - "[RESPONSE_TIME] < 6500" # might be a little low if your shit is slow
-    - "[STATUS] == 200"
+    - "[CERTIFICATE_EXPIRATION] > 240h" # Ensures certificates are up-to-date.
+    - "[RESPONSE_TIME] < 2000" # External services shouldn't take more than 2s to resolve.
+    - "[STATUS] == 200" # 200 will be an OK
 
 # Default container options.
 x-defaults-container: &defaults-container
-  <<: *defaults
+  alerts: *defaults-alerts
+  interval: 5m
   conditions:
-    - "[BODY].State.Health.Status != unhealthy" # will bitch when restarting lol
-    - "[RESPONSE_TIME] < 100" # containers should always be < 100ms
-    - "[STATUS] == 200"
+    - "[BODY].State.Health.Status != unhealthy" # Not the most accurate check.
+    - "[RESPONSE_TIME] < 10" # Containers should always be within ~10ms.
+    - "[STATUS] == 200" # 200 will be an OK
   ui:
     hide-hostname: true # no reason to show container hostnames
 
 # Alerting configuration.
 alerting:
-  discord:
+  discord: # Send to a Discord webhook by default.
     title: "🚨 Status Update"
     webhook-url: "${GATUS_DISCORD_WEBHOOK_URL}"
 
-# Storage configuration.
+# Database configuration.
 storage:
-  type: postgres
-  path: "postgres://postgres:${GATUS_DB_PASSWORD}@gatus-db:5432/postgres?sslmode=disable"
+  type: postgres # Use PostgreSQL.
+  path: "postgres://postgres:${GATUS_DB_PASSWORD}@gatus-db:5432/postgres?sslmode=disable" # Connect to PostgreSQL.
 
 # UI configuration.
 ui:
-  default-sort-by: group
-  description: "${GATUS_DESCRIPTION}"
-  header: ${GATUS_HEADER}
-  link: "/"
-  logo: "${GATUS_LOGO_URL}"
-  title: ${GATUS_TITLE}
+  default-sort-by: group # Sort by group automatically.
+  description: "${GATUS_DESCRIPTION}" # Sets the page description.
+  header: ${GATUS_HEADER} # Sets the header name.
+  link: "/" # Fixes the header link.
+  logo: "${GATUS_LOGO_URL}" # Sets the logo URL.
+  title: ${GATUS_TITLE} # Sets the page title.
 
 endpoints:
   ###########################################################################
@@ -94,12 +85,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/radarr-db/json
 
-  # Seerr DB.
-  - name: Seerr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/seerr-db/json
-
   # Sonarr DB.
   - name: Sonarr - PostgreSQL
     <<: *defaults-container
@@ -134,12 +119,6 @@ endpoints:
     group: Downloads
     url: ${SOCKET_PROXY_URL}/qbittorrent/json
 
-  # qui.
-  - name: qui
-    <<: *defaults-container
-    group: Downloads
-    url: ${SOCKET_PROXY_URL}/qui/json
-
   # slskd.
   - name: slskd
     <<: *defaults-container
@@ -149,12 +128,6 @@ endpoints:
   ###########################################################################
   # Infrastructure.                                                         #
   ###########################################################################
-
-  # Backrest.
-  - name: Backrest
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/backrest/json
 
   # Caddy.
   - name: Caddy
@@ -184,17 +157,11 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/byparr/json
 
-  # Cleanuparr.
-  - name: Cleanuparr
+  # Configarr.
+  - name: Configarr
     <<: *defaults-container
     group: Media Management
-    url: ${SOCKET_PROXY_URL}/cleanuparr/json
-
-  # Huntarr.
-  - name: Huntarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/huntarr/json
+    url: ${SOCKET_PROXY_URL}/configarr/json
 
   # Lidarr.
   - name: Lidarr
@@ -208,12 +175,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/mam-ip-helper/json
 
-  # Profilarr.
-  - name: Profilarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/profilarr/json
-
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
@@ -225,12 +186,6 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/radarr/json
-
-  # Seerr.
-  - name: Seerr
-    <<: *defaults-http
-    group: Media Management
-    url: https://${SEERR_URL}
 
   # Sonarr.
   - name: Sonarr
@@ -276,8 +231,8 @@ endpoints:
   # Services.                                                               #
   ###########################################################################
 
-  # Chhoto.
-  - name: Chhoto
+  # Chhoto URL.
+  - name: Chhoto URL
     <<: *defaults-http
     group: Services
     url: https://${CHHOTO_URL}
@@ -309,6 +264,12 @@ endpoints:
   ###########################################################################
   # Websites.                                                               #
   ###########################################################################
+
+  # Quad9 (here for DNS resolving problemos).
+  - name: Quad9 - HTTP
+    <<: *defaults-http
+    group: Websites
+    url: https://quad9.net
 
   # Website.
   - name: Main Website - HTTP
