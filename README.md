@@ -11,6 +11,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Caddy
 -   Chhoto URL
 -   Configarr
+-   Deemix
 -   Dozzle
 -   Gatus
 -   Gluetun

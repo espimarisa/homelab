@@ -71,38 +71,38 @@
 # Externally accessible services.                                         #
 ###########################################################################
 
-# {$CHHOTO_URL} {
-# 	import external_proxy chhoto:4567
-# 	import security_headers
-# }
+{$CHHOTO_URL} {
+	import external_proxy chhoto:4567
+	import security_headers
+}
 
-# {$GATUS_URL} {
-# 	import external_proxy gatus:8080
-# 	import security_headers
-# }
+{$GATUS_URL} {
+	import external_proxy gatus:8080
+	import security_headers
+}
 
-# {$JELLYFIN_URL} {
-# 	import external_proxy jellyfin:8096
-# 	import security_headers
-# }
+{$JELLYFIN_URL} {
+	import external_proxy jellyfin:8096
+	import security_headers
+}
 
-# {$OPENCLOUD_URL} {
-# 	import external_proxy opencloud:9200
-# 	import security_headers
-# }
+{$OPENCLOUD_URL} {
+	import external_proxy opencloud:9200
+	import security_headers
+}
 
-# {$THELOUNGE_URL} {
-# 	import external_proxy thelounge:9000
-# 	import security_headers
-# }
+{$THELOUNGE_URL} {
+	import external_proxy thelounge:9000
+	import security_headers
+}
 
-# {$VAULTWARDEN_URL} {
-# 	import external_proxy vaultwarden:80
+{$VAULTWARDEN_URL} {
+	import external_proxy vaultwarden:80
 
-# 	header {
-# 		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-# 	}
-# }
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+	}
+}
 
 ###########################################################################
 # Internal-only services; need DNS rewrites + Caddy CA cert installed.    #
@@ -118,6 +118,10 @@ bazarr.{$INTERNAL_DOMAIN} {
 
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
+}
+
+deemix.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:6595
 }
 
 dozzle.{$INTERNAL_DOMAIN} {

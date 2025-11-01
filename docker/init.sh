@@ -71,6 +71,7 @@ readonly APPDATA_DIRECTORIES=(
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	"soulseek"                # Soulseek downloads.
+	"deemix"                  # Deemix downloads.
 	"torrents/.torrent-files" # .torrent file storage.
 	"torrents/lidarr"         # Lidarr torrents.
 	"torrents/prowlarr"       # Prowlarr torrents.
@@ -81,7 +82,7 @@ readonly DOWNLOADS_DIRECTORIES=(
 
 # Incomplete download directories to create.
 readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
-	"soulseek" # Incomplete soulseek downloads.
+	"soulseek" # Incomplete SoulSeek downloads.
 	"torrents" # Incomplete torrents downloads.
 )
 
@@ -117,6 +118,7 @@ readonly VOLUMES=(
 	"caddy-logs-volume"             # Caddy logs.
 	"chhoto-volume"                 # Chhoto database.
 	"configarr-volume"              # Configarr cloned data,
+	"deemix-volume"                 # Deemix configuration and data.
 	"dozzle-volume"                 # Dozzle configuration and data.
 	"gatus-db-backups-volume"       # Gatus database backups.
 	"gatus-db-config-volume"        # Gatus database configuration.
