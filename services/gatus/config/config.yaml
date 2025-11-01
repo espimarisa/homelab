@@ -243,6 +243,12 @@ endpoints:
     group: Services
     url: https://${CHHOTO_URL}
 
+  # Homarr.
+  - name: Homarr
+    <<: *defaults-http
+    group: Services
+    url: https://${HOMARR_URL}
+
   # Jellyfin.
   - name: Jellyfin
     <<: *defaults-http

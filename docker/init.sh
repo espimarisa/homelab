@@ -124,6 +124,10 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"        # Gatus database configuration.
 	"gatus-db-data-volume"          # Gatus database data.
 	"gluetun-volume"                # Gluetun cache.
+	"homarr-db-backups-volume"      # Homarr database backups.
+	"homarr-db-config-volume"       # Homarr database configuration.
+	"homarr-db-data-volume"         # Homarr database data.
+	"homarr-volume"                 # Homarr logs.
 	"jellyfin-cache-volume"         # Jellyfin cache.
 	"jellyfin-config-volume"        # Jellyfin configuration and data.
 	"lidarr-db-backups-volume"      # Lidarr database backups.
@@ -160,13 +164,14 @@ readonly CHOWN_VOLUMES=(
 	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
-	"chhoto-volume"
 	"caddy-backups-volume"
 	"caddy-config-volume"
 	"caddy-data-volume"
 	"caddy-logs-volume"
+	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
+	"homarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"opencloud-config-volume"
@@ -259,6 +264,10 @@ done
 # Create Chhoto database.
 CHHOTO_DATA_PATH="${DOCKER_VOLUMES_PATH}/chhoto-volume/_data"
 $SUDO touch "${CHHOTO_DATA_PATH}/urls.sqlite"
+
+# Create required folders.
+HOMARR_DATA_PATH="${DOCKER_VOLUMES_PATH}/homarr-volume/_data"
+$SUDO mkdir -p "${HOMARR_DATA_PATH}/redis"
 
 # Set ownership of volumes by chowning their _data directory on the host
 echo -e "\nSetting volume permissions..."
