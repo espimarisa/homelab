@@ -70,6 +70,7 @@ readonly APPDATA_DIRECTORIES=(
 
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
+	".logs"                   # Log files.
 	"soulseek"                # Soulseek downloads.
 	"deemix"                  # Deemix downloads.
 	"torrents/.torrent-files" # .torrent file storage.
