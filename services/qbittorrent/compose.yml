@@ -14,7 +14,7 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     volumes:
       - downloads:/downloads:rw # Root downloads path.
-      - downloads-incomplete:/incomplete:rw # Root downloads cache path.
+      - downloads-incomplete:/dl-cache:rw # Root downloads cache path.
       - qbittorrent-config:/qbittorrent/etc:rw # Configuration path.
       - qbittorrent-data:/qbittorrent/var:rw # Data path.
     cap_add:

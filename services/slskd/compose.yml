@@ -31,7 +31,7 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - slskd:/app:rw # Configuration and database.
-      - downloads-incomplete:/incomplete:rw # Root path to incomplete downloads.
+      - downloads-incomplete:/dl-cache:rw # Root path to incomplete downloads.
       - downloads:/downloads:rw # Root path to downloads.
       - media-library:/library:ro # Root path to the media library.
     cap_add:
