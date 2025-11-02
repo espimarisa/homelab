@@ -5,12 +5,10 @@
 ---
 services:
   caddy:
-    image: ghcr.io/11notes/caddy:2
+    build: ./ # Build from the current directory.
     container_name: caddy
-    command: ["run", "--config", "/caddy/etc/Caddyfile"] # Use the Caddyfile.
     env_file: ../../.env # Needed to force Caddyfile parsing.
     hostname: caddy
-    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket proxy.
@@ -23,14 +21,10 @@ services:
       - 80:80/tcp # HTTP traffic.
       - 443:443/tcp # HTTPS traffic.
       - 443:443/udp # HTTPS3 traffic.
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - ./config/Caddyfile:/caddy/etc/Caddyfile:ro # Caddyfile mount.
-      - caddy-backups:/caddy/backup:rw # Caddyfile backups.
-      - caddy-config:/caddy/etc:rw # Caddy config.
-      - caddy-data:/caddy/var:rw # Caddy data and certificates.
-      - caddy-logs:/caddy/logs:rw # Caddy logs.
+      - caddy-data:/data # Caddy data.
+      - caddy-config:/config # Caddy configuration files.
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro # Caddyfile mount.
     cap_add:
       - NET_BIND_SERVICE # Required for binding ports <= 1024.
       - NET_ADMIN # Improves HTTP3 performance.
@@ -48,6 +42,9 @@ services:
         reservations:
           cpus: 0.5 # Reserve 0.5 vCPUs.
           memory: 128MB # Reserve 128MB of RAM.
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000 || exit 1"
+
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 
@@ -63,15 +60,9 @@ networks:
     name: internal-network
 
 volumes:
-  caddy-backups:
-    name: caddy-backups-volume
-    external: true
   caddy-config:
     name: caddy-config-volume
     external: true
   caddy-data:
     name: caddy-data-volume
-    external: true
-  caddy-logs:
-    name: caddy-logs-volume
     external: true

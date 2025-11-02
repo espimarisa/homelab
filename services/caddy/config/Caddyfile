@@ -1,75 +1,76 @@
 {
-	email {$ACME_EMAIL}
-	storage file_system /caddy/var
+	# ACME configuration.
+	acme_ca https://acme.zerossl.com/v2/DV90 # Use ZeroSSL for SSL certificates.
+	acme_dns bunny {$BUNNY_API_KEY} # Use Bunny for ACME DNS challenges.
+	email {$ACME_EMAIL} # Configures the email to use for ACME.
+
+	# Dynamic DNS configuration.
+	dynamic_dns {
+		# Use Bunny DNS.
+		provider bunny {$BUNNY_API_KEY}
+		check_interval 1h # Check for an updated IP every hour.
+		versions ipv4 ipv6 # Use both A and AAAA records.
+
+		# List of domains to update.
+		domains {
+			{$DOMAIN} {$DDNS_SUBDOMAINS} # Should be parsed as "example.com home vault test example".
+		}
+	}
+
+	# Global server configuration.
+	servers {
+		# Trust private ranges for reverse proxying.
+		trusted_proxies static private_ranges
+	}
 }
 
 # Snippet for security headers.
 (security_headers) {
 	header {
-		-Server
-		Referrer-Policy "strict-origin-when-cross-origin"
-		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-		X-Content-Type-Options "nosniff"
-		X-Frame-Options "DENY"
+		-Server # Remove the Server header.
+		Referrer-Policy "strict-origin-when-cross-origin" # Control referrer information.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" # Enable HSTS.
+		X-Content-Type-Options "nosniff" # Prevent browser from MIME-type sniffing.
+		X-Frame-Options "DENY" # Prevent clickjacking attacks.
+	}
+}
+
+# Snippet for default settings.
+(default_settings) {
+	# Enable zstd and gzip compression.
+	encode zstd gzip
+
+	header {
+		Connection {http.request.header.Connection}
+		Upgrade {http.request.header.Upgrade}
+		X-Http-Version {http.request.proto}
+		X-Real-Ip {remote_host}
 	}
 }
 
 # Snippet for externally accessible reverse proxied services.
 (external_proxy) {
-	encode zstd gzip
-
-	log {
-		output file /caddy/logs/external-access.log {
-			roll_size 10mb
-			roll_keep 5
-			roll_keep_for 720h
-		}
-	}
-
-	reverse_proxy {args[0]} {
-		header_up Connection {http.request.header.Connection}
-		header_up Upgrade {http.request.header.Upgrade}
-		header_up X-Http-Version {http.request.proto}
-		header_up X-Real-Ip {remote_host}
-		trusted_proxies private_ranges
-	}
+	import default_settings
+	reverse_proxy {args[0]}
 }
 
 # Snippet for internal-only reverse proxied services.
 (internal_proxy) {
+	# Define @not_internal as non-private ranges.
 	@not_internal not remote_ip private_ranges
 	abort @not_internal
-	encode zstd gzip
-	tls internal
-
-	log {
-		output file /caddy/logs/internal-access.log {
-			roll_keep 5
-			roll_keep_for 720h
-			roll_size 10mb
-		}
-	}
-
-	reverse_proxy {args[0]} {
-		header_up Connection {http.request.header.Connection}
-		header_up Upgrade {http.request.header.Upgrade}
-		header_up X-Http-Version {http.request.proto}
-		header_up X-Real-Ip {remote_host}
-		trusted_proxies private_ranges
-	}
+	import default_settings
+	reverse_proxy {args[0]}
 }
 
-###########################################################################
-# Internal healthcheck endpoint.                                          #
-###########################################################################
-
+# Internal healthcheck.
 :3000 {
 	respond / 200
 }
 
-###########################################################################
-# Externally accessible services.                                         #
-###########################################################################
+#################################################
+# Externally accessible services.				#
+#################################################
 
 {$CHHOTO_URL} {
 	import external_proxy chhoto:4567
@@ -109,9 +110,9 @@
 	}
 }
 
-###########################################################################
-# Internal-only services; need DNS rewrites + Caddy CA cert installed.    #
-###########################################################################
+#################################################
+# Internal-only services.						#
+#################################################
 
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474

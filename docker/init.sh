@@ -113,10 +113,8 @@ readonly VOLUMES=(
 	"beszel-agent-volume"           # Beszel agent cache.
 	"beszel-data-volume"            # Beszel data.
 	"beszel-socket-volume"          # Beszel socket cache.
-	"caddy-backups-volume"          # Caddyfile backups.
 	"caddy-config-volume"           # Caddy configuration.
 	"caddy-data-volume"             # Caddy data.
-	"caddy-logs-volume"             # Caddy logs.
 	"chhoto-volume"                 # Chhoto database.
 	"configarr-volume"              # Configarr cloned data,
 	"deemix-volume"                 # Deemix configuration and data.

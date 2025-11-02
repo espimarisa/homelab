@@ -223,6 +223,11 @@ radarr:
         rename: true
         standard: jellyfin-tmdb
 
+    # Sets quality definition ratios.
+    quality_definition:
+      type: movie
+      preferred_ratio: 0.075
+
     # Configures root folders.
     root_folders:
       - /library/movies
@@ -337,6 +342,11 @@ sonarr:
         standard: default
         daily: default
         anime: default
+
+    # Sets preferred quality definitions.
+    quality_definition:
+      type: series
+      preferred_ratio: 0.075
 
     # Sets root folders.
     root_folders:
