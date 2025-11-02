@@ -114,9 +114,6 @@
 # Internal-only services.						#
 #################################################
 
-autobrr.{$INTERNAL_DOMAIN} {
-	import internal_proxy gluetun:7474
-}
 
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767

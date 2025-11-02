@@ -38,7 +38,6 @@ services:
     expose:
       - 5030/tcp # slskd web interface reverse proxied internally at slskd.${INTERNAL_DOMAIN}.
       - 6595/tcp # Deemix web interface reverse proxied internally at deemix.${INTERNAL_DOMAIN}.
-      - 7474/tcp # Autobrr web interface reverse proxied internally at autobrr.${INTERNAL_DOMAIN}.
       - 8080/tcp # qBittorrent web interface reverse proxied internally at qbittorrent.${INTERNAL_DOMAIN}.
       - 8191/tcp # Byparr API.
       - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${INTERNAL_DOMAIN}.

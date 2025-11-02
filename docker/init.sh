@@ -101,11 +101,6 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-db-backups-volume"     # Autobrr database backups.
-	"autobrr-db-config-volume"      # Autobrr database configuration.
-	"autobrr-db-data-volume"        # Autobrr database data.
-	"autobrr-logs-volume"           # Autobrr logs.
-	"autobrr-volume"                # Autobrr configuration and data.
 	"bazarr-db-backups-volume"      # Bazarr database backups.
 	"bazarr-db-config-volume"       # Bazarr database configuration.
 	"bazarr-db-data-volume"         # Bazarr database data.
@@ -159,8 +154,6 @@ readonly VOLUMES=(
 
 # Docker volumes to take ownership of.
 readonly CHOWN_VOLUMES=(
-	"autobrr-logs-volume"
-	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"caddy-backups-volume"

@@ -49,12 +49,6 @@ endpoints:
   # Databases.                                                              #
   ###########################################################################
 
-  # Autobrr DB.
-  - name: Autobrr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/autobrr-db/json
-
   # Bazarr DB.
   - name: Bazarr - PostgreSQL
     <<: *defaults-container
@@ -100,12 +94,6 @@ endpoints:
   ###########################################################################
   # Download clients.                                                       #
   ###########################################################################
-
-  # Autobrr.
-  - name: Autobrr
-    <<: *defaults-container
-    group: Downloads
-    url: ${SOCKET_PROXY_URL}/autobrr/json
 
   # Deemix.
   - name: Deemix
