@@ -43,7 +43,7 @@ services:
       resources:
         limits:
           cpus: 4 # Allow using 4 vCPUs.
-          memory: 4G # Allow using 4GB of RAM.
+          memory: 8G # Allow using 8GB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
 

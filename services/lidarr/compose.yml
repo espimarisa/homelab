@@ -47,7 +47,7 @@ services:
       resources:
         limits:
           cpus: 4 # Allow using 4 vCPUs.
-          memory: 4G # Allow using 4GB of RAM.
+          memory: 8G # Allow using 8GB of RAM.
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
 
