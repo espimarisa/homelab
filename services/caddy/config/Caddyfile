@@ -9,7 +9,6 @@
 		# Use Bunny DNS.
 		provider bunny {$BUNNY_API_KEY}
 		check_interval 1h # Check for an updated IP every hour.
-		versions ipv4 ipv6 # Use both A and AAAA records.
 
 		# List of domains to update.
 		domains {
@@ -20,7 +19,7 @@
 	# Global server configuration.
 	servers {
 		# Trust private ranges for reverse proxying.
-		trusted_proxies static private_ranges
+		trusted_proxies static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	}
 }
 
@@ -35,31 +34,18 @@
 	}
 }
 
-# Snippet for default settings.
-(default_settings) {
-	# Enable zstd and gzip compression.
-	encode zstd gzip
-
-	header {
-		Connection {http.request.header.Connection}
-		Upgrade {http.request.header.Upgrade}
-		X-Http-Version {http.request.proto}
-		X-Real-Ip {remote_host}
-	}
-}
-
 # Snippet for externally accessible reverse proxied services.
 (external_proxy) {
-	import default_settings
+	encode zstd gzip
 	reverse_proxy {args[0]}
 }
 
 # Snippet for internal-only reverse proxied services.
 (internal_proxy) {
-	# Define @not_internal as non-private ranges.
-	@not_internal not remote_ip private_ranges
+	# Define @not_internal as non-private ranges + non-Tailscale ranges.
+	@not_internal not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	abort @not_internal
-	import default_settings
+	encode zstd gzip
 	reverse_proxy {args[0]}
 }
 
