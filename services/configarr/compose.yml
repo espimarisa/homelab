@@ -38,7 +38,10 @@ services:
       resources:
         limits:
           cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 128MB # Allow up to 128MB of RAM.
+          memory: 128M # Allow up to 128MB of RAM.
+        reservations:
+          cpus: 0.125 # Reserve 0.125 vCPUs.
+          memory: 64M # Reserve 64MB of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

@@ -5,7 +5,7 @@
 ---
 services:
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3
+    image: ghcr.io/qdm12/gluetun:latest
     container_name: gluetun
     hostname: gluetun
     restart: unless-stopped
@@ -21,6 +21,7 @@ services:
       FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/8,fc00::/7" # Subnets to allow in.
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # Server-side ports to allow in; for AirVPN this is your forwarded ports.
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443" # Use Quad9 for healthchecks.
+      HEALTH_VPN_DURATION_INITIAL: "60s" # Wait 60s before marking as unhealthy.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
       SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities.

@@ -30,9 +30,9 @@ services:
       IP_HEADER: "X-Forwarded-For" # Required for reverse proxy.
       LOGIN_RATELIMIT_MAX_BURST: "10" # Configures max burst ratelimit.
       LOGIN_RATELIMIT_SECONDS: "60" # Ratelimit for 60 seconds.
-      # PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles support for push notifications.
-      # PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # Bitwarden installation ID for push notifications.
-      # PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # Bitwarden installation key for push notifications.
+      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles support for push notifications.
+      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # Bitwarden installation ID for push notifications.
+      PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # Bitwarden installation key for push notifications.
       REQUIRE_DEVICE_EMAIL: "true" # Require email verification.
       SENDS_ALLOWED: "true" # Allow usage of the send feature.
       SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles support for signing up.
@@ -59,7 +59,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5 # Allow up to 1 vCPUs.
+          cpus: 1 # Allow up to 1 vCPUs.
           memory: 512M # Allow up to 512MB of RAM.
         reservations:
           cpus: 0.5 # Reserve 0.5 vCPUs.
@@ -96,7 +96,7 @@ services:
           memory: 256M # Allow using 256M of RAM.
         reservations:
           cpus: 0.25 # Reserve 0.25 vCPUs.
-          memory: 256M # Reserve 128MB of RAM.
+          memory: 128M # Reserve 128MB of RAM.
 
 networks:
   external:

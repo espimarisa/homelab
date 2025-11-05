@@ -101,10 +101,6 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"bazarr-db-backups-volume"      # Bazarr database backups.
-	"bazarr-db-config-volume"       # Bazarr database configuration.
-	"bazarr-db-data-volume"         # Bazarr database data.
-	"bazarr-volume"                 # Bazarr configuration and data.
 	"beszel-agent-volume"           # Beszel agent cache.
 	"beszel-data-volume"            # Beszel data.
 	"beszel-socket-volume"          # Beszel socket cache.

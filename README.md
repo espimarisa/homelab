@@ -4,7 +4,6 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 
 ## Services
 
--   Bazarr
 -   Beszel
 -   Byparr
 -   Caddy

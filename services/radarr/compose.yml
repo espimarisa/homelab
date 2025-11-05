@@ -45,6 +45,9 @@ services:
         limits:
           cpus: 4 # Allow using 4 vCPUs.
           memory: 8G # Allow using 8GB of RAM.
+        reservations:
+          cpus: 1 # Reserve 1 vCPU.
+          memory: 2GB # Reserve 2GB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
 

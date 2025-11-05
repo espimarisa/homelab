@@ -100,11 +100,6 @@
 # Internal-only services.						#
 #################################################
 
-
-bazarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy bazarr:6767
-}
-
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }

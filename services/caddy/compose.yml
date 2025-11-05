@@ -41,10 +41,9 @@ services:
           memory: 512M # Allow up to 512MB of RAM usage.
         reservations:
           cpus: 0.5 # Reserve 0.5 vCPUs.
-          memory: 128MB # Reserve 128MB of RAM.
+          memory: 128M # Reserve 128MB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000 || exit 1"
-
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

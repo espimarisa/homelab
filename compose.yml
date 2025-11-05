@@ -1,6 +1,5 @@
 ---
 include:
-  - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
   - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
