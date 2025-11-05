@@ -24,8 +24,8 @@ services:
     networks:
       external:
       gluetun:
-        ipv4_address: 172.19.3.20
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::20"
+        ipv4_address: 172.19.3.23
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::23"
       internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.
