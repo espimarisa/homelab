@@ -8,6 +8,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Byparr
 -   Caddy
 -   Chhoto URL
+-   Cleanuparr
 -   Configarr
 -   Deemix
 -   Dozzle
@@ -21,6 +22,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Prowlarr
 -   qBittorrent
 -   Radarr
+-   Readarr
 -   slskd
 -   Sonarr
 -   The Lounge

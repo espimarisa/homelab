@@ -73,6 +73,12 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/radarr-db/json
 
+  # Readarr DB.
+  - name: Readarr - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/readarr-db/json
+
   # Sonarr DB.
   - name: Sonarr - PostgreSQL
     <<: *defaults-container
@@ -139,6 +145,12 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/byparr/json
 
+  # Cleanuparr.
+  - name: Cleanuparr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/cleanuparr/json
+
   # Configarr.
   - name: Configarr
     <<: *defaults-container
@@ -168,6 +180,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/radarr/json
+
+  # Readarr.
+  - name: Readarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/readarr/json
 
   # Sonarr.
   - name: Sonarr
@@ -252,12 +270,6 @@ endpoints:
   ###########################################################################
   # Websites.                                                               #
   ###########################################################################
-
-  # Quad9 (here for DNS resolving problemos).
-  - name: Quad9 - HTTP
-    <<: *defaults-http
-    group: Websites
-    url: https://quad9.net
 
   # Website.
   - name: Main Website - HTTP

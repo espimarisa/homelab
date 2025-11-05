@@ -71,12 +71,13 @@ readonly APPDATA_DIRECTORIES=(
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	".logs"                   # Log files.
-	"soulseek"                # Soulseek downloads.
 	"deemix"                  # Deemix downloads.
+	"soulseek"                # Soulseek downloads.
 	"torrents/.torrent-files" # .torrent file storage.
 	"torrents/lidarr"         # Lidarr torrents.
 	"torrents/prowlarr"       # Prowlarr torrents.
 	"torrents/radarr"         # Radarr torrents.
+	"torrents/readarr"        # Readarr torrents.
 	"torrents/sonarr"         # Sonarr torrents.
 	"torrents/uncategorized"  # Uncategorized torrents.
 )
@@ -107,6 +108,7 @@ readonly VOLUMES=(
 	"caddy-config-volume"           # Caddy configuration.
 	"caddy-data-volume"             # Caddy data.
 	"chhoto-volume"                 # Chhoto database.
+	"cleanuparr-volume"             # Cleanuparr configuration and data.
 	"configarr-volume"              # Configarr cloned data,
 	"deemix-volume"                 # Deemix configuration and data.
 	"dozzle-volume"                 # Dozzle configuration and data.
@@ -135,6 +137,10 @@ readonly VOLUMES=(
 	"radarr-db-config-volume"       # Radarr database configuration.
 	"radarr-db-data-volume"         # Radarr database data.
 	"radarr-volume"                 # Radarr configuration and data.
+	"readarr-db-backups-volume"     # Readarr database backups.
+	"readarr-db-config-volume"      # Readarr database configuration.
+	"readarr-db-data-volume"        # Readarr database data.
+	"readarr-volume"                # Readarr configuration and data.
 	"slskd-volume"                  # slskd configuration and data.
 	"sonarr-db-backups-volume"      # Sonarr database backups.
 	"sonarr-db-config-volume"       # Sonarr database configuration.
