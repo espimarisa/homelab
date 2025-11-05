@@ -10,7 +10,7 @@ x-defaults-http: &defaults-http
   interval: 5m
   conditions:
     - "[CERTIFICATE_EXPIRATION] > 240h" # Ensures certificates are up-to-date.
-    - "[RESPONSE_TIME] < 2000" # External services shouldn't take more than 2s to resolve.
+    - "[RESPONSE_TIME] < 6000" # External services shouldn't take more than 6s to resolve.
     - "[STATUS] == 200" # 200 will be an OK
 
 # Default container options.
