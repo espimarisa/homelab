@@ -158,10 +158,8 @@ readonly VOLUMES=(
 readonly CHOWN_VOLUMES=(
 	"beszel-agent-volume"
 	"beszel-data-volume"
-	"caddy-backups-volume"
 	"caddy-config-volume"
 	"caddy-data-volume"
-	"caddy-logs-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
