@@ -14,7 +14,7 @@ services:
     environment:
       SLSKD_DISK_LOGGER: "true" # Log files to the disk.
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Sets the downloads directory.
-      SLSKD_INCOMPLETE_DIR: "/dl-cache/soulseek-incomplete" # Sets the incomplete downloads directory.
+      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek" # Sets the incomplete downloads directory.
       SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # Sets the JWT API key.
       SLSKD_JWT_TTL: "604800000" # Sets the JWT API TTL.
       SLSKD_REMOTE_CONFIGURATION: "true" # Enables editing the configuration.
@@ -32,7 +32,7 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
       - slskd:/app:rw # Configuration and database.
-      - downloads-incomplete:/dl-cache:rw # Root path to incomplete downloads.
+      - downloads-incomplete:/downloads-incomplete:rw # Root path to incomplete downloads.
       - downloads:/downloads:rw # Root path to downloads.
       - media-library:/library:ro # Root path to the media library.
     cap_add:

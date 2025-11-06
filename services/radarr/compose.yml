@@ -16,7 +16,7 @@ x-defaults: &defaults
 services:
   radarr:
     <<: *defaults
-    image: ghcr.io/11notes/radarr:5
+    image: ghcr.io/11notes/radarr:5 # https://github.com/11notes/docker-radarr
     container_name: radarr
     hostname: radarr
     networks:
