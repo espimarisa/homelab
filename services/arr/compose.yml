@@ -51,9 +51,9 @@ x-defaults-db: &defaults-db
       limits:
         cpus: 1 # Allow using 1 vCPU.
         memory: 512M # Allow using 512MB of RAM.
-    tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
-      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
+  tmpfs:
+    - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
 
 services:
   ###########################################################################
