@@ -364,7 +364,7 @@ radarr:
 
 readarr:
   readarr:
-    base_url: http://readarr:8686
+    base_url: http://readarr:8787
     api_key: !env READARR_API_KEY
 
     # Delete or replace old formats.
