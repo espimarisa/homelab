@@ -284,7 +284,7 @@ services:
       TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
-      - internall
+      - internal
     volumes:
       - ./config:/configarr/etc # Local Configarr config.
       - configarr:/configarr/var # Configarr cache/data volume.
