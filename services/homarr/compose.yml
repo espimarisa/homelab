@@ -56,9 +56,6 @@ services:
         limits:
           cpus: 1 # Allow using up to 1 vCPU.
           memory: 2G # Allow using 2G of RAM.
-        reservations:
-          cpus: 0.5 # Reserve 0.5 vCPUs.
-          memory: 512M # Reserve 512MB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
 
@@ -68,6 +65,7 @@ services:
     container_name: homarr-db
     hostname: homarr-db
     read_only: true # Prevent writing directly to the image.
+    shm_size: 512M # Raises the shared memory size.
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
       POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets the database password.
@@ -90,9 +88,6 @@ services:
         limits:
           cpus: 1 # Allow using 1 vCPU.
           memory: 256M # Allow using 256M of RAM.
-        reservations:
-          cpus: 0.25 # Reserve 0.125 vCPUs.
-          memory: 128M # Reserve 128MB of RAM.
 
 networks:
   external:

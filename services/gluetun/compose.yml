@@ -38,7 +38,6 @@ services:
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
     expose:
       - 5030/tcp # slskd web interface reverse proxied internally at slskd.${INTERNAL_DOMAIN}.
-      - 6595/tcp # Deemix web interface reverse proxied internally at deemix.${INTERNAL_DOMAIN}.
       - 8080/tcp # qBittorrent web interface reverse proxied internally at qbittorrent.${INTERNAL_DOMAIN}.
       - 8191/tcp # Byparr API.
       - 9696/tcp # Prowlarr web interface reverse proxied internally at prowlarr.${INTERNAL_DOMAIN}.
@@ -64,9 +63,6 @@ services:
         limits:
           cpus: 1 # Allow using up to 1 vCPUs.
           memory: 1G # Allow using 1GB of RAM.
-        reservations:
-          cpus: 0.25 # Reserve 0.25 vCPUs.
-          memory: 256M # Reserve 256MB of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

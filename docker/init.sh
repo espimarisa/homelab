@@ -71,7 +71,7 @@ readonly APPDATA_DIRECTORIES=(
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	".logs"                   # Log files.
-	"deemix"                  # Deemix downloads.
+	"deezer"                  # Deezer downloads.
 	"soulseek"                # Soulseek downloads.
 	"torrents/.torrent-files" # .torrent file storage.
 	"torrents/lidarr"         # Lidarr torrents.
@@ -110,7 +110,6 @@ readonly VOLUMES=(
 	"chhoto-volume"                 # Chhoto database.
 	"cleanuparr-volume"             # Cleanuparr configuration and data.
 	"configarr-volume"              # Configarr cloned data,
-	"deemix-volume"                 # Deemix configuration and data.
 	"dozzle-volume"                 # Dozzle configuration and data.
 	"gatus-db-backups-volume"       # Gatus database backups.
 	"gatus-db-config-volume"        # Gatus database configuration.

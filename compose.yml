@@ -1,27 +1,18 @@
 ---
 include:
+  - ./services/arr/compose.yml
   - ./services/beszel/compose.yml
-  - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
-  - ./services/cleanuparr/compose.yml
-  - ./services/configarr/compose.yml
-  - ./services/deemix/compose.yml
   - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
   - ./services/homarr/compose.yml
   - ./services/jellyfin/compose.yml
-  - ./services/lidarr/compose.yml
   - ./services/mam-ip-helper/compose.yml
   - ./services/opencloud/compose.yml
-  - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
-  - ./services/radarr/compose.yml
-  - ./services/readarr/compose.yml
   - ./services/slskd/compose.yml
   - ./services/socket-proxy/compose.yml
-  - ./services/sonarr/compose.yml
   - ./services/thelounge/compose.yml
-  - ./services/unpackerr/compose.yml
   - ./services/vaultwarden/compose.yml

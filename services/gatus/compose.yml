@@ -54,6 +54,7 @@ services:
     image: ghcr.io/11notes/postgres:17
     container_name: gatus-db
     hostname: gatus-db
+    shm_size: 512M # Raises the shared memory size.
     environment:
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup every day at 6AM.
       POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Configures the PostgreSQL password.

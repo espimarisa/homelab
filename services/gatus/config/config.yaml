@@ -95,12 +95,6 @@ endpoints:
   # Download clients.                                                       #
   ###########################################################################
 
-  # Deemix.
-  - name: Deemix
-    <<: *defaults-container
-    group: Downloads
-    url: ${SOCKET_PROXY_URL}/deemix/json
-
   # Gluetun.
   - name: Gluetun (VPN)
     <<: *defaults-container

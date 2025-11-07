@@ -10,7 +10,6 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Chhoto URL
 -   Cleanuparr
 -   Configarr
--   Deemix
 -   Dozzle
 -   Gatus
 -   Gluetun

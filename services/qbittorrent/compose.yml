@@ -28,9 +28,6 @@ services:
         limits:
           cpus: 8 # Allow up to 8 vCPUs.
           memory: 8GB # Allow up to 8GB of RAM usage.
-        reservations:
-          cpus: 1 # Reserve 1 vCPU.
-          memory: 1G # Reserve 1GB of RAM.
     security_opt:
       - no-new-privileges:true # Do not allow privilege escalation.
 

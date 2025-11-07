@@ -12,9 +12,6 @@ x-defaults: &defaults
       limits:
         cpus: 0.25 # Allow using 0.25 vCPUs.
         memory: 64M # Allow using 64M of RAM.
-      reservations:
-        cpus: 0.125 # Reserve 0.125 vCPUs.
-        memory: 32M # Reserve 32MB of RAM.
   security_opt:
     - no-new-privileges:true # Do not allow privilege escalation.
 
