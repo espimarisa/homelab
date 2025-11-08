@@ -49,6 +49,12 @@ endpoints:
   # Databases.                                                              #
   ###########################################################################
 
+  # Autobrr DB.
+  - name: Autobrr - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/autobrr-db/json
+
   # Gatus DB.
   - name: Gatus - PostgreSQL
     <<: *defaults-container
@@ -94,6 +100,18 @@ endpoints:
   ###########################################################################
   # Download clients.                                                       #
   ###########################################################################
+
+  # Autobrr.
+  - name: Autobrr
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/autobrr/json
+
+  # Deemix.
+  - name: Deemix
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/deemix/json
 
   # Gluetun.
   - name: Gluetun (VPN)
@@ -150,6 +168,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/configarr/json
+
+  # Huntarr.
+  - name: Huntarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/huntarr/json
 
   # Lidarr.
   - name: Lidarr

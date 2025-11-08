@@ -1,0 +1,103 @@
+###########################################################################
+# autobrr: Download automation and ratio manager - https://autobrr.com    #
+###########################################################################
+
+---
+x-defaults: &defaults
+  read_only: true # Prevent writing directly to the image.
+  restart: unless-stopped
+  cap_drop:
+    - ALL # Drop all default capabilities.
+  security_opt:
+    - no-new-privileges:true # Do not allow privilege escalation.
+
+services:
+  autobrr:
+    <<: *defaults
+    image: ghcr.io/autobrr/autobrr:v1.68
+    container_name: autobrr
+    network_mode: service:gluetun # Route all traffic through Gluetun.
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      AUTOBRR__CHECK_FOR_UPDATES: "false" # Do not check for updates.
+      AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
+      AUTOBRR__HOST: "0.0.0.0"
+      AUTOBRR__LOG_LEVEL: "info" # Log at the info level.
+      AUTOBRR__LOG_MAX_SIZE: "10" # 10mb max.
+      AUTOBRR__LOG_PATH: "/logs/autobrr.log" # Log at /logs.
+      AUTOBRR__POSTGRES_DATABASE: "postgres" # Use default database.
+      AUTOBRR__POSTGRES_HOST: "172.19.3.30" # Connect to PostgreSQL.
+      AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Connect with PostgreSQL password.
+      AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
+      AUTOBRR__POSTGRES_USER: "postgres" # Use default user.
+      TZ: "${TZ}" # Sets the timezone.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only images.
+    volumes:
+      - autobrr-logs:/logs:rw
+      - autobrr:/config:rw # Configuration and data.
+    depends_on:
+      autobrr-db:
+        condition: service_healthy # Require autobrr-db to be healthy before starting.
+        restart: true # Restart when autobrr-db restarts.
+      gluetun:
+        condition: service_healthy # Require Gluetun to be healthy before starting.
+        restart: true # Restart when Gluetun restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow using up to 1 vCPUs.
+          memory: 1G # Allow using 1G of RAM.
+    healthcheck:
+      test: "curl --fail --retry 0 --silent  http://127.0.0.1:7474 || exit 1"
+
+  autobrr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:17
+    container_name: autobrr-db
+    shm_size: 512M # Raises the shared memory size.
+    environment:
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
+      POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}" # Sets the database password.
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      gluetun:
+        ipv4_address: 172.19.3.30
+        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::30"
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    volumes:
+      - autobrr-db-backups:/postgres/backup:rw # PostgreSQL backups.
+      - autobrr-db-config:/postgres/etc:rw # PostgreSQL config.
+      - autobrr-db-data:/postgres/var:rw # PostgreSQL data.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5 # Allow using 0.5 vCPUs.
+          memory: 256M # Allow using 256M of RAM.
+
+networks:
+  gluetun:
+    name: gluetun-network
+    external: true
+  internal:
+    name: internal-network
+    external: true
+
+volumes:
+  autobrr:
+    name: autobrr-volume
+    external: true
+  autobrr-logs:
+    name: autobrr-logs-volume
+    external: true
+  autobrr-db-backups:
+    name: autobrr-db-backups-volume
+    external: true
+  autobrr-db-config:
+    name: autobrr-db-config-volume
+    external: true
+  autobrr-db-data:
+    name: autobrr-db-data-volume
+    external: true

@@ -367,6 +367,27 @@ services:
           memory: 4G # Allow up to 4GB of RAM.
 
   ###########################################################################
+  # Huntarr: Automatic media library upgrade search tool.                   #
+  ###########################################################################
+
+  huntarr:
+    <<: *defaults
+    image: ghcr.io/plexguide/huntarr:8.2.10
+    container_name: huntarr
+    hostname: huntarr
+    user: ${PUID}:${PGID} # Run as non-root user.
+    expose:
+      - 9705/tcp # Web interface reverse proxied internally at huntarr.${INTERNAL_DOMAIN}.
+    networks:
+      - external
+      - internal
+      - gluetun
+    volumes:
+      - huntarr:/config # Configuration and data.
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:11011 || exit 1"
+
+  ###########################################################################
   # Cleanuparr: Automated cleanup of 'ARR apps and qBittorrent.             #
   ###########################################################################
 
@@ -408,6 +429,9 @@ volumes:
     external: true
   configarr:
     name: configarr-volume
+    external: true
+  huntarr:
+    name: huntarr-volume
     external: true
   lidarr:
     name: lidarr-volume

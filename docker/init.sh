@@ -74,6 +74,7 @@ readonly DOWNLOADS_DIRECTORIES=(
 	"deezer"                  # Deezer downloads.
 	"soulseek"                # Soulseek downloads.
 	"torrents/.torrent-files" # .torrent file storage.
+	"torrents/huntarr"        # Huntarr torrents.
 	"torrents/lidarr"         # Lidarr torrents.
 	"torrents/prowlarr"       # Prowlarr torrents.
 	"torrents/radarr"         # Radarr torrents.
@@ -102,6 +103,11 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
+	"autobrr-db-backups-volume"     # Autobrr database backups.
+	"autobrr-db-config-volume"      # Autobrr database configuration.
+	"autobrr-db-data-volume"        # Autobrr database data.
+	"autobrr-logs-volume"           # Autobrr logs.
+	"autobrr-volume"                # Autobrr configuration and data.
 	"beszel-agent-volume"           # Beszel agent cache.
 	"beszel-data-volume"            # Beszel data.
 	"beszel-socket-volume"          # Beszel socket cache.
@@ -110,6 +116,7 @@ readonly VOLUMES=(
 	"chhoto-volume"                 # Chhoto database.
 	"cleanuparr-volume"             # Cleanuparr configuration and data.
 	"configarr-volume"              # Configarr cloned data,
+	"deemix-volume"                 # Deemix configuration.
 	"dozzle-volume"                 # Dozzle configuration and data.
 	"gatus-db-backups-volume"       # Gatus database backups.
 	"gatus-db-config-volume"        # Gatus database configuration.
@@ -119,6 +126,7 @@ readonly VOLUMES=(
 	"homarr-db-config-volume"       # Homarr database configuration.
 	"homarr-db-data-volume"         # Homarr database data.
 	"homarr-volume"                 # Homarr logs.
+	"huntarr-volume"                # Huntarr configuration and data.
 	"jellyfin-cache-volume"         # Jellyfin cache.
 	"jellyfin-config-volume"        # Jellyfin configuration and data.
 	"lidarr-db-backups-volume"      # Lidarr database backups.
@@ -155,6 +163,8 @@ readonly VOLUMES=(
 
 # Docker volumes to take ownership of.
 readonly CHOWN_VOLUMES=(
+	"autobrr-logs-volume"
+	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"caddy-config-volume"
@@ -163,6 +173,7 @@ readonly CHOWN_VOLUMES=(
 	"configarr-volume"
 	"dozzle-volume"
 	"homarr-volume"
+	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"opencloud-config-volume"

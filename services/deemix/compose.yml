@@ -1,0 +1,54 @@
+###########################################################################
+# Deemix: Deezer music download client.                                   #
+###########################################################################
+
+---
+services:
+  deemix:
+    image: ghcr.io/bambanah/deemix:v4.3.5
+    container_name: deemix
+    restart: unless-stopped
+    network_mode: service:gluetun # Route all traffic through Gluetun.
+    environment:
+      DEEMIX_DATA_DIR: "/config" # Sets the config directory.
+      DEEMIX_MUSIC_DIR: "/downloads/deezer" # Store Deemix downloads to /downloads/deezer.
+      DEEMIX_SINGLE_USER: "true" # Only use one global user account.
+      PGID: "${PGID}" # Group to run as.
+      PUID: "${PUID}" # User to run as.
+      TZ: "${TZ}" # Timezone to set.
+      UMASK_SET: "${UMASK}" # Umask to set.
+    volumes:
+      - deemix:/config:rw # Configuration and data.
+      - downloads:/downloads:rw # Root downloads directory.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    depends_on:
+      gluetun:
+        condition: service_healthy # Require Gluetun to be healthy.
+        restart: true # Restart when Gluetun restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 2 # Allow up to 2 vCPUs.
+          memory: 2G # Allow up to 2GB of RAM usage.
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:6595 || exit 1"
+    security_opt:
+      - no-new-privileges:true # Prevents privilege escalation.
+
+volumes:
+  deemix:
+    name: deemix-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none

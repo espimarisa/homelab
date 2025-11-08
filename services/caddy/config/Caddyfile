@@ -100,6 +100,10 @@
 # Internal-only services.						#
 #################################################
 
+autobrr.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:7474
+}
+
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
@@ -108,8 +112,16 @@ cleanuparr.{$INTERNAL_DOMAIN} {
 	import internal_proxy cleanuparr:11011
 }
 
+deemix.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:6595
+}
+
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
+}
+
+huntarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy huntarr:9705
 }
 
 lidarr.{$INTERNAL_DOMAIN} {
