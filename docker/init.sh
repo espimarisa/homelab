@@ -167,8 +167,6 @@ readonly CHOWN_VOLUMES=(
 	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
-	"caddy-config-volume"
-	"caddy-data-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
