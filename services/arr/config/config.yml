@@ -93,7 +93,6 @@ lidarr:
             required: false
             fields:
               value: '\blossless\b'
-        specifications:
           - name: FLAC
             implementation: ReleaseTitleSpecification
             negate: false
