@@ -15,7 +15,7 @@ services:
       BLOCK_ADS: "off" # Disable unbound blocking; lowers resource usage.
       BLOCK_MALICIOUS: "off" # Disable unbound blocking; lowers resource usage.
       BLOCK_SURVEILLANCE: "off" # Disable unbound blocking; lowers resource usage.
-      DOT_IPV6: "on" # Enable DOT for IPV6.
+      # DOT_IPV6: "on" # Enable DOT for IPV6.
       DOT_PROVIDERS: "quad9" # Use Quad9 for DOT.
       DOT: "on" # Enable DOT.
       FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/8,fc00::/7" # Subnets to allow in.
@@ -37,6 +37,7 @@ services:
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
     expose:
+      - 2468/tcp # Cross-seed API.
       - 5030/tcp # slskd web interface reverse proxied internally at slskd.${INTERNAL_DOMAIN}.
       - 6595/tcp # Deemix web interface reverse proxied internally at deemix.${INTERNAL_DOMAIN}.
       - 7474/tcp # Autobrr web interface reverse proxied internally at autobrr.${INTERNAL_DOMAIN}.
@@ -46,7 +47,7 @@ services:
     networks:
       gluetun:
         ipv4_address: 172.19.3.10
-        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:3::10
+        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:3::10
     volumes:
       - gluetun:/gluetun # Gluetun cache.
     cap_add:

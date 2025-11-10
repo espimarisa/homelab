@@ -5,8 +5,8 @@ set -euo pipefail
 
 # Required environment variables.
 readonly REQUIRED_VARS=(
-	"APPDATA_PATH"              # Path to store application data.
-	"DOCKER_IPV6_ULA_BASE"      # Docker IPV6 ULA base.
+	"APPDATA_PATH" # Path to store application data.
+	# "DOCKER_IPV6_ULA_BASE"      # Docker IPV6 ULA base.
 	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
 	"DOWNLOADS_PATH"            # Path to store downloads.
 	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
@@ -48,20 +48,20 @@ fi
 # Internal network, subnet #1.
 readonly INTERNAL_IPV4_SUBNET="172.19.2.0/24"
 readonly INTERNAL_IPV4_GATEWAY="172.19.2.1"
-readonly INTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:1::/64"
-readonly INTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:1::1"
+# readonly INTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:1::/64"
+# readonly INTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:1::1"
 
 # External network, subnet #2.
 readonly EXTERNAL_IPV4_SUBNET="172.19.1.0/24"
 readonly EXTERNAL_IPV4_GATEWAY="172.19.1.1"
-readonly EXTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:2::/64"
-readonly EXTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:2::1"
+# readonly EXTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:2::/64"
+# readonly EXTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:2::1"
 
 # Gluetun network, subnet #3.
 readonly GLUETUN_IPV4_SUBNET="172.19.3.0/24"
 readonly GLUETUN_IPV4_GATEWAY="172.19.3.1"
-readonly GLUETUN_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:3::/64"
-readonly GLUETUN_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:3::1"
+# readonly GLUETUN_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:3::/64"
+# readonly GLUETUN_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:3::1"
 
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
@@ -197,13 +197,16 @@ create_dual_stack_network() {
 	local network_name="$1"
 	local ipv4_subnet="$2"
 	local ipv4_gateway="$3"
-	local ipv6_subnet="$4"
-	local ipv6_gateway="$5"
-	local internal_flag="$6"
+	# local ipv6_subnet="$4"
+	# local ipv6_gateway="$5"
+	# local internal_flag="$6"
+	local internal_flag="$4"
 
 	if ! docker network inspect "$network_name" &>/dev/null; then
-		echo "Creating dual-stack network: $network_name (IPv6: $ipv6_subnet, Internal: $internal_flag)"
-		local command="docker network create --driver=bridge --ipv6 "
+		echo "Creating network: $network_name (Internal: $internal_flag)"
+		# echo "Creating dual-stack network: $network_name (IPv6: $ipv6_subnet, Internal: $internal_flag)"
+		# local command="docker network create --driver=bridge --ipv6 "
+		local command="docker network create --driver=bridge"
 
 		# The internal network requires the internal flag and gateway defined for static IPs.
 		if [ "$internal_flag" = "true" ]; then
@@ -211,7 +214,8 @@ create_dual_stack_network() {
 		fi
 
 		# Creates the Docker network.
-		command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} --subnet=${ipv6_subnet} --gateway=${ipv6_gateway} "
+		# command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} --subnet=${ipv6_subnet} --gateway=${ipv6_gateway} "
+		command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} "
 		eval "$command" "$network_name"
 
 	else
@@ -242,18 +246,18 @@ echo -e "\nCreating Docker networks..."
 
 # Creates the external network.
 create_dual_stack_network "external-network" \
-	"$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" \
-	"$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
+	"$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" "false"
+# "$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
 
 # Creates the internal network.
 create_dual_stack_network "internal-network" \
-	"$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" \
-	"$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
+	"$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" "true"
+# "$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
 
 # Creates the Gluetun network.
 create_dual_stack_network "gluetun-network" \
-	"$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" \
-	"$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
+	"$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" "false"
+# "$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
 
 # Create Docker volumes.
 echo -e "\nCreating Docker volumes..."

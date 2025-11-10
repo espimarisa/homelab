@@ -63,7 +63,7 @@ services:
     networks:
       gluetun:
         ipv4_address: 172.19.3.30
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::30"
+        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::30"
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.

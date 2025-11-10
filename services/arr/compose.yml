@@ -71,7 +71,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.20
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::20"
+        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::20"
       internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.
@@ -94,7 +94,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.20
-        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::20
+        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::20
     volumes:
       - lidarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - lidarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -113,7 +113,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.21
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::21"
+        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::21"
       internal:
     expose:
       - 7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
@@ -139,7 +139,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.21
-        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::21
+        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::21
     volumes:
       - radarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - radarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -160,7 +160,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.22
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::22"
+        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::22"
       internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.
@@ -183,7 +183,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.22
-        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::22
+        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::22
     volumes:
       - readarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - readarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -202,7 +202,7 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.23
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::23"
+        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::23"
       internal:
     expose:
       - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
@@ -227,7 +227,7 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.23
-        ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::23
+        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::23
     volumes:
       - sonarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - sonarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -264,7 +264,7 @@ services:
     networks:
       gluetun:
         ipv4_address: 172.19.3.31
-        ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::31"
+        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::31"
     volumes:
       - prowlarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - prowlarr-db-config:/postgres/etc:rw # PostgreSQL configuration.

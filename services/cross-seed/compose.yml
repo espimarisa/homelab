@@ -1,0 +1,32 @@
+###########################################################################
+# Cross-Seed: Automatic cross-tracker seeding.                            #
+###########################################################################
+
+---
+services:
+  cross-seed:
+    image: ghcr.io/cross-seed/cross-seed:6
+    command: daemon # Run cross-seed in daemon mode.
+    container_name: cross-seed
+    network_mode: service:gluetun # Route all traffic through Gluetun.
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    volumes:
+      - ./config:/config:ro
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      qbittorrent:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow 1 vCPU.
+          memory: 512M # Allow 512MB of RAM.
+    security_opt:
+      - no-new-privileges:true # Prevents privilege escalation.
