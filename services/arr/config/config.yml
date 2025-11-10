@@ -40,7 +40,7 @@ lidarr:
       # Preferred groups.
       - trash_id: lidarr-preferred-groups
         trash_scores:
-          default: 50
+          default: 25
         trash_description: Preferred Groups
         name: Preferred Groups
         includeCustomFormatWhenRenaming: false
@@ -50,19 +50,19 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '\\bDeVOiD\\b'
+              value: '\bDeVOiD\b'
           - name: PERFECT
             implementation: ReleaseGroupSpecification
             negate: false
             required: false
             fields:
-              value: '\\bPERFECT\\b'
+              value: '\bPERFECT\b'
           - name: ENRiCH
             implementation: ReleaseGroupSpecification
             negate: false
             required: false
             fields:
-              value: '\\bENRiCH\\b'
+              value: '\bENRiCH\b'
 
       # Explicit releases (monkey patch for poor tagging).
       - trash_id: lidarr-explicit
@@ -77,7 +77,7 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '\\bExplicit\\b'
+              value: '\bExplicit\b'
 
       # Lossless releases.
       - trash_id: lidarr-lossless
@@ -92,7 +92,22 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '\\blossless\\b'
+              value: '\blossless\b'
+
+      # 24-bit releases.
+      - trash_id: lidarr-24bit
+        trash_scores:
+          default: 50
+        trash_description: 24 Bit
+        name: 24 Bit
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: 24 Bit
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '\b24 ?bit\b'
 
       # CD releases.
       - trash_id: lidarr-cd
@@ -107,7 +122,7 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '\\bCD\\b'
+              value: '\bCD\b'
 
       # Vinyl releases.
       - trash_id: lidarr-vinyl
@@ -122,12 +137,12 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '\\bVinyl\\b'
+              value: '\bVinyl\b'
 
       # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
-          default: 20
+          default: 25
         trash_description: WEB
         name: WEB
         includeCustomFormatWhenRenaming: false
@@ -137,11 +152,12 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '\\bWEB\\b'
+              value: '\bWEB\b'
 
     # Custom formats to import.
     custom_formats:
       - trash_ids:
+          - lidarr-24bit
           - lidarr-cd
           - lidarr-explicit
           - lidarr-lossless
