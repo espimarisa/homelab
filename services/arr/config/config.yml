@@ -87,12 +87,19 @@ lidarr:
         name: Lossless
         includeCustomFormatWhenRenaming: false
         specifications:
-          - name: FLAC
+          - name: Lossless
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
               value: '\blossless\b'
+        specifications:
+          - name: FLAC
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '\bflac\b'
 
       # 24-bit releases.
       - trash_id: lidarr-24bit
