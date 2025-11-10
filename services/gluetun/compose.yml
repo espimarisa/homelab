@@ -37,7 +37,6 @@ services:
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
     expose:
-      - 2468/tcp # Cross-seed API.
       - 5030/tcp # slskd web interface reverse proxied internally at slskd.${INTERNAL_DOMAIN}.
       - 6595/tcp # Deemix web interface reverse proxied internally at deemix.${INTERNAL_DOMAIN}.
       - 7474/tcp # Autobrr web interface reverse proxied internally at autobrr.${INTERNAL_DOMAIN}.

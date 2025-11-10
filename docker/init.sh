@@ -6,7 +6,6 @@ set -euo pipefail
 # Required environment variables.
 readonly REQUIRED_VARS=(
 	"APPDATA_PATH" # Path to store application data.
-	# "DOCKER_IPV6_ULA_BASE"      # Docker IPV6 ULA base.
 	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
 	"DOWNLOADS_PATH"            # Path to store downloads.
 	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
@@ -245,18 +244,15 @@ create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}
 echo -e "\nCreating Docker networks..."
 
 # Creates the external network.
-create_dual_stack_network "external-network" \
-	"$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" "false"
+create_dual_stack_network "external-network" "$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" "false"
 # "$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
 
 # Creates the internal network.
-create_dual_stack_network "internal-network" \
-	"$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" "true"
+create_dual_stack_network "internal-network"  "$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" "true"
 # "$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
 
 # Creates the Gluetun network.
-create_dual_stack_network "gluetun-network" \
-	"$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" "false"
+create_dual_stack_network "gluetun-network" "$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" "false"
 # "$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
 
 # Create Docker volumes.
