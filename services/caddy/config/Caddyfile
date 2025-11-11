@@ -19,7 +19,7 @@
 	# Global server configuration.
 	servers {
 		# Trust private ranges for reverse proxying.
-		trusted_proxies static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+		trusted_proxies static private_ranges 100.64.0.0/10
 	}
 }
 
@@ -43,7 +43,7 @@
 # Snippet for internal-only reverse proxied services.
 (internal_proxy) {
 	# Define @not_internal as non-private ranges + non-Tailscale ranges.
-	@not_internal not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	@not_internal not remote_ip private_ranges 100.64.0.0/10
 	abort @not_internal
 	encode zstd gzip
 	reverse_proxy {args[0]}
@@ -126,6 +126,10 @@ huntarr.{$INTERNAL_DOMAIN} {
 
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
+}
+
+profilarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy profilarr:6868
 }
 
 prowlarr.{$INTERNAL_DOMAIN} {
