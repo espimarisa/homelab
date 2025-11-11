@@ -360,7 +360,7 @@ services:
     volumes:
       - huntarr:/config # Configuration and data.
     healthcheck:
-      test: "curl --fail --retry 0 --silent http://127.0.0.1:11011 || exit 1"
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
 
   ###########################################################################
   # Cleanuparr: Automated cleanup of 'ARR apps and qBittorrent.             #
