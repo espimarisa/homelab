@@ -1,20 +1,20 @@
 {
 	# ACME configuration.
 	acme_ca https://acme.zerossl.com/v2/DV90 # Use ZeroSSL for SSL certificates.
-	acme_dns bunny {$BUNNY_API_KEY} # Use Bunny for ACME DNS challenges.
+	# acme_dns bunny {$BUNNY_API_KEY} # Use Bunny for ACME DNS challenges.
 	email {$ACME_EMAIL} # Configures the email to use for ACME.
 
-	# Dynamic DNS configuration.
-	dynamic_dns {
-		# Use Bunny DNS.
-		provider bunny {$BUNNY_API_KEY}
-		check_interval 1h # Check for an updated IP every hour.
+	# # Dynamic DNS configuration.
+	# dynamic_dns {
+	# 	# Use Bunny DNS.
+	# 	provider bunny {$BUNNY_API_KEY}
+	# 	check_interval 1h # Check for an updated IP every hour.
 
-		# List of domains to update.
-		domains {
-			{$DOMAIN} {$DDNS_SUBDOMAINS} # Should be parsed as "example.com home vault test example".
-		}
-	}
+	# 	# List of domains to update.
+	# 	domains {
+	# 		{$DOMAIN} {$DDNS_SUBDOMAINS} # Should be parsed as "example.com home vault test example".
+	# 	}
+	# }
 
 	# Global server configuration.
 	servers {
@@ -44,6 +44,7 @@
 (internal_proxy) {
 	# Define @not_internal as non-private ranges + non-Tailscale ranges.
 	@not_internal not remote_ip private_ranges 100.64.0.0/10
+	tls internal
 	abort @not_internal
 	encode zstd gzip
 	reverse_proxy {args[0]}
