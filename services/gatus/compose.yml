@@ -62,7 +62,6 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.41 # Static IPV4 from the internal subnet
-        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:1::41" # Static IPV6 equivalent
     tmpfs:
       - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
       - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.

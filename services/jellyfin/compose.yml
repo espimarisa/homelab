@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:ro
+      - /dev/dri:/dev/dri:ro
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures autodiscovery.
     expose:

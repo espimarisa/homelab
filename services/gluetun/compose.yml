@@ -15,10 +15,9 @@ services:
       BLOCK_ADS: "off" # Disable unbound blocking; lowers resource usage.
       BLOCK_MALICIOUS: "off" # Disable unbound blocking; lowers resource usage.
       BLOCK_SURVEILLANCE: "off" # Disable unbound blocking; lowers resource usage.
-      # DOT_IPV6: "on" # Enable DOT for IPV6.
       DOT_PROVIDERS: "quad9" # Use Quad9 for DOT.
       DOT: "on" # Enable DOT.
-      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/8,fc00::/7" # Subnets to allow in.
+      FIREWALL_OUTBOUND_SUBNETS: "172.19.1.0/24,172.19.2.0/24,172.19.3.0/24,10.0.0.0/8" # Subnets to allow in.
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # Server-side ports to allow in; for AirVPN this is your forwarded ports.
       HEALTH_TARGET_ADDRESS: "www.quad9.net:443" # Use Quad9 for healthchecks.
       HEALTH_VPN_DURATION_INITIAL: "60s" # Wait 60s before marking as unhealthy.
@@ -46,7 +45,6 @@ services:
     networks:
       gluetun:
         ipv4_address: 172.19.3.10
-        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:3::10
     volumes:
       - gluetun:/gluetun # Gluetun cache.
     cap_add:

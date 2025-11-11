@@ -5,7 +5,7 @@ set -euo pipefail
 
 # Required environment variables.
 readonly REQUIRED_VARS=(
-	"APPDATA_PATH" # Path to store application data.
+	"APPDATA_PATH"              # Path to store application data.
 	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
 	"DOWNLOADS_PATH"            # Path to store downloads.
 	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
@@ -43,24 +43,6 @@ if [ "$(id -u)" -ne 0 ]; then
 	SUDO="sudo"
 	echo "Script not run as root. Using 'sudo' for privileged commands."
 fi
-
-# Internal network, subnet #1.
-readonly INTERNAL_IPV4_SUBNET="172.19.2.0/24"
-readonly INTERNAL_IPV4_GATEWAY="172.19.2.1"
-# readonly INTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:1::/64"
-# readonly INTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:1::1"
-
-# External network, subnet #2.
-readonly EXTERNAL_IPV4_SUBNET="172.19.1.0/24"
-readonly EXTERNAL_IPV4_GATEWAY="172.19.1.1"
-# readonly EXTERNAL_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:2::/64"
-# readonly EXTERNAL_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:2::1"
-
-# Gluetun network, subnet #3.
-readonly GLUETUN_IPV4_SUBNET="172.19.3.0/24"
-readonly GLUETUN_IPV4_GATEWAY="172.19.3.1"
-# readonly GLUETUN_IPV6_SUBNET="${DOCKER_IPV6_ULA_BASE}:3::/64"
-# readonly GLUETUN_IPV6_GATEWAY="${DOCKER_IPV6_ULA_BASE}:3::1"
 
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
@@ -102,37 +84,37 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-db-backups-volume"     # Autobrr database backups.
-	"autobrr-db-config-volume"      # Autobrr database configuration.
-	"autobrr-db-data-volume"        # Autobrr database data.
-	"autobrr-logs-volume"           # Autobrr logs.
-	"autobrr-volume"                # Autobrr configuration and data.
-	"beszel-agent-volume"           # Beszel agent cache.
-	"beszel-data-volume"            # Beszel data.
-	"beszel-socket-volume"          # Beszel socket cache.
-	"caddy-config-volume"           # Caddy configuration.
-	"caddy-data-volume"             # Caddy data.
-	"chhoto-volume"                 # Chhoto database.
-	"cleanuparr-volume"             # Cleanuparr configuration and data.
-	"configarr-volume"              # Configarr cloned data,
-	"deemix-volume"                 # Deemix configuration.
-	"dozzle-volume"                 # Dozzle configuration and data.
-	"gatus-db-backups-volume"       # Gatus database backups.
-	"gatus-db-config-volume"        # Gatus database configuration.
-	"gatus-db-data-volume"          # Gatus database data.
-	"gluetun-volume"                # Gluetun cache.
-	"homarr-db-backups-volume"      # Homarr database backups.
-	"homarr-db-config-volume"       # Homarr database configuration.
-	"homarr-db-data-volume"         # Homarr database data.
-	"homarr-volume"                 # Homarr logs.
-	"huntarr-volume"                # Huntarr configuration and data.
-	"jellyfin-cache-volume"         # Jellyfin cache.
-	"jellyfin-config-volume"        # Jellyfin configuration and data.
-	"lidarr-db-backups-volume"      # Lidarr database backups.
-	"lidarr-db-config-volume"       # Lidarr database configuration.
-	"lidarr-db-data-volume"         # Lidarr database data.
-	"lidarr-volume"                 # Lidarr configuration and data.
-	"opencloud-config-volume"       # OpenCloud configuration.
+	"autobrr-db-backups-volume" # Autobrr database backups.
+	"autobrr-db-config-volume"  # Autobrr database configuration.
+	"autobrr-db-data-volume"    # Autobrr database data.
+	"autobrr-logs-volume"       # Autobrr logs.
+	"autobrr-volume"            # Autobrr configuration and data.
+	"beszel-agent-volume"       # Beszel agent cache.
+	"beszel-data-volume"        # Beszel data.
+	"beszel-socket-volume"      # Beszel socket cache.
+	"caddy-config-volume"       # Caddy configuration.
+	"caddy-data-volume"         # Caddy data.
+	"chhoto-volume"             # Chhoto database.
+	"cleanuparr-volume"         # Cleanuparr configuration and data.
+	"deemix-volume"             # Deemix configuration.
+	"dozzle-volume"             # Dozzle configuration and data.
+	"gatus-db-backups-volume"   # Gatus database backups.
+	"gatus-db-config-volume"    # Gatus database configuration.
+	"gatus-db-data-volume"      # Gatus database data.
+	"gluetun-volume"            # Gluetun cache.
+	"homarr-db-backups-volume"  # Homarr database backups.
+	"homarr-db-config-volume"   # Homarr database configuration.
+	"homarr-db-data-volume"     # Homarr database data.
+	"homarr-volume"             # Homarr logs.
+	"huntarr-volume"            # Huntarr configuration and data.
+	"jellyfin-cache-volume"     # Jellyfin cache.
+	"jellyfin-config-volume"    # Jellyfin configuration and data.
+	"lidarr-db-backups-volume"  # Lidarr database backups.
+	"lidarr-db-config-volume"   # Lidarr database configuration.
+	"lidarr-db-data-volume"     # Lidarr database data.
+	"lidarr-volume"             # Lidarr configuration and data.
+	"opencloud-config-volume"   # OpenCloud configuration.
+	"profilarr-volume"
 	"prowlarr-db-backups-volume"    # Prowlarr database backups.
 	"prowlarr-db-config-volume"     # Prowlarr database configuration.
 	"prowlarr-db-data-volume"       # Prowlarr database data.
@@ -167,7 +149,6 @@ readonly CHOWN_VOLUMES=(
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"chhoto-volume"
-	"configarr-volume"
 	"dozzle-volume"
 	"homarr-volume"
 	"huntarr-volume"
@@ -191,37 +172,6 @@ create_dirs() {
 	done
 }
 
-# Function to create a dual-stack bridge networks.
-create_dual_stack_network() {
-	local network_name="$1"
-	local ipv4_subnet="$2"
-	local ipv4_gateway="$3"
-	# local ipv6_subnet="$4"
-	# local ipv6_gateway="$5"
-	# local internal_flag="$6"
-	local internal_flag="$4"
-
-	if ! docker network inspect "$network_name" &>/dev/null; then
-		echo "Creating network: $network_name (Internal: $internal_flag)"
-		# echo "Creating dual-stack network: $network_name (IPv6: $ipv6_subnet, Internal: $internal_flag)"
-		# local command="docker network create --driver=bridge --ipv6 "
-		local command="docker network create --driver=bridge"
-
-		# The internal network requires the internal flag and gateway defined for static IPs.
-		if [ "$internal_flag" = "true" ]; then
-			command+="--internal "
-		fi
-
-		# Creates the Docker network.
-		# command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} --subnet=${ipv6_subnet} --gateway=${ipv6_gateway} "
-		command+="--subnet=${ipv4_subnet} --gateway=${ipv4_gateway} "
-		eval "$command" "$network_name"
-
-	else
-		echo "Docker network '$network_name' already exists."
-	fi
-}
-
 # Function to create a Docker volume if it doesn't exist.
 create_volume() {
 	local volume_name="$1"
@@ -242,18 +192,6 @@ create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
-
-# Creates the external network.
-create_dual_stack_network "external-network" "$EXTERNAL_IPV4_SUBNET" "$EXTERNAL_IPV4_GATEWAY" "false"
-# "$EXTERNAL_IPV6_SUBNET" "$EXTERNAL_IPV6_GATEWAY" "false"
-
-# Creates the internal network.
-create_dual_stack_network "internal-network"  "$INTERNAL_IPV4_SUBNET" "$INTERNAL_IPV4_GATEWAY" "true"
-# "$INTERNAL_IPV6_SUBNET" "$INTERNAL_IPV6_GATEWAY" "true"
-
-# Creates the Gluetun network.
-create_dual_stack_network "gluetun-network" "$GLUETUN_IPV4_SUBNET" "$GLUETUN_IPV4_GATEWAY" "false"
-# "$GLUETUN_IPV6_SUBNET" "$GLUETUN_IPV6_GATEWAY" "false"
 
 # Create Docker volumes.
 echo -e "\nCreating Docker volumes..."

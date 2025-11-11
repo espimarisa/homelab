@@ -71,7 +71,6 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.20
-        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::20"
       internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.
@@ -94,7 +93,6 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.20
-        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::20
     volumes:
       - lidarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - lidarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -113,7 +111,6 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.21
-        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::21"
       internal:
     expose:
       - 7878/tcp # Web interface reverse proxied internally at radarr.${INTERNAL_DOMAIN}.
@@ -139,7 +136,6 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.21
-        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::21
     volumes:
       - radarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - radarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -160,7 +156,6 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.22
-        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::22"
       internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.
@@ -183,7 +178,6 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.22
-        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::22
     volumes:
       - readarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - readarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -202,7 +196,6 @@ services:
       external:
       gluetun:
         ipv4_address: 172.19.3.23
-        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::23"
       internal:
     expose:
       - 8989/tcp # Web interface reverse proxied internally at sonarr.${INTERNAL_DOMAIN}.
@@ -227,7 +220,6 @@ services:
     networks:
       internal:
         ipv4_address: 172.19.2.23
-        # ipv6_address: ${DOCKER_IPV6_ULA_BASE}:1::23
     volumes:
       - sonarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - sonarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
@@ -264,48 +256,10 @@ services:
     networks:
       gluetun:
         ipv4_address: 172.19.3.31
-        # ipv6_address: "${DOCKER_IPV6_ULA_BASE}:3::31"
     volumes:
       - prowlarr-db-backups:/postgres/backup:rw # PostgreSQL backups.
       - prowlarr-db-config:/postgres/etc:rw # PostgreSQL configuration.
       - prowlarr-db-data:/postgres/var:rw # PostgreSQL data.
-
-  ###########################################################################
-  # Configarr: 'ARR profile synchronization and management service.         #
-  ###########################################################################
-
-  configarr:
-    <<: *defaults-ro
-    image: ghcr.io/11notes/configarr:1
-    container_name: configarr
-    env_file: ../../.env # Needed to force YAML parsing.
-    environment:
-      CONFIGARR_SCHEDULE: "0 5 * * *" # Run every night at 5AM.
-      TZ: "${TZ}" # Sets the timezone.
-    networks:
-      - external
-      - internal
-    volumes:
-      - ./config:/configarr/etc # Local Configarr config.
-      - configarr:/configarr/var # Configarr cache/data volume.
-    depends_on:
-      lidarr:
-        condition: service_healthy
-        restart: true
-      radarr:
-        condition: service_healthy
-        restart: true
-      readarr:
-        condition: service_healthy
-        restart: true
-      sonarr:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 128M # Allow up to 128MB of RAM.
 
   ###########################################################################
   # Byparr: Captcha solver - https://github.com/ThePhaseless/Byparr         #
@@ -367,6 +321,27 @@ services:
           memory: 4G # Allow up to 4GB of RAM.
 
   ###########################################################################
+  # Profilarr: 'ARR profile manager and sync tool.                          #
+  ###########################################################################
+
+  profilarr:
+    <<: *defaults
+    image: santiagosayshey/profilarr:beta
+    container_name: profilarr
+    hostname: profilarr
+    expose:
+      - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
+    networks:
+      - external
+    volumes:
+      - profilarr:/config # Configuration and data.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5 # Allow up to 0.5 vCPUs.
+          memory: 512M # Allow up to 512MB of RAM.
+
+  ###########################################################################
   # Huntarr: Automatic media library upgrade search tool.                   #
   ###########################################################################
 
@@ -380,7 +355,6 @@ services:
       - 9705/tcp # Web interface reverse proxied internally at huntarr.${INTERNAL_DOMAIN}.
     networks:
       - external
-      - internal
       - gluetun
     volumes:
       - huntarr:/config # Configuration and data.
@@ -400,7 +374,6 @@ services:
       - 11011/tcp # Web interface reverse proxied internally at cleanuparr.${INTERNAL_DOMAIN}.
     networks:
       - external
-      - internal
       - gluetun
     volumes:
       - cleanuparr:/config # Configuration and data.
@@ -427,9 +400,6 @@ volumes:
   cleanuparr:
     name: cleanuparr-volume
     external: true
-  configarr:
-    name: configarr-volume
-    external: true
   huntarr:
     name: huntarr-volume
     external: true
@@ -444,6 +414,9 @@ volumes:
     external: true
   lidarr-db-data:
     name: lidarr-db-data-volume
+    external: true
+  profilarr:
+    name: profilarr-volume
     external: true
   prowlarr:
     name: prowlarr-volume

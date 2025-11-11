@@ -5,13 +5,13 @@
 ---
 services:
   caddy:
-    build: ./ # Build from the current directory.
+    build: ./ # Use the local Dockerfile to build from the current directory.
     container_name: caddy
     env_file: ../../.env # Needed to force Caddyfile parsing.
     hostname: caddy
     restart: unless-stopped
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket proxy.
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       TZ: "${TZ}" # Sets the timezone.
     networks:
       - external

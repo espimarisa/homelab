@@ -10,7 +10,6 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Caddy
 -   Chhoto URL
 -   Cleanuparr
--   Configarr
 -   Deemix
 -   Dozzle
 -   Gatus
@@ -21,6 +20,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Lidarr
 -   mam-ip-helper
 -   OpenCloud
+-   Profilarr
 -   Prowlarr
 -   qBittorrent
 -   Radarr
