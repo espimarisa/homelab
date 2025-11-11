@@ -333,6 +333,7 @@ services:
       - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
     networks:
       - external
+      - internal
     volumes:
       - profilarr:/config # Configuration and data.
     deploy:

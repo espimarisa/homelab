@@ -18,6 +18,7 @@ services:
     expose:
       - 8080/tcp # Dozzle web interface; will be reverse proxied internally at dozzle.${INTERNAL_DOMAIN}.
     networks:
+      - external
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Timezone mount.
