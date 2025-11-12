@@ -321,26 +321,41 @@ services:
           memory: 4G # Allow up to 4GB of RAM.
 
   ###########################################################################
-  # Profilarr: 'ARR profile manager and sync tool.                          #
+  # Configarr: 'ARR profile synchronization and management service.         #
   ###########################################################################
 
-  profilarr:
-    <<: *defaults
-    image: santiagosayshey/profilarr:beta
-    container_name: profilarr
-    hostname: profilarr
-    expose:
-      - 6868/tcp # Web interface reverse proxied internally at profilarr.${INTERNAL_DOMAIN}.
+  configarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/configarr:1
+    container_name: configarr
+    env_file: ../../.env # Needed to force YAML parsing.
+    environment:
+      CONFIGARR_SCHEDULE: "0 5 * * *" # Run every night at 5AM.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
       - internal
     volumes:
-      - profilarr:/config # Configuration and data.
+      - ./config:/configarr/etc # Local Configarr config.
+      - configarr:/configarr/var # Configarr cache/data volume.
+    depends_on:
+      lidarr:
+        condition: service_healthy
+        restart: true
+      radarr:
+        condition: service_healthy
+        restart: true
+      readarr:
+        condition: service_healthy
+        restart: true
+      sonarr:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 0.5 # Allow up to 0.5 vCPUs.
-          memory: 512M # Allow up to 512MB of RAM.
+          cpus: 0.25 # Allow up to 0.25 vCPUs.
+          memory: 128M # Allow up to 128MB of RAM.
 
   ###########################################################################
   # Huntarr: Automatic media library upgrade search tool.                   #
@@ -416,8 +431,8 @@ volumes:
   lidarr-db-data:
     name: lidarr-db-data-volume
     external: true
-  profilarr:
-    name: profilarr-volume
+  configarr:
+    name: configarr-volume
     external: true
   prowlarr:
     name: prowlarr-volume

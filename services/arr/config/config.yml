@@ -1,0 +1,575 @@
+---
+radarrEnabled: true
+sonarrEnabled: true
+lidarrEnabled: true
+readarrEnabled: true
+whisparrEnabled: false
+
+#################################################
+# Lidarr configuration.                         #
+#################################################
+
+lidarr:
+  lidarr:
+    base_url: http://lidarr:8686
+    api_key: !env LIDARR_API_KEY
+
+    # Delete or replace old formats.
+    delete_unmanaged_custom_formats:
+      enabled: true
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    # Do not prefer propers and repacks.
+    media_management:
+      downloadPropersAndRepacks: doNotPrefer
+
+    # Custom Format definitions.
+    customFormatDefinitions:
+      # Preferred groups.
+      - trash_id: lidarr-preferred-groups
+        trash_scores:
+          default: 1
+        trash_description: Preferred Groups
+        name: Preferred Groups
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: DeVOiD
+            implementation: ReleaseGroupSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bDeVOiD\b"
+          - name: PERFECT
+            implementation: ReleaseGroupSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bPERFECT\b"
+          - name: ENRiCH
+            implementation: ReleaseGroupSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bENRiCH\b"
+
+      # Explicit releases (monkey patch for poor tagging).
+      - trash_id: lidarr-explicit
+        trash_scores:
+          default: 1
+        trash_description: Explicit
+        name: Explicit
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: Explicit
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bExplicit\b"
+
+      # Lossless releases.
+      - trash_id: lidarr-lossless
+        trash_scores:
+          default: 100
+        trash_description: Lossless
+        name: Lossless
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: Lossless
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\blossless\b"
+          - name: FLAC
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bflac\b"
+
+      # 24-bit releases.
+      - trash_id: lidarr-24bit
+        trash_scores:
+          default: 10
+        trash_description: 24 Bit
+        name: 24 Bit
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: 24 Bit
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\b24 ?bit\b"
+
+      # CD releases.
+      - trash_id: lidarr-cd
+        trash_scores:
+          default: 2
+        trash_description: CD
+        name: CD
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: CD
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bCD\b"
+
+      # Vinyl releases.
+      - trash_id: lidarr-vinyl
+        trash_scores:
+          default: 1
+        trash_description: Vinyl
+        name: Vinyl
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: Vinyl
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bVinyl\b"
+
+      # WEB releases.
+      - trash_id: lidarr-web
+        trash_scores:
+          default: 2
+        trash_description: WEB
+        name: WEB
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: WEB
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "\bWEB\b"
+
+    # Custom formats to import.
+    custom_formats:
+      - trash_ids:
+          - lidarr-24bit
+          - lidarr-cd
+          - lidarr-explicit
+          - lidarr-lossless
+          - lidarr-preferred-groups
+          - lidarr-vinyl
+          - lidarr-web
+        assign_scores_to:
+          - name: HQ
+          - name: Lossless Only
+
+    # Custom quality profiles.
+    quality_profiles:
+      # HQ profile, for most music.
+      - name: HQ
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: FLAC 24bit # Prefer FLAC 24-bit.
+          until_score: 110 # At least always try to get Lossless. 110 will = Lossless 24bit.
+        min_format_score: 1
+        quality_sort: top
+        qualities:
+          - name: FLAC 24bit
+          - name: FLAC
+          - name: WAV # WAV is allowed here as a fallback for old, non-FLAC releases.
+          - name: MP3-320
+
+      # Lossless only, for problematic music that tries to only grab lossy stuff.
+      - name: Lossless Only
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: FLAC 24bit # Prefer FLAC 24-bit.
+          until_score: 110 # At least always try to get Lossless. 110 will = Lossless 24bit.
+        min_format_score: 1
+        quality_sort: top
+        qualities:
+          - name: FLAC 24bit
+          - name: FLAC
+          - name: WAV # WAV is allowed here as a fallback for old, non-FLAC releases.
+
+#################################################
+# Radarr configuration.                         #
+#################################################
+
+radarr:
+  radarr:
+    base_url: http://radarr:7878
+    api_key: !env RADARR_API_KEY
+
+    # Configures delay profiles.
+    delay_profiles:
+      default:
+        bypassIfAboveCustomFormatScore: false
+        bypassIfHighestQuality: false
+        enableTorrent: true
+        enableUsenet: true
+        minimumCustomFormatScore: 0
+        preferredProtocol: torrent
+        torrentDelay: 60
+        usenetDelay: 60
+
+    # Delete or replace updated/unmaintained formats.
+    delete_unmanaged_custom_formats:
+      enabled: true
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    # Do not prefer propers and repacks.
+    media_management:
+      downloadPropersAndRepacks: doNotPrefer
+
+    # Set up renaming to follow Jellyfin standards.
+    media_naming:
+      folder: jellyfin-tmdb
+      movie:
+        rename: true
+        standard: jellyfin-tmdb
+
+    # Configures root folders.
+    root_folders:
+      - /library/movies
+
+    include:
+      # Anime custom formats and quality profiles.
+      - template: radarr-custom-formats-anime
+      - template: radarr-quality-definition-anime
+      - template: radarr-quality-profile-anime
+
+      # Movie quality definitions.
+      - template: radarr-quality-definition-movie
+
+      # Remux + WEB 1080p custom formats and quality profiles.
+      - template: radarr-custom-formats-remux-web-1080p
+      - template: radarr-quality-profile-remux-web-1080p
+
+      # Remux + WEB 2160p custom formats and quality profiles.
+      - template: radarr-custom-formats-remux-web-2160p
+      - template: radarr-quality-profile-remux-web-2160p
+
+    # Custom Format definition for YayPonies/YayBingo/etc
+    customFormatDefinitions:
+      - trash_id: radarr-yayponies
+        trash_scores:
+          default: 10000
+        trash_description: YayPonies
+        name: YayPonies
+        specifications:
+          - name: YayPonies
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "^YP-"
+
+    custom_formats:
+      - trash_ids:
+          # HDR bonuses.
+          - 493b6d1dbec3c3364c59d7607f7e3405 # HDR
+          - caa37d0df9c348912df1fb1d88f9273a # HDR10+ Boost
+
+          # Movie format bonuses.
+          - eecf3a857724171f968a66cb5719e152 # IMAX
+          - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
+          - 09d9dd29a0fc958f9796e65c2a8864b4 # Open Matte
+
+          # Movie bonuses.
+          - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+          - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
+          - 0f12c086e289cf966fa5948eac571f44 # Hybrid
+          - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
+          - 570bc9ebecd92723d2d21500f4be314c # Remaster
+          - 957d0f44b592285f26449575e8b1167e # Special Edition
+          - e9001909a4c88013a359d0b9920d7bea # Theatrical Cut
+          - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
+
+          # Unwanted formats.
+          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+        assign_scores_to:
+          - name: Remux + WEB 1080p
+          - name: Remux + WEB 2160p
+
+      # Allow AV1, but don"t prefer it.
+      - trash_ids:
+          - cae4ca30163749b891686f95532519bd # AV1
+        assign_scores_to:
+          - name: Remux + WEB 1080p
+            score: 0
+          - name: Remux + WEB 2160p
+            score: 0
+          - name: Remux-1080p - Anime
+            score: 0
+
+      # 10bit boost.
+      - trash_ids:
+          - a5d148168c4506b55cf53984107c396e # 10bit
+        assign_scores_to:
+          - name: Remux + WEB 1080p
+            score: 5
+          - name: Remux + WEB 2160p
+            score: 5
+          - name: Remux-1080p - Anime
+            score: 5
+
+      # Uncensored boost.
+      - trash_ids:
+          - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
+        assign_scores_to:
+          - name: Remux + WEB 1080p
+            score: 25
+          - name: Remux + WEB 2160p
+            score: 25
+          - name: Remux-1080p - Anime
+            score: 25
+
+      # Anime Dual Audio boost.
+      - trash_ids:
+          - 4a3b087eea2ce012fcc1ce319259a3be # Dual Audio
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 100
+
+      # YayPonies custom format assignment.
+      - trash_ids:
+          - radarr-yayponies # Custom YayPonies format.
+        assign_scores_to:
+          - name: YayPonies-1080p
+            score: 10000
+
+    quality_profiles:
+      # Custom YayPonies profile for MLP, Bluey, etc.
+      - name: YayPonies-1080p
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: WEBDL-1080p
+        min_format_score: 10000
+        quality_sort: top
+        qualities:
+          - name: WEBDL-1080p
+
+#################################################
+# Readarr configuration.                        #
+#################################################
+
+readarr:
+  readarr:
+    base_url: http://readarr:8787
+    api_key: !env READARR_API_KEY
+
+    # Delete or replace old formats.
+    delete_unmanaged_custom_formats:
+      enabled: true
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    # Do not prefer propers and repacks.
+    media_management:
+      downloadPropersAndRepacks: doNotPrefer
+
+#################################################
+# Sonarr configuration.                         #
+#################################################
+
+sonarr:
+  sonarr:
+    base_url: http://sonarr:8989
+    api_key: !env SONARR_API_KEY
+
+    # Configures delay profiles.
+    delay_profiles:
+      default:
+        bypassIfAboveCustomFormatScore: false
+        bypassIfHighestQuality: false
+        enableTorrent: true
+        enableUsenet: true
+        minimumCustomFormatScore: 0
+        preferredProtocol: torrent
+        torrentDelay: 60
+        usenetDelay: 60
+
+    # Delete or replace old formats.
+    delete_unmanaged_custom_formats:
+      enabled: true
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    # Do not prefer propers and repacks.
+    media_management:
+      downloadPropersAndRepacks: doNotPrefer
+
+    # Set up renaming to follow Jellyfin standards.
+    media_naming:
+      folder: jellyfin-tmdb
+      series: jellyfin-tmdb
+      season: jellyfin-tmdb
+      episodes:
+        rename: true
+        standard: jellyfin-tmdb
+        daily: jellyfin-tmdb
+        anime: jellyfin-tmdb
+
+    # Sets root folders.
+    root_folders:
+      - /library/anime
+      - /library/tv-shows
+
+    # Recyclarr includes.
+    include:
+      - template: sonarr-quality-definition-anime
+      - template: sonarr-quality-definition-series
+      - template: sonarr-v4-custom-formats-anime
+      - template: sonarr-v4-custom-formats-web-1080p
+      - template: sonarr-v4-custom-formats-web-2160p
+      - template: sonarr-v4-quality-profile-anime
+      - template: sonarr-v4-quality-profile-web-1080p-alternative
+      - template: sonarr-v4-quality-profile-web-2160p-alternative
+
+    # Custom Format definition for YayPonies/YayBingo/etc
+    customFormatDefinitions:
+      - trash_id: sonarr-yayponies
+        trash_scores:
+          default: 10000
+        trash_description: YayPonies
+        name: YayPonies
+        specifications:
+          - name: YayPonies
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "^YP-"
+
+    # Custom formats.
+    custom_formats:
+      # 2160p Remux formats.
+      - trash_ids:
+          # Unified HDR.
+          - 505d871304820ba7106b693be6fe4a9e # HDR
+
+          # Unwanted.
+          - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
+          - fbcb31d8dabd2a319072b84fc0b7249c # Extras
+          - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
+          - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
+          - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+
+          # Misc.
+          - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
+          - eb3d5cc0a2be0db205fb823640db6a3c # Repack v2
+          - 44e7c4de10ae50265753082e5dc76047 # Repack v3
+
+          # Remux groups.
+          - 9965a052eb87b0d10313b1cea89eb451 # Remux Tier 01
+          - 8a1d0c3d7497e741736761a1da866a2e # Remux Tier 02
+        assign_scores_to:
+          - name: Remux-2160p
+
+      - trash_ids:
+          # Unwanted formats.
+          - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
+          - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
+          - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
+        assign_scores_to:
+          - name: Remux-2160p
+          - name: WEB-1080p
+          - name: WEB-2160p
+
+      # Allow AV1 and x265, but don"t prefer it.
+      - trash_ids:
+          - 15a05bc7c1a36e2b57fd628f8977e2fc # AV1
+          - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+          - 9b64dff695c2115facf1b6ea59c9bd07 # x265 (No HDR)
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
+          - name: Remux-2160p
+            score: 0
+          - name: WEB-1080p
+            score: 0
+          - name: WEB-2160p
+            score: 0
+
+      # 10bit boost.
+      - trash_ids:
+          - b2550eb333d27b75833e25b8c2557b38 # 10bit
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 5
+          - name: Remux-2160p
+            score: 5
+          - name: WEB-1080p
+            score: 5
+          - name: WEB-2160p
+            score: 5
+
+      # Uncensored boost.
+      - trash_ids:
+          - 026d5aadd1a6b4e550b134cb6c72b3ca # Uncensored
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 25
+          - name: Remux-2160p
+            score: 25
+          - name: WEB-1080p
+            score: 25
+          - name: WEB-2160p
+            score: 25
+
+      # Anime Dual Audio boost.
+      - trash_ids:
+          - 418f50b10f1907201b6cfdf881f467b7 # Dual Audio
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 100
+
+      # YayPonies custom format assignment.
+      - trash_ids:
+          - sonarr-yayponies # Custom YayPonies format.
+        assign_scores_to:
+          - name: YayPonies-1080p
+            score: 10000
+
+    # Custom quality profiles.
+    quality_profiles:
+      # Dedicated Remux-2160p profile. Only ranks REMUX groups, will only grab if one is included.
+      - name: Remux-2160p
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: Bluray-2160p Remux
+          until_score: 10000
+        min_format_score: 100
+        quality_sort: top
+        qualities:
+          - name: Bluray-2160p Remux
+          - name: Bluray-2160p
+          - name: WEB 2160p
+            qualities:
+              - WEBDL-2160p
+              - WEBRip-2160p
+
+      # Custom YayPonies profile for MLP, Bluey, etc.
+      - name: YayPonies-1080p
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: WEBDL-1080p
+        min_format_score: 10000
+        quality_sort: top
+        qualities:
+          - name: WEBDL-1080p

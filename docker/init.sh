@@ -84,37 +84,37 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-db-backups-volume" # Autobrr database backups.
-	"autobrr-db-config-volume"  # Autobrr database configuration.
-	"autobrr-db-data-volume"    # Autobrr database data.
-	"autobrr-logs-volume"       # Autobrr logs.
-	"autobrr-volume"            # Autobrr configuration and data.
-	"beszel-agent-volume"       # Beszel agent cache.
-	"beszel-data-volume"        # Beszel data.
-	"beszel-socket-volume"      # Beszel socket cache.
-	"caddy-config-volume"       # Caddy configuration.
-	"caddy-data-volume"         # Caddy data.
-	"chhoto-volume"             # Chhoto database.
-	"cleanuparr-volume"         # Cleanuparr configuration and data.
-	"deemix-volume"             # Deemix configuration.
-	"dozzle-volume"             # Dozzle configuration and data.
-	"gatus-db-backups-volume"   # Gatus database backups.
-	"gatus-db-config-volume"    # Gatus database configuration.
-	"gatus-db-data-volume"      # Gatus database data.
-	"gluetun-volume"            # Gluetun cache.
-	"homarr-db-backups-volume"  # Homarr database backups.
-	"homarr-db-config-volume"   # Homarr database configuration.
-	"homarr-db-data-volume"     # Homarr database data.
-	"homarr-volume"             # Homarr logs.
-	"huntarr-volume"            # Huntarr configuration and data.
-	"jellyfin-cache-volume"     # Jellyfin cache.
-	"jellyfin-config-volume"    # Jellyfin configuration and data.
-	"lidarr-db-backups-volume"  # Lidarr database backups.
-	"lidarr-db-config-volume"   # Lidarr database configuration.
-	"lidarr-db-data-volume"     # Lidarr database data.
-	"lidarr-volume"             # Lidarr configuration and data.
-	"opencloud-config-volume"   # OpenCloud configuration.
-	"profilarr-volume"
+	"autobrr-db-backups-volume"     # Autobrr database backups.
+	"autobrr-db-config-volume"      # Autobrr database configuration.
+	"autobrr-db-data-volume"        # Autobrr database data.
+	"autobrr-logs-volume"           # Autobrr logs.
+	"autobrr-volume"                # Autobrr configuration and data.
+	"beszel-agent-volume"           # Beszel agent cache.
+	"beszel-data-volume"            # Beszel data.
+	"beszel-socket-volume"          # Beszel socket cache.
+	"caddy-config-volume"           # Caddy configuration.
+	"caddy-data-volume"             # Caddy data.
+	"chhoto-volume"                 # Chhoto database.
+	"cleanuparr-volume"             # Cleanuparr configuration and data.
+	"configarr-volume"              # Configarr data.
+	"deemix-volume"                 # Deemix configuration.
+	"dozzle-volume"                 # Dozzle configuration and data.
+	"gatus-db-backups-volume"       # Gatus database backups.
+	"gatus-db-config-volume"        # Gatus database configuration.
+	"gatus-db-data-volume"          # Gatus database data.
+	"gluetun-volume"                # Gluetun cache.
+	"homarr-db-backups-volume"      # Homarr database backups.
+	"homarr-db-config-volume"       # Homarr database configuration.
+	"homarr-db-data-volume"         # Homarr database data.
+	"homarr-volume"                 # Homarr logs.
+	"huntarr-volume"                # Huntarr configuration and data.
+	"jellyfin-cache-volume"         # Jellyfin cache.
+	"jellyfin-config-volume"        # Jellyfin configuration and data.
+	"lidarr-db-backups-volume"      # Lidarr database backups.
+	"lidarr-db-config-volume"       # Lidarr database configuration.
+	"lidarr-db-data-volume"         # Lidarr database data.
+	"lidarr-volume"                 # Lidarr configuration and data.
+	"opencloud-config-volume"       # OpenCloud configuration.
 	"prowlarr-db-backups-volume"    # Prowlarr database backups.
 	"prowlarr-db-config-volume"     # Prowlarr database configuration.
 	"prowlarr-db-data-volume"       # Prowlarr database data.
@@ -149,6 +149,7 @@ readonly CHOWN_VOLUMES=(
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"chhoto-volume"
+	"configarr-volume"
 	"dozzle-volume"
 	"homarr-volume"
 	"huntarr-volume"

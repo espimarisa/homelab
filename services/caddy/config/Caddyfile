@@ -129,10 +129,6 @@ lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
 }
 
-profilarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy profilarr:6868
-}
-
 prowlarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:9696
 }

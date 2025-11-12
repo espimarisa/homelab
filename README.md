@@ -20,7 +20,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Lidarr
 -   mam-ip-helper
 -   OpenCloud
--   Profilarr
+-   Configarr
 -   Prowlarr
 -   qBittorrent
 -   Radarr
