@@ -47,7 +47,6 @@
 (internal_proxy) {
 	# Define @not_internal as non-private ranges + non-Tailscale ranges.
 	@not_internal not remote_ip private_ranges 100.64.0.0/10
-	tls internal
 	abort @not_internal
 	encode zstd gzip
 	reverse_proxy {args[0]}
