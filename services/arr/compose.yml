@@ -65,12 +65,11 @@ services:
     image: ghcr.io/hotio/lidarr:pr-plugins
     container_name: lidarr
     hostname: lidarr
-    expose:
-      - 8686/tcp # Web interface reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
+    ports:
+      - 8686:8686/tcp # Web interface reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     networks:
       external:
       gluetun:
-        ipv4_address: 172.19.3.20
       internal:
     volumes:
       - downloads:/downloads:rw # Root downloads directory.

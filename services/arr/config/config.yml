@@ -11,83 +11,58 @@ whisparrEnabled: false
 
 lidarr:
   lidarr:
+    # Connect to the local Lidarr server.
     base_url: http://lidarr:8686
     api_key: !env LIDARR_API_KEY
 
-    # Delete or replace old formats.
-    delete_unmanaged_custom_formats:
-      enabled: true
+    # Delete old and unmanaged custom formats and replace existing ones.
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
+    delete_unmanaged_custom_formats:
+      enabled: true
 
-    # Do not prefer propers and repacks.
+    # Configures media management.
     media_management:
-      downloadPropersAndRepacks: doNotPrefer
+      downloadPropersAndRepacks: doNotPrefer # Do not prefer propers and repacks.
+      # media_naming:
+      #   # Configures media naming to include MusicBrainz IDs as well as MediaInfo.
+      #   artistFolderFormat: "{Artist CleanNameThe} {(Artist Disambiguation)} [mbid-{Artist MbId}]"
+      #   multiDiscTrackFormat: "{Album Type}/({Release Year}) {Album CleanTitle:100}{ (Album Disambiguation:100)} [mbid-{Album MbId}]/{medium:00}{track:00} - {Track ArtistCleanNameThe:100} - {Album CleanTitle:100} - {Track CleanTitle:100} [{MediaInfo AudioCodec} {MediaInfo AudioBitsPerSample}] [{MediaInfo AudioSampleRate}] [{MediaInfo AudioBitRate}]"
+      #   standardTrackFormat: "{Album Type}/({Release Year}) {Album CleanTitle:100}{ (Album Disambiguation)} [mbid-{Album MbId}]/{track:00} - {Track ArtistCleanNameThe:100} - {Album CleanTitle:100} - {Track CleanTitle:100} [{MediaInfo AudioCodec} {MediaInfo AudioBitsPerSample}] [{MediaInfo AudioSampleRate}] [{MediaInfo AudioBitRate}]"
+      # root_folders:
+      #   - path: /library/music
+      #     metadata_profile: Standard
+      #     name: Music
+      #     quality_profile: Lossless
 
     # Custom Format definitions.
     customFormatDefinitions:
-      # Preferred groups.
-      - trash_id: lidarr-preferred-groups
+      # 96KHz releases.
+      - trash_id: lidarr-96khz
         trash_scores:
-          default: 1
-        trash_description: Preferred Groups
-        name: Preferred Groups
+          default: 10
+        trash_description: 96 KHz
+        name: 96 KHz
         includeCustomFormatWhenRenaming: false
         specifications:
-          - name: DeVOiD
-            implementation: ReleaseGroupSpecification
-            negate: false
-            required: false
-            fields:
-              value: "\bDeVOiD\b"
-          - name: PERFECT
-            implementation: ReleaseGroupSpecification
-            negate: false
-            required: false
-            fields:
-              value: "\bPERFECT\b"
-          - name: ENRiCH
-            implementation: ReleaseGroupSpecification
-            negate: false
-            required: false
-            fields:
-              value: "\bENRiCH\b"
-
-      # Explicit releases (monkey patch for poor tagging).
-      - trash_id: lidarr-explicit
-        trash_scores:
-          default: 1
-        trash_description: Explicit
-        name: Explicit
-        includeCustomFormatWhenRenaming: false
-        specifications:
-          - name: Explicit
+          - name: 96 KHz
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
-              value: "\bExplicit\b"
-
-      # Lossless releases.
-      - trash_id: lidarr-lossless
-        trash_scores:
-          default: 100
-        trash_description: Lossless
-        name: Lossless
-        includeCustomFormatWhenRenaming: false
-        specifications:
-          - name: Lossless
+              value: '(?i)\b(96|192|88\.2|176\.4)(\.0)? ?k(hz)?\b'
+          - name: 24-96
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
-              value: "\blossless\b"
-          - name: FLAC
+              value: '(?i)\b24 ?(bit)?[/-] ?(96|192|88\.2|176\.4)(\.0)? ?(k(hz)?)?\b'
+          - name: 96-24
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
-              value: "\bflac\b"
+              value: '(?i)\b(96|192|88\.2|176\.4)(\.0)? ?[/-] ?24 ?(bit)?\b'
 
       # 24-bit releases.
       - trash_id: lidarr-24bit
@@ -102,99 +77,141 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: "\b24 ?bit\b"
+              value: '(?i)\b24 ?bit(s)?\b'
+          - name: FLAC24
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\bFLAC24\b'
+
+      # Explicit releases.
+      - trash_id: lidarr-explicit
+        trash_scores:
+          default: 1
+        trash_description: Explicit
+        name: Explicit
+        includeCustomFormatWhenRenaming: true # Include Explicit in renamed files.
+        specifications:
+          - name: Explicit
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\b(explicit)\b'
+
+      # Lossless releases.
+      - trash_id: lidarr-lossless
+        trash_scores:
+          default: 100
+        trash_description: Lossless
+        name: Lossless
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: FLAC
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '\bFLAC\b'
+          - name: Lossless
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\b(Lossless)\b'
 
       # CD releases.
       - trash_id: lidarr-cd
         trash_scores:
           default: 2
-        trash_description: CD
-        name: CD
         includeCustomFormatWhenRenaming: false
+        name: CD
+        trash_description: CD
         specifications:
           - name: CD
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
-              value: "\bCD\b"
+              value: '(?i)\bCD\b'
 
       # Vinyl releases.
       - trash_id: lidarr-vinyl
         trash_scores:
-          default: 1
-        trash_description: Vinyl
-        name: Vinyl
+          default: 1 # Lower priority for Vinyl releases.
         includeCustomFormatWhenRenaming: false
+        name: Vinyl
+        trash_description: Vinyl
         specifications:
           - name: Vinyl
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
-              value: "\bVinyl\b"
+              value: '(?i)\bVinyl(?! ?(Rip|dub))\b'
 
       # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
           default: 2
-        trash_description: WEB
-        name: WEB
         includeCustomFormatWhenRenaming: false
+        name: WEB
+        trash_description: WEB
         specifications:
           - name: WEB
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
             fields:
-              value: "\bWEB\b"
+              value: '(?i)\b(WEB|WEB(DL)?|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
 
     # Custom formats to import.
     custom_formats:
       - trash_ids:
-          - lidarr-24bit
-          - lidarr-cd
-          - lidarr-explicit
-          - lidarr-lossless
-          - lidarr-preferred-groups
-          - lidarr-vinyl
-          - lidarr-web
+          - lidarr-96khz # 96KHz.
+          - lidarr-24bit # 24Bit FLAC.
+          - lidarr-cd # CD releases.
+          - lidarr-explicit # Explicit releases.
+          - lidarr-lossless # Lossless releases.
+          - lidarr-vinyl # Vinyl releases.
+          - lidarr-web # WEB releases.
         assign_scores_to:
           - name: HQ
-          - name: Lossless Only
+          - name: Lossless
 
     # Custom quality profiles.
     quality_profiles:
-      # HQ profile, for most music.
+      # HQ profile. Allows MP3-320 and FLAC.
       - name: HQ
         reset_unmatched_scores:
-          enabled: true
+          enabled: true # Reset unmatched custom format scores.
         upgrade:
-          allowed: true
+          allowed: true # Allow upgrading.
           until_quality: FLAC 24bit # Prefer FLAC 24-bit.
-          until_score: 110 # At least always try to get Lossless. 110 will = Lossless 24bit.
-        min_format_score: 1
-        quality_sort: top
+          until_score: 120 # At least always try to get Lossless. 120 will = Lossless 24bit and 96KHz.
+        min_format_score: 1 # Require a custom format score of 1 or higher.
+        quality_sort: top # Sort by top quality first.
         qualities:
-          - name: FLAC 24bit
-          - name: FLAC
-          - name: WAV # WAV is allowed here as a fallback for old, non-FLAC releases.
-          - name: MP3-320
+          - name: FLAC 24bit # 24Bit FLAC.
+          - name: FLAC # FLAC.
+          - name: WAV # Allow WAV releases, but at a lower priority.
+          - name: MP3-320 # 320KHz MP3.
 
-      # Lossless only, for problematic music that tries to only grab lossy stuff.
-      - name: Lossless Only
+      # Lossless only. Allows FLAC and FLAC 24-bit.
+      - name: Lossless
         reset_unmatched_scores:
-          enabled: true
+          enabled: true # Reset unmatched custom format scores.
         upgrade:
-          allowed: true
+          allowed: true # Allow upgrading.
           until_quality: FLAC 24bit # Prefer FLAC 24-bit.
-          until_score: 110 # At least always try to get Lossless. 110 will = Lossless 24bit.
-        min_format_score: 1
-        quality_sort: top
+          until_score: 120 # At least always try to get Lossless. 120 will = Lossless 24bit and 96KHz.
+        min_format_score: 1 # Require a custom format score of 1 or higher.
+        quality_sort: top # Sort by top quality first.
         qualities:
-          - name: FLAC 24bit
-          - name: FLAC
-          - name: WAV # WAV is allowed here as a fallback for old, non-FLAC releases.
+          - name: FLAC 24bit # 24Bit FLAC.
+          - name: FLAC # FLAC.
+          - name: WAV # Allow WAV releases, but at the lowest priority.
 
 #################################################
 # Radarr configuration.                         #
@@ -279,17 +296,11 @@ radarr:
           # Movie format bonuses.
           - eecf3a857724171f968a66cb5719e152 # IMAX
           - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
-          - 09d9dd29a0fc958f9796e65c2a8864b4 # Open Matte
 
           # Movie bonuses.
           - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
-          - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
           - 0f12c086e289cf966fa5948eac571f44 # Hybrid
-          - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
           - 570bc9ebecd92723d2d21500f4be314c # Remaster
-          - 957d0f44b592285f26449575e8b1167e # Special Edition
-          - e9001909a4c88013a359d0b9920d7bea # Theatrical Cut
-          - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
 
           # Unwanted formats.
           - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
