@@ -19,7 +19,10 @@
 	# Global server configuration.
 	servers {
 		# Trust private ranges for reverse proxying.
-		trusted_proxies static cloudflare private_ranges 100.64.0.0/10
+		trusted_proxies combine {
+			cloudflare
+			static private_ranges 100.64.0.0/10
+		}
 	}
 }
 
