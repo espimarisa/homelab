@@ -97,7 +97,6 @@ readonly VOLUMES=(
 	"chhoto-volume"                 # Chhoto database.
 	"cleanuparr-volume"             # Cleanuparr configuration and data.
 	"configarr-volume"              # Configarr data.
-	"deemix-volume"                 # Deemix configuration.
 	"dozzle-volume"                 # Dozzle configuration and data.
 	"gatus-db-backups-volume"       # Gatus database backups.
 	"gatus-db-config-volume"        # Gatus database configuration.

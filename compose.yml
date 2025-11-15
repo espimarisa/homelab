@@ -5,7 +5,6 @@ include:
   - ./services/beszel/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
-  - ./services/deemix/compose.yml
   - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml

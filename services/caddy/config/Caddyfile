@@ -113,10 +113,6 @@ cleanuparr.{$INTERNAL_DOMAIN} {
 	import internal_proxy cleanuparr:11011
 }
 
-deemix.{$INTERNAL_DOMAIN} {
-	import internal_proxy gluetun:6595
-}
-
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
 }
