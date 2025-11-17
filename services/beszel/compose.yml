@@ -48,10 +48,12 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent:0
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host # Required for gathering network data.
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw # gpu
     environment:
       HUB_URL: "http://127.0.0.1:8090" # Listen to the beszel container.
       KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
