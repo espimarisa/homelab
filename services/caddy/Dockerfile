@@ -1,9 +1,7 @@
 # Builds the image.
 FROM caddy:2-builder-alpine AS builder
 RUN xcaddy build \
-	--with github.com/caddy-dns/cloudflare \
 	--with github.com/mholt/caddy-dynamicdns \
-	--with github.com/WeidiDeng/caddy-cloudflare-ip \
 	--with github.com/fvbommel/caddy-combine-ip-ranges
 
 # Creates the full image.

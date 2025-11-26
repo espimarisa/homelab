@@ -13,8 +13,9 @@ services:
     environment:
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - downloads:/downloads:rw # Root downloads path.
       - downloads-incomplete:/downloads-incomplete:rw # Root incomplete downloads cache path.
+      - downloads-seedpool:/downloads-seedpool:rw # Root downloads path for permaseed torrents.
+      - downloads:/downloads:rw # Root downloads path.
       - qbittorrent-config:/qbittorrent/etc:rw # qBittorrent configuration.
       - qbittorrent-data:/qbittorrent/var:rw # qBittorrent cache and database.
     cap_drop:
