@@ -62,7 +62,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
       - /var/run/docker.sock:/var/run/docker.sock:ro # Native Socket volume mount.
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/nvme1n1:ro # Downloads cache drive, change to be your path and drive name.
+      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # Downloads cache drive, change to be your path and drive name.
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive, change to be your path and drive name
       - beszel-agent:/var/lib/beszel-agent:rw # Besel agent.
       - beszel-socket:/beszel_socket:rw # Beszel socket.
