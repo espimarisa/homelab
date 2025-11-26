@@ -51,3 +51,9 @@ volumes:
       device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none
+  downloads-seedpool:
+    name: downloads-seedpool-bind
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
+      o: bind
+      type: none
