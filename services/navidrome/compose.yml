@@ -1,0 +1,60 @@
+---
+services:
+  ###########################################################################
+  # Navidrome: Music media server - https://www.navidrome.org/              #
+  ###########################################################################
+
+  navidrome:
+    image: ghcr.io/navidrome/navidrome:latest
+    container_name: navidrome
+    hostname: navidrome
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      ND_DEFAULTDOWNLOADABLESHARE: "true"
+      ND_ENABLEINSIGHTSCOLLECTOR: "false"
+      ND_ENABLESHARING: "true"
+      ND_LASTFM_APIKEY: "${LASTFM_API_KEY}"
+      ND_LASTFM_ENABLED: "true"
+      ND_LASTFM_SECRET: "${LASTFM_API_SECRET}"
+      ND_MUSICFOLDER: "/music"
+      ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}"
+      ND_SPOTIFY_ID: "${SPOTIFY_ID}"
+      ND_SPOTIFY_SECRET: "${SPOTIFY_SECRET}"
+      SQLITE_TMPDIR: "/data"
+    expose:
+      - 4533/tcp
+    networks:
+      - external
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - music-library:/music:ro
+      - navidrome:/data
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 4
+          memory: 4G
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4533/ping || exit 1"
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+
+volumes:
+  navidrome:
+    external: true
+    name: navidrome-volume
+  music-library:
+    name: music-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}/music"
+      o: bind
+      type: none

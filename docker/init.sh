@@ -5,7 +5,6 @@ set -euo pipefail
 
 # Required environment variables.
 readonly REQUIRED_VARS=(
-	"APPDATA_PATH"              # Path to store application data.
 	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
 	"DOWNLOADS_PATH"            # Path to store downloads.
 	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
@@ -44,11 +43,6 @@ if [ "$(id -u)" -ne 0 ]; then
 	echo "Script not run as root. Using 'sudo' for privileged commands."
 fi
 
-# Appdata directories to create.
-readonly APPDATA_DIRECTORIES=(
-	"opencloud/data" # OpenCloud data.
-)
-
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	".logs"                   # Log files.
@@ -84,18 +78,16 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-db-backups-volume"     # Autobrr database backups.
-	"autobrr-db-config-volume"      # Autobrr database configuration.
-	"autobrr-db-data-volume"        # Autobrr database data.
-	"autobrr-logs-volume"           # Autobrr logs.
-	"autobrr-volume"                # Autobrr configuration and data.
+	"backrest-cache-volume"
+	"backrest-config-volume"
+	"backrest-data-volume"
+	"backrest-tmp-volume"
 	"beszel-agent-volume"           # Beszel agent cache.
 	"beszel-data-volume"            # Beszel data.
 	"beszel-socket-volume"          # Beszel socket cache.
 	"caddy-config-volume"           # Caddy configuration.
 	"caddy-data-volume"             # Caddy data.
 	"chhoto-volume"                 # Chhoto database.
-	"cleanuparr-volume"             # Cleanuparr configuration and data.
 	"configarr-volume"              # Configarr data.
 	"dozzle-volume"                 # Dozzle configuration and data.
 	"gatus-db-backups-volume"       # Gatus database backups.
@@ -113,6 +105,7 @@ readonly VOLUMES=(
 	"lidarr-db-config-volume"       # Lidarr database configuration.
 	"lidarr-db-data-volume"         # Lidarr database data.
 	"lidarr-volume"                 # Lidarr configuration and data.
+	"navidrome-volume"              # Navidrome configuration and data.
 	"opencloud-config-volume"       # OpenCloud configuration.
 	"prowlarr-db-backups-volume"    # Prowlarr database backups.
 	"prowlarr-db-config-volume"     # Prowlarr database configuration.
@@ -143,8 +136,6 @@ readonly VOLUMES=(
 
 # Docker volumes to take ownership of.
 readonly CHOWN_VOLUMES=(
-	"autobrr-logs-volume"
-	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"chhoto-volume"
@@ -154,6 +145,7 @@ readonly CHOWN_VOLUMES=(
 	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
+	"navidrome-volume"
 	"opencloud-config-volume"
 	"slskd-volume"
 	"thelounge-volume"
@@ -185,8 +177,7 @@ create_volume() {
 
 # Create bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
-create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
-create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_COMPLETE_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 
@@ -223,16 +214,16 @@ done
 echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
-	"${APPDATA_PATH}" \
-	"${DOWNLOADS_PATH}" \
+	"${OPENCLOUD_DATA_PATH}" \
+	"${DOWNLOADS_COMPLETE_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
 # Set permissions of the main bind mount directories on the host.
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
-	"${APPDATA_PATH}" \
-	"${DOWNLOADS_PATH}" \
+	"${OPENCLOUD_DATA_PATH}" \
+	"${DOWNLOADS_COMPLETE_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 

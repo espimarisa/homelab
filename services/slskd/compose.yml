@@ -7,71 +7,67 @@ services:
   slskd:
     image: ghcr.io/slskd/slskd:latest
     container_name: slskd
-    network_mode: service:gluetun # Route all traffic through Gluetun.
+    network_mode: service:gluetun
     restart: unless-stopped
-    read_only: true # Prevent writing directly to the image.
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    read_only: true
+    user: "${PUID}:${PGID}"
     environment:
-      SLSKD_DISK_LOGGER: "true" # Log files to the disk.
-      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Sets the downloads directory.
-      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek" # Sets the incomplete downloads directory.
-      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # Sets the JWT API key.
-      SLSKD_JWT_TTL: "604800000" # Sets the JWT API TTL.
-      SLSKD_REMOTE_CONFIGURATION: "true" # Enables editing the configuration.
-      SLSKD_SHARED_DIR: "/library/music" # Share the music library.
-      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_DESCRIPTION}" # Sets user description.
-      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Configures the port used for Soulseek traffic.
-      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}" # Soulseek user password.
-      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}" # Soulseek username.
-      SLSKD_UMASK: "${UMASK}" # Umask to apply to newly created files.
-      SLSKD_USERNAME: "${SLSKD_USERNAME}" # Web interface username to set.
-      SOULSEEK_PASSWORD: "${SOULSEEK_PASSWORD}" # Web interface password to set.
-      TZ: "${TZ}" # Sets the timezone.
+      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
+      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
+      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
+      SLSKD_JWT_TTL: "604800000"
+      SLSKD_REMOTE_CONFIGURATION: "true"
+      SLSKD_SHARED_DIR: "/library"
+      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
+      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
+      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
+      SLSKD_UMASK: "${UMASK}"
+      TZ: "${TZ}"
     tmpfs:
-      - "/.net:uid=${PUID},gid=${PGID},exec" # Required for read_only image.
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/.net:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - slskd:/app:rw # Configuration and database.
-      - downloads-incomplete:/downloads-incomplete:rw # Root path to incomplete downloads.
-      - downloads:/downloads:rw # Root path to downloads.
-      - media-library:/library:ro # Root path to the media library.
+      - media-library:/library:ro
+      - slskd:/app
+      - soulseek-downloads-incomplete:/downloads-incomplete
+      - soulseek-downloads:/downloads
     cap_add:
-      - CHOWN # Required for taking ownership.
+      - CHOWN
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - ALL
     depends_on:
       gluetun:
-        condition: service_healthy # Wait for Gluetun to be healthy before connecting.
-        restart: true # Restart when Gluetun restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow up to 2 vCPUs.
-          memory: 2G # Allow up to 2G of RAM.
+          cpus: 2
+          memory: 2G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+      - no-new-privileges:true
 
 volumes:
   slskd:
     name: slskd-volume
     external: true
-  downloads:
-    name: downloads-bind
+  soulseek-downloads:
+    name: soulseek-downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}/soulseek"
       o: bind
       type: none
-  media-library:
-    name: media-library-bind
+  soulseek-downloads-incomplete:
+    name: soulseek-downloads-incomplete-bind
     driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}"
+      device: "${DOWNLOADS_INCOMPLETE_PATH}/soulseek"
       o: bind
       type: none
-  downloads-incomplete:
-    name: downloads-incomplete-bind
+  soulseek-library:
+    name: soulseek-library-bind
     driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}"
+      device: "${MEDIA_LIBRARY_PATH}/music"
       o: bind
       type: none

@@ -1,0 +1,81 @@
+---
+services:
+  ###########################################################################
+  # Backrest: Web UI and orchestrator for restic backup.                    #
+  ###########################################################################
+
+  backrest:
+    image: garethgeorge/backrest:v1
+    container_name: backrest
+    restart: unless-stopped
+    hostname: backrest
+    environment:
+      BACKREST_CONFIG: "/config/config.json"
+      BACKREST_DATA: "/data"
+      TMPDIR: "/tmp"
+      TZ: "${TZ}"
+      XDG_CACHE_HOME: "/cache"
+    expose:
+      - 9898/tcp
+    networks:
+      - external
+    volumes:
+      - backrest-cache:/cache
+      - backrest-config:/config
+      - backrest-data:/data
+      - backrest-hdd:/mnt/backup-hdd
+      - backrest-tmp:/tmp
+      - storage:/mnt/storage
+      - docker-volumes:/mnt/docker-volumes
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 4
+          memory: 4G
+    healthcheck:
+      test: "et --no-verbose --tries=1 --spider http://127.0.0.1:9898 || exit 1"
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    name: external-network
+    external: true
+
+volumes:
+  backrest-data:
+    name: backrest-data-volume
+    external: true
+  backrest-cache:
+    name: backrest-cache-volume
+    external: true
+  backrest-config:
+    name: backrest-config-volume
+    external: true
+  backrest-tmp:
+    name: backrest-tmp-volume
+    external: true
+  docker-volumes:
+    name: docker-volumes-bind
+    driver_opts:
+      device: "${DOCKER_VOLUMES_PATH}"
+      o: bind
+      type: none
+  backrest-hdd:
+    name: backrest-hdd-bind
+    driver_opts:
+      device: "${BACKUPS_PATH}"
+      o: bind
+      type: none
+  storage:
+    name: storage-bind
+    driver_opts:
+      device: "${STORAGE_PATH}"
+      o: bind
+      type: none

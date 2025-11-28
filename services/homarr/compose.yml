@@ -6,7 +6,7 @@
 x-defaults: &defaults
   restart: unless-stopped
   security_opt:
-    - no-new-privileges:true # Prevent privelage escalation.
+    - no-new-privileges:true
 
 services:
   homarr:
@@ -15,27 +15,27 @@ services:
     container_name: homarr
     hostname: homarr
     environment:
-      DB_DIALECT: "postgresql" # Use PostgreSQL.
-      DB_DRIVER: "node-postgres" # Use node-postgres.
-      DB_HOST: "homarr-db" # Sets PostgreSQL host.
-      DB_NAME: "postgres" # Sets PostgreSQL database name.
-      DB_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets PostgreSQL password.
-      DB_PORT: "5432" # Sets PostgreSQL port.
-      DB_USER: "postgres" # Sets PostgreSQL username.
-      DOCKER_HOSTNAMES: "socket-proxy" # Connect to the socket proxy.
-      DOCKER_PORTS: "2375" # Connect to port 2375.
-      PGID: ${PGID} # Group ID to run as.
-      PUID: ${PUID} # User ID to run as.
-      SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}" # Encryption key to use for sessions.
-      TZ: "${TZ}" # Sets the timezone.
+      DB_DIALECT: "postgresql"
+      DB_DRIVER: "node-postgres"
+      DB_HOST: "homarr-db"
+      DB_NAME: "postgres"
+      DB_PASSWORD: "${HOMARR_DB_PASSWORD}"
+      DB_PORT: "5432"
+      DB_USER: "postgres"
+      DOCKER_HOSTNAMES: "socket-proxy"
+      DOCKER_PORTS: "2375"
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}"
+      TZ: "${TZ}"
     expose:
-      - 7575/tcp # Web interface reverse proxied externally at ${HOMARR_URL}.
+      - 7575/tcp
     networks:
       - external
       - gluetun
       - internal
     volumes:
-      - homarr:/appdata # Configuration and data.
+      - homarr:/appdata
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -46,16 +46,16 @@ services:
       - SYS_PTRACE
     depends_on:
       homarr-db:
-        condition: service_healthy # Require homarr-db to be healthy before connecting.
-        restart: true # Restart when homarr-db is restarted.
+        condition: service_healthy
+        restart: true
       socket-proxy:
-        condition: service_healthy # Require socket-proxy to be healthy before connecting.
-        restart: true # Restart when socket-proxy is restarted.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 vCPU.
-          memory: 2G # Allow using 2G of RAM.
+          cpus: 1
+          memory: 2G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
 
@@ -64,29 +64,28 @@ services:
     image: ghcr.io/11notes/postgres:17
     container_name: homarr-db
     hostname: homarr-db
-    read_only: true # Prevent writing directly to the image.
-    shm_size: 512M # Raises the shared memory size.
+    read_only: true
+    shm_size: 512M
     environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6AM.
-      POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets the database password.
-      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
+      POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}"
+      TZ: "${TZ}"
     networks:
-      internal:
-        ipv4_address: 172.19.2.42 # Static IPV4 from the internal subnet
+      - internal
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}" # Required for read_only image.
-      - "/postgres/run:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
     volumes:
-      - homarr-db-backups:/postgres/backup # PostgreSQL backups.
-      - homarr-db-config:/postgres/etc # PostgreSQL config.
-      - homarr-db-data:/postgres/var # PostgreSQL data.
+      - homarr-db-backups:/postgres/backup
+      - homarr-db-config:/postgres/etc
+      - homarr-db-data:/postgres/var
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using 1 vCPU.
-          memory: 256M # Allow using 256M of RAM.
+          cpus: 1
+          memory: 256M
 
 networks:
   external:

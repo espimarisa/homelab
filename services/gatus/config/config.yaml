@@ -38,22 +38,12 @@ storage:
 # UI configuration.
 ui:
   default-sort-by: group # Sort by group automatically.
-  description: "${GATUS_DESCRIPTION}" # Sets the page description.
-  header: ${GATUS_HEADER} # Sets the header name.
   link: "/" # Fixes the header link.
-  logo: "${GATUS_LOGO_URL}" # Sets the logo URL.
-  title: ${GATUS_TITLE} # Sets the page title.
 
 endpoints:
   ###########################################################################
   # Databases.                                                              #
   ###########################################################################
-
-  # Autobrr DB.
-  - name: Autobrr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/autobrr-db/json
 
   # Gatus DB.
   - name: Gatus - PostgreSQL
@@ -101,12 +91,6 @@ endpoints:
   # Download clients.                                                       #
   ###########################################################################
 
-  # Autobrr.
-  - name: Autobrr
-    <<: *defaults-container
-    group: Downloads
-    url: ${SOCKET_PROXY_URL}/autobrr/json
-
   # Gluetun.
   - name: Gluetun (VPN)
     <<: *defaults-container
@@ -129,6 +113,12 @@ endpoints:
   # Infrastructure.                                                         #
   ###########################################################################
 
+  # Backrest.
+  - name: Backrest
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/backrest/json
+
   # Caddy.
   - name: Caddy
     <<: *defaults-container
@@ -150,12 +140,6 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/byparr/json
-
-  # Cleanuparr.
-  - name: Cleanuparr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/cleanuparr/json
 
   # Configarr.
   - name: Configarr
@@ -260,6 +244,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${JELLYFIN_URL}/health
+
+  # Navidrome.
+  - name: Navidrome
+    <<: *defaults-http
+    group: Services
+    url: https://${NAVIDROME_URL}
 
   # OpenCloud.
   - name: OpenCloud

@@ -4,12 +4,11 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 
 ## Services
 
--   Autobrr
+-   Backrest
 -   Beszel
 -   Byparr
 -   Caddy
 -   Chhoto URL
--   Cleanuparr
 -   Dozzle
 -   Gatus
 -   Gluetun
@@ -18,6 +17,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 -   Jellyfin
 -   Lidarr
 -   mam-ip-helper
+-   Navidrome
 -   OpenCloud
 -   Configarr
 -   Prowlarr

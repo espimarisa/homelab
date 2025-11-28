@@ -1,7 +1,7 @@
 ---
 include:
   - ./services/arr/compose.yml
-  - ./services/autobrr/compose.yml
+  - ./services/backrest/compose.yml
   - ./services/beszel/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
@@ -11,6 +11,7 @@ include:
   - ./services/homarr/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/mam-ip-helper/compose.yml
+  - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/qbittorrent/compose.yml
   - ./services/slskd/compose.yml

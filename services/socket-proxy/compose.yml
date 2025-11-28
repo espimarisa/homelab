@@ -5,43 +5,41 @@
 ---
 services:
   socket-proxy:
-    image: lscr.io/linuxserver/socket-proxy:3.2.7
+    image: lscr.io/linuxserver/socket-proxy:3.2.9
     container_name: socket-proxy
     hostname: socket-proxy
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
     environment:
-      ALLOW_RESTARTS: "1" # Allow restarting containers.
-      ALLOW_START: "1" # Allow starting containers.
-      ALLOW_STOP: "1" # Allow stopping containers.
-      CONTAINERS: "1" # Allow containers endpoint.
-      EVENTS: "1" # Allow event logging.
-      NETWORKS: "1" # Allow networks endpoint.
-      INFO: "1" # Allow info endpoint.
-      NODES: "1" # Allow nodes endpoint.
-      IMAGES: "1" # Allows images endpoint.
-      PING: "1" # Allow ping endpoint.
-      SERVICES: "1" # Allow services endpoint.
-      SWARM: "1" # Allow swarm checking.
-      TZ: "${TZ}" # Sets the timezone.
+      ALLOW_RESTARTS: "1"
+      ALLOW_START: "1"
+      ALLOW_STOP: "1"
+      CONTAINERS: "1"
+      EVENTS: "1"
+      IMAGES: "1"
+      INFO: "1"
+      NETWORKS: "1"
+      PING: "1"
+      SERVICES: "1"
+      TZ: "${TZ}"
     networks:
       - internal
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Host Docker socket mount.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     tmpfs:
-      - /run # Required for read-only image.
+      - /run
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 64M # Allow up to 64MB of RAM.
+          cpus: 0.25
+          memory: 64M
     healthcheck:
       interval: 10s
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:2375/_ping || exit 1"
     security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+      - no-new-privileges:true
 
 networks:
   internal:

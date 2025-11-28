@@ -8,35 +8,35 @@ services:
     image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
     hostname: jellyfin
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # GPU passthrough support.
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw
     environment:
-      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures autodiscovery.
+      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}"
     expose:
-      - 8096/tcp # Web interface reverse proxied externally at ${JELLYFIN_URL}.
+      - 8096/tcp
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - jellyfin-cache:/cache:rw # Cache volume.
-      - jellyfin-config:/config:rw # Configuration and database.
-      - media-library:/library:ro # Read-only media library mount.
+      - /etc/localtime:/etc/localtime:ro
+      - jellyfin-cache:/cache:rw
+      - jellyfin-config:/config:rw
+      - media-library:/library:ro
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - ALL
     security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow up to 4 vCPUs.
-          memory: 8G # Allow up to 8GB of RAM usage.
+          cpus: 4
+          memory: 8G
     group_add:
-      - "${RENDER_GID}" # Adds user to the host render group.
+      - "${RENDER_PGID}"
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8096/health || exit 1"
 

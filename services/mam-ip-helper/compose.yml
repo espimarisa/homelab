@@ -7,23 +7,23 @@ services:
   mam-ip-helper:
     image: tyzen9/myanonamouse-ip-helper:1.0.0
     container_name: mam-ip-helper
-    network_mode: service:gluetun # Route all traffic through Gluetun.
-    read_only: true # Prevent writing directly to the image.
+    network_mode: service:gluetun
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
-      TZ: "${TZ}" # Sets the timezone.
-      MAM_ID: "${MAM_ID}" # MyAnonaMouse session ID.
+      MAM_ID: "${MAM_ID}"
+      TZ: "${TZ}"
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - ALL
     depends_on:
       gluetun:
-        condition: service_healthy # Require Gluetun to be healthy before connecting.
-        restart: true # Restart when Gluetun is restarted.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 0.25 # Allow up to 0.25 vCPUs.
-          memory: 64M # Allow up to 64MB of RAM usage.
+          cpus: 0.25
+          memory: 64M
     security_opt:
-      - no-new-privileges:true # Do not allow privilege escalation.
+      - no-new-privileges:true

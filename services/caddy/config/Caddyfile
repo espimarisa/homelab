@@ -67,6 +67,11 @@
 	import security_headers
 }
 
+{$NAVIDROME_URL} {
+	import external_proxy navidrome:4533
+	import security_headers
+}
+
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
 	import security_headers
@@ -89,16 +94,12 @@
 # Internal-only services.						#
 #################################################
 
-autobrr.{$INTERNAL_DOMAIN} {
-	import internal_proxy gluetun:7474
+backrest.{$INTERNAL_DOMAIN} {
+	import internal_proxy backrest:9898
 }
 
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
-}
-
-cleanuparr.{$INTERNAL_DOMAIN} {
-	import internal_proxy cleanuparr:11011
 }
 
 dozzle.{$INTERNAL_DOMAIN} {

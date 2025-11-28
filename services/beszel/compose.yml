@@ -5,15 +5,15 @@
 ---
 # Default container options.
 x-defaults: &defaults
-  read_only: true # Prevent writing directly to the image.
+  read_only: true
   restart: unless-stopped
   deploy:
     resources:
       limits:
-        cpus: 0.25 # Allow using 0.25 vCPUs.
-        memory: 64M # Allow using 64M of RAM.
+        cpus: 0.25
+        memory: 64M
   security_opt:
-    - no-new-privileges:true # Do not allow privilege escalation.
+    - no-new-privileges:true
 
 services:
   beszel:
@@ -21,26 +21,24 @@ services:
     image: ghcr.io/henrygd/beszel/beszel:0
     container_name: beszel
     hostname: beszel
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
-      APP_URL: "https://beszel.${INTERNAL_DOMAIN}" # Configures the URL to bind to.
-      USER_EMAIL: "${BESZEL_EMAIL}" # Admin account email to use.
-      USER_PASSWORD: "${BESZEL_PASSWORD}" # Admin account password to use.
+      APP_URL: "https://beszel.${INTERNAL_DOMAIN}"
     ports:
-      - 127.0.0.1:8090:8090/tcp # Web interface reverse proxied internally at beszel.${INTERNAL_DOMAIN}.
+      - 127.0.0.1:8090:8090/tcp
     networks:
       - external
       - internal
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - beszel-data:/beszel_data:rw # Configuration and database.
-      - beszel-socket:/beszel_socket:rw # Beszel socket.
+      - /etc/localtime:/etc/localtime:ro
+      - beszel-data:/beszel_data
+      - beszel-socket:/beszel_socket
     cap_drop:
-      - ALL # Drop all default capabilities.
+      - ALL
     healthcheck:
       test: ["CMD", "/beszel", "health", "--url", "http://127.0.0.1:8090"]
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/tmp:uid=${PUID},gid=${PGID}"
 
   ###########################################################################
   # Beszel Agent: Beszel agent for server monitoring.                       #
@@ -48,27 +46,25 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0
+    image: ghcr.io/henrygd/beszel/beszel-agent:0
     container_name: beszel-agent
     hostname: beszel-agent
-    network_mode: host # Required for gathering network data.
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # gpu
+    network_mode: host
     environment:
-      HUB_URL: "http://127.0.0.1:8090" # Listen to the beszel container.
-      KEY: "${BESZEL_KEY}" # Beszel public key to authenticate with, configured in the hub post-deployment.
-      LISTEN: "0.0.0.0:45876" # Bind to 0.0.0.0.
-      TOKEN: "${BESZEL_TOKEN}" # Beszel token to authenticate with, configured in the hub post-deployment.
+      HUB_URL: "http://127.0.0.1:8090"
+      KEY: "${BESZEL_KEY}"
+      LISTEN: "0.0.0.0:45876"
+      TOKEN: "${BESZEL_TOKEN}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Native Socket volume mount.
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # Downloads cache drive, change to be your path and drive name.
-      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Storage drive, change to be your path and drive name
-      - beszel-agent:/var/lib/beszel-agent:rw # Besel agent.
-      - beszel-socket:/beszel_socket:rw # Beszel socket.
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # path to downloads disk
+      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # path to storage disk
+      - beszel-agent:/var/lib/beszel-agent
+      - beszel-socket:/beszel_socket
     cap_add:
-      - PERFMON # Needed for GPU monitoring in the future.
-      - SYS_ADMIN # Needed for GPU monitoring in the future.
+      - PERFMON
+      - SYS_ADMIN
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -76,15 +72,15 @@ services:
       - SYS_PTRACE
     depends_on:
       beszel:
-        condition: service_healthy # Wait for Beszel to be healthy before connecting.
-        restart: true # Restart when Beszel is restarted.
+        condition: service_healthy
+        restart: true
       socket-proxy:
-        condition: service_healthy # Wait for the socket proxy to be healthy before connecting.
-        restart: true # Restart when the socket proxy is restarted.
+        condition: service_healthy
+        restart: true
     healthcheck:
       test: ["CMD", "/agent", "health"]
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+      - "/tmp:uid=${PUID},gid=${PGID}"
 
 networks:
   external:
