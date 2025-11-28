@@ -51,8 +51,6 @@ x-defaults-db: &defaults-db
       limits:
         cpus: 1
         memory: 512M
-    networks:
-      - internal
   tmpfs:
     - "/postgres/log:uid=${PUID},gid=${PGID}"
     - "/postgres/run:uid=${PUID},gid=${PGID}"
@@ -91,6 +89,8 @@ services:
     environment:
       <<: *defaults-db-env
       POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}"
+    networks:
+      - internal
     volumes:
       - lidarr-db-backups:/postgres/backup
       - lidarr-db-config:/postgres/etc
@@ -131,6 +131,8 @@ services:
     environment:
       <<: *defaults-db-env
       POSTGRES_PASSWORD: "${RADARR_DB_PASSWORD}"
+    networks:
+      - internal
     volumes:
       - radarr-db-backups:/postgres/backup
       - radarr-db-config:/postgres/etc
@@ -170,6 +172,8 @@ services:
     environment:
       <<: *defaults-db-env
       POSTGRES_PASSWORD: "${READARR_DB_PASSWORD}"
+    networks:
+      - internal
     volumes:
       - readarr-db-backups:/postgres/backup
       - readarr-db-config:/postgres/etc
@@ -209,6 +213,8 @@ services:
     environment:
       <<: *defaults-db-env
       POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}"
+    networks:
+      - internal
     volumes:
       - sonarr-db-backups:/postgres/backup
       - sonarr-db-config:/postgres/etc
