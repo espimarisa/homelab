@@ -177,7 +177,7 @@ create_volume() {
 
 # Create bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
-create_dirs "$DOWNLOADS_COMPLETE_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 
@@ -215,7 +215,7 @@ echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${OPENCLOUD_DATA_PATH}" \
-	"${DOWNLOADS_COMPLETE_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
@@ -223,7 +223,7 @@ $SUDO chown -R "${PUID}:${PGID}" \
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
 	"${OPENCLOUD_DATA_PATH}" \
-	"${DOWNLOADS_COMPLETE_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 

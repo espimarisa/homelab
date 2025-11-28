@@ -56,7 +56,7 @@ volumes:
   soulseek-downloads:
     name: soulseek-downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_COMPLETE_PATH}/soulseek"
+      device: "${DOWNLOADS_PATH}/soulseek"
       o: bind
       type: none
   soulseek-downloads-incomplete:
