@@ -8,7 +8,7 @@ readonly REQUIRED_VARS=(
 	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
 	"DOWNLOADS_PATH"            # Path to store downloads.
 	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
-	"OPENCLOUD_PATH"			# Path to store OpenCloud data.
+	"OPENCLOUD_DATA_PATH"			# Path to store OpenCloud data.
 	"PGID"                      # Group ID to run as.
 	"PUID"                      # User ID to run as.
 	"STORAGE_PATH"              # Path to the storage directory.
