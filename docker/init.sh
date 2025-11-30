@@ -8,6 +8,7 @@ readonly REQUIRED_VARS=(
 	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
 	"DOWNLOADS_PATH"            # Path to store downloads.
 	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
+	"OPENCLOUD_PATH"			# Path to store OpenCloud data.
 	"PGID"                      # Group ID to run as.
 	"PUID"                      # User ID to run as.
 	"STORAGE_PATH"              # Path to the storage directory.
@@ -105,7 +106,9 @@ readonly VOLUMES=(
 	"lidarr-db-config-volume"       # Lidarr database configuration.
 	"lidarr-db-data-volume"         # Lidarr database data.
 	"lidarr-volume"                 # Lidarr configuration and data.
-	"navidrome-volume"              # Navidrome configuration and data.
+	"navidrome-cache-volume" 		# Navidrome Cache.
+	"navidrome-backups-volume" 		# Navidrome backups.
+	"navidrome-data-volume"         # Navidrome configuration and data.
 	"opencloud-config-volume"       # OpenCloud configuration.
 	"prowlarr-db-backups-volume"    # Prowlarr database backups.
 	"prowlarr-db-config-volume"     # Prowlarr database configuration.
@@ -145,7 +148,9 @@ readonly CHOWN_VOLUMES=(
 	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"navidrome-volume"
+	"navidrome-cache-volume" 		
+	"navidrome-backups-volume" 		
+	"navidrome-data-volume"         
 	"opencloud-config-volume"
 	"slskd-volume"
 	"thelounge-volume"
