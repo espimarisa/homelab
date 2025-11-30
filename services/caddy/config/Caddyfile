@@ -35,6 +35,7 @@
 	@not_internal not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	abort @not_internal
 	encode zstd gzip
+	tls internal
 	reverse_proxy {args[0]}
 }
 
