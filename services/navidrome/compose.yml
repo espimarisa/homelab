@@ -21,7 +21,7 @@ services:
       ND_ENABLESHARING: "true"
       ND_LASTFM_APIKEY: "${LASTFM_API_KEY}"
       ND_LASTFM_ENABLED: "true"
-      ND_LASTFM_LANGUAGE: "en",
+      ND_LASTFM_LANGUAGE: "en"
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}"
       ND_LOGLEVEL: "info"
       ND_MUSICFOLDER: "/music"
