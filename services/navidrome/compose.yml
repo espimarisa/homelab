@@ -24,19 +24,19 @@ services:
       ND_LASTFM_LANGUAGE: "en"
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}"
       ND_LOGLEVEL: "info"
-      ND_MUSICFOLDER: "/music"
+      ND_MUSICFOLDER: "/library/music"
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}"
       ND_SCANNER_SCHEDULE: "0 6 * * *"
       ND_SPOTIFY_ID: "${SPOTIFY_ID}"
       ND_SPOTIFY_SECRET: "${SPOTIFY_SECRET}"
-      SQLITE_TMPDIR: "/data"   
+      SQLITE_TMPDIR: "/data"
     expose:
       - 4533/tcp
     networks:
       - external
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - music-library:/music:ro
+      - media-library:/library:ro
       - navidrome-backups:/backups
       - navidrome-cache:/cache
       - navidrome-data:/data
@@ -67,9 +67,9 @@ volumes:
   navidrome-data:
     external: true
     name: navidrome-data-volume
-  music-library:
-    name: music-library-bind
+  media-library:
+    name: media-library-bind
     driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}/music"
+      device: "${MEDIA_LIBRARY_PATH}"
       o: bind
       type: none

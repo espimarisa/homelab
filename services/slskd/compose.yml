@@ -17,7 +17,7 @@ services:
       SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
       SLSKD_JWT_TTL: "604800000"
       SLSKD_REMOTE_CONFIGURATION: "true"
-      SLSKD_SHARED_DIR: "/library"
+      SLSKD_SHARED_DIR: "/library/music"
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
       SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
       SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
@@ -27,10 +27,10 @@ services:
       - "/.net:uid=${PUID},gid=${PGID},exec"
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
+      - downloads-incomplete:/downloads-incomplete
+      - downloads:/downloads
       - media-library:/library:ro
       - slskd:/app
-      - soulseek-downloads-incomplete:/downloads-incomplete
-      - soulseek-downloads:/downloads
     cap_add:
       - CHOWN
     cap_drop:
@@ -53,21 +53,21 @@ volumes:
   slskd:
     name: slskd-volume
     external: true
-  soulseek-downloads:
-    name: soulseek-downloads-bind
+  downloads:
+    name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}/soulseek"
+      device: "${DOWNLOADS_PATH}"
       o: bind
       type: none
-  soulseek-downloads-incomplete:
-    name: soulseek-downloads-incomplete-bind
+  downloads-incomplete:
+    name: downloads-incomplete-bind
     driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}/soulseek"
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none
-  soulseek-library:
-    name: soulseek-library-bind
+  media-library:
+    name: media-library-bind
     driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}/music"
+      device: "${MEDIA_LIBRARY_PATH}"
       o: bind
       type: none

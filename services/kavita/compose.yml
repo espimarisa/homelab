@@ -1,0 +1,56 @@
+---
+services:
+  ###########################################################################
+  # Kavita: eBook/Comic/Manga media server - https://kavitareader.com  #
+  ###########################################################################
+
+  kavita:
+    image: lscr.io/linuxserver/kavita:0.8.8
+    container_name: kavita
+    hostname: kavita
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 5000/tcp
+    networks:
+      - external
+    volumes:
+      - kavita:/config
+      - media-library:/library:ro
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2G
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:5000 || exit 1"
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+
+volumes:
+  kavita:
+    external: true
+    name: kavita-volume
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

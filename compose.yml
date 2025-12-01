@@ -10,6 +10,7 @@ include:
   - ./services/gluetun/compose.yml
   - ./services/homarr/compose.yml
   - ./services/jellyfin/compose.yml
+  - ./services/kavita/compose.yml
   - ./services/mam-ip-helper/compose.yml
   - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml

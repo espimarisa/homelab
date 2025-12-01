@@ -68,6 +68,11 @@
 	import security_headers
 }
 
+{$KAVITA_URL} {
+	import external_proxy kavita:5000
+	import security_headers
+}
+
 {$NAVIDROME_URL} {
 	import external_proxy navidrome:4533
 	import security_headers

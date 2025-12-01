@@ -50,7 +50,6 @@ readonly DOWNLOADS_DIRECTORIES=(
 	"deezer"                  # Deezer downloads.
 	"soulseek"                # Soulseek downloads.
 	"torrents/.torrent-files" # .torrent file storage.
-	"torrents/huntarr"        # Huntarr torrents.
 	"torrents/lidarr"         # Lidarr torrents.
 	"torrents/prowlarr"       # Prowlarr torrents.
 	"torrents/radarr"         # Radarr torrents.
@@ -61,7 +60,7 @@ readonly DOWNLOADS_DIRECTORIES=(
 
 # Incomplete download directories to create.
 readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
-	"soulseek" # Incomplete SoulSeek downloads.
+	"soulseek" # Incomplete Soulseek downloads.
 	"torrents" # Incomplete torrents downloads.
 )
 
@@ -79,10 +78,10 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"backrest-cache-volume"
-	"backrest-config-volume"
-	"backrest-data-volume"
-	"backrest-tmp-volume"
+	"backrest-cache-volume" 		# Backrest cache.
+	"backrest-config-volume" 		# Backrest configuration.
+	"backrest-data-volume" 			# Backrest data.
+	"backrest-tmp-volume" 			# Backrest temporary files.
 	"beszel-agent-volume"           # Beszel agent cache.
 	"beszel-data-volume"            # Beszel data.
 	"beszel-socket-volume"          # Beszel socket cache.
@@ -102,12 +101,13 @@ readonly VOLUMES=(
 	"huntarr-volume"                # Huntarr configuration and data.
 	"jellyfin-cache-volume"         # Jellyfin cache.
 	"jellyfin-config-volume"        # Jellyfin configuration and data.
+	"kavita-volume" 			    # Kavita configuration and data.
 	"lidarr-db-backups-volume"      # Lidarr database backups.
 	"lidarr-db-config-volume"       # Lidarr database configuration.
 	"lidarr-db-data-volume"         # Lidarr database data.
 	"lidarr-volume"                 # Lidarr configuration and data.
-	"navidrome-cache-volume" 		# Navidrome Cache.
 	"navidrome-backups-volume" 		# Navidrome backups.
+	"navidrome-cache-volume" 		# Navidrome Cache.
 	"navidrome-data-volume"         # Navidrome configuration and data.
 	"opencloud-config-volume"       # OpenCloud configuration.
 	"prowlarr-db-backups-volume"    # Prowlarr database backups.
@@ -148,9 +148,9 @@ readonly CHOWN_VOLUMES=(
 	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"navidrome-cache-volume" 		
-	"navidrome-backups-volume" 		
-	"navidrome-data-volume"         
+	"navidrome-cache-volume"
+	"navidrome-backups-volume"
+	"navidrome-data-volume"
 	"opencloud-config-volume"
 	"slskd-volume"
 	"thelounge-volume"
