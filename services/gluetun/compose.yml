@@ -37,7 +37,7 @@ services:
       - 9696/tcp # Prowlarr.
     networks:
       gluetun:
-        ipv4_address: 172.19.3.10
+        ipv4_address: 172.19.0.10
     volumes:
       - gluetun:/gluetun
     cap_add:

@@ -66,9 +66,10 @@ services:
     ports:
       - 8686:8686/tcp
     networks:
-      - external
-      - gluetun
-      - internal
+      external:
+      gluetun:
+        ipv4_address: 172.19.0.21
+      internal:
     volumes:
       - downloads:/downloads
       - media-library:/library
@@ -105,7 +106,7 @@ services:
     networks:
       external:
       gluetun:
-        ipv4_address: 172.19.3.21
+        ipv4_address: 172.19.0.21
       internal:
     expose:
       - 7878/tcp
@@ -146,7 +147,7 @@ services:
     networks:
       external:
       gluetun:
-        ipv4_address: 172.19.3.23
+        ipv4_address: 172.19.0.22
       internal:
     expose:
       - 8989/tcp
@@ -204,7 +205,7 @@ services:
       POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}"
     networks:
       gluetun:
-        ipv4_address: 172.19.3.31
+        ipv4_address: 172.19.0.30
     volumes:
       - prowlarr-db-config:/postgres/etc
       - prowlarr-db-data:/postgres/var
