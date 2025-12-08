@@ -46,12 +46,10 @@ services:
 
   gatus-db:
     <<: *defaults
-    image: ghcr.io/11notes/postgres:17
+    image: ghcr.io/11notes/postgres:18
     container_name: gatus-db
     hostname: gatus-db
-    shm_size: 512M
     environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
       POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}"
       TZ: "${TZ}"
     networks:
@@ -60,7 +58,6 @@ services:
       - "/postgres/log:uid=${PUID},gid=${PGID}"
       - "/postgres/run:uid=${PUID},gid=${PGID}"
     volumes:
-      - gatus-db-backups:/postgres/backup
       - gatus-db-config:/postgres/etc
       - gatus-db-data:/postgres/var
 

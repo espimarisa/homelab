@@ -1,15 +1,7 @@
 {
 	# ACME configuration.
-	# acme_ca https://acme.zerossl.com/v2/DV90 # Use ZeroSSL for SSL certificates.
+	acme_ca https://acme.zerossl.com/v2/DV90 # Use ZeroSSL for SSL certificates.
 	email {$ACME_EMAIL} # Configures the email to use for ACME.
-
-	# Global server configuration.
-	servers {
-		# Trust private ranges for reverse proxying.
-		trusted_proxies combine {
-			static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
-		}
-	}
 }
 
 # Snippet for security headers.
@@ -26,6 +18,7 @@
 # Snippet for externally accessible reverse proxied services.
 (external_proxy) {
 	encode zstd gzip
+	trusted_proxies private_ranges
 	reverse_proxy {args[0]}
 }
 
@@ -36,6 +29,7 @@
 	abort @not_internal
 	encode zstd gzip
 	tls internal
+	trusted_proxies private_ranges
 	reverse_proxy {args[0]}
 }
 
@@ -130,10 +124,6 @@ qbittorrent.{$INTERNAL_DOMAIN} {
 
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
-}
-
-readarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy readarr:8787
 }
 
 slskd.{$INTERNAL_DOMAIN} {

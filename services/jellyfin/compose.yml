@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw
+      - /dev/dri/renderD128:/dev/dri/renderD128
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}"
     expose:
@@ -23,8 +23,8 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - jellyfin-cache:/cache:rw
-      - jellyfin-config:/config:rw
+      - jellyfin-cache:/cache
+      - jellyfin-config:/config
       - media-library:/library:ro
     cap_drop:
       - ALL

@@ -70,11 +70,11 @@ services:
 
   vaultwarden-db:
     <<: *defaults
-    image: ghcr.io/11notes/postgres:17
+    image: ghcr.io/11notes/postgres:18
     container_name: vaultwarden-db
     hostname: vaultwarden-db
-    shm_size: 512M
     environment:
+      POSTGRES_BACKUP_RETENTION: "14"
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}"
       TZ: "${TZ}"

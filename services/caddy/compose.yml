@@ -5,10 +5,12 @@
 ---
 services:
   caddy:
-    build: ./
+    image: ghcr.io/11notes/caddy:2
+    command: ["run", "--config", "/caddy/etc/Caddyfile"]
     container_name: caddy
     env_file: ../../.env
     hostname: caddy
+    read_only: true
     restart: unless-stopped
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375"
@@ -22,9 +24,12 @@ services:
       - 443:443/tcp
       - 443:443/udp
     volumes:
-      - caddy-data:/data
-      - caddy-config:/config
-      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./config/Caddyfile:/caddy/etc/Caddyfile:ro
+      - caddy-config:/caddy/etc
+      - caddy-data:/caddy/var
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/caddy/backup:uid=${PUID},gid=${PGID}"
     cap_add:
       - NET_BIND_SERVICE
       - NET_ADMIN

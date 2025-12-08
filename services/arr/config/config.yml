@@ -2,7 +2,7 @@
 radarrEnabled: true
 sonarrEnabled: true
 lidarrEnabled: true
-readarrEnabled: true
+readarrEnabled: false
 whisparrEnabled: false
 
 #################################################
@@ -370,25 +370,6 @@ radarr:
         quality_sort: top
         qualities:
           - name: WEBDL-1080p
-
-#################################################
-# Readarr configuration.                        #
-#################################################
-
-readarr:
-  readarr:
-    base_url: http://readarr:8787
-    api_key: !env READARR_API_KEY
-
-    # Delete or replace old formats.
-    delete_unmanaged_custom_formats:
-      enabled: true
-    delete_old_custom_formats: true
-    replace_existing_custom_formats: true
-
-    # Do not prefer propers and repacks.
-    media_management:
-      downloadPropersAndRepacks: doNotPrefer
 
 #################################################
 # Sonarr configuration.                         #

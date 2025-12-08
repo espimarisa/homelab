@@ -3,22 +3,25 @@
 # Exit immediately if a command exits with a non-zero status.
 set -euo pipefail
 
-# Required environment variables.
+# List of required environment variables.
 readonly REQUIRED_VARS=(
-	"DOWNLOADS_INCOMPLETE_PATH" # Path to store incomplete downloads. I use a feeder SSD.
-	"DOWNLOADS_PATH"            # Path to store downloads.
-	"MEDIA_LIBRARY_PATH"        # Path to store the media library.
-	"OPENCLOUD_DATA_PATH"			# Path to store OpenCloud data.
-	"PGID"                      # Group ID to run as.
-	"PUID"                      # User ID to run as.
-	"STORAGE_PATH"              # Path to the storage directory.
+	"DOWNLOADS_INCOMPLETE_PATH"
+	"DOWNLOADS_PATH"
+	"MEDIA_LIBRARY_PATH"
+	"OPENCLOUD_DATA_PATH"
+	"PGID"
+	"PUID"
+	"STORAGE_PATH"
+	"TZ"
+	"UMASK"
 )
 
-# Source environment variables from .env file.
+# Sources environment variables from .env.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="${SCRIPT_DIR}/../.env"
 SUDO=""
 
+# Reads the environment variable file.
 if [ -f "$ENV_FILE" ]; then
 	echo "Sourcing environment variables from ${ENV_FILE}."
 	set -a
@@ -33,7 +36,7 @@ fi
 # Validates required environment variables.
 for var in "${REQUIRED_VARS[@]}"; do
 	if [ -z "${!var-}" ]; then
-		echo "Error: Required environment variable '$var' is not set in ${ENV_FILE}." >&2
+		echo "Error: Required environment variable '$var' is not set." >&2
 		exit 1
 	fi
 done
@@ -46,101 +49,90 @@ fi
 
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
-	".logs"                   # Log files.
-	"deezer"                  # Deezer downloads.
-	"soulseek"                # Soulseek downloads.
-	"torrents/.torrent-files" # .torrent file storage.
-	"torrents/lidarr"         # Lidarr torrents.
-	"torrents/prowlarr"       # Prowlarr torrents.
-	"torrents/radarr"         # Radarr torrents.
-	"torrents/readarr"        # Readarr torrents.
-	"torrents/sonarr"         # Sonarr torrents.
-	"torrents/uncategorized"  # Uncategorized torrents.
+	"deezer"
+	"soulseek"
+	"torrents/.torrent-files"
+	"torrents/lidarr"
+	"torrents/permaseed"
+	"torrents/radarr"
+	"torrents/readarr"
+	"torrents/sonarr"
+	"torrents/uncategorized"
 )
 
 # Incomplete download directories to create.
 readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
-	"soulseek" # Incomplete Soulseek downloads.
-	"torrents" # Incomplete torrents downloads.
+	"soulseek"
+	"torrents"
 )
 
 # Media library directories to create.
 readonly MEDIA_LIBRARY_DIRECTORIES=(
-	"anime"      # Anime library.
-	"audiobooks" # Audiobooks library.
-	"books"      # Books library.
-	"comics"     # Comics library.
-	"manga"      # Manga library.
-	"movies"     # Movies library.
-	"music"      # Music library.
-	"tv-shows"   # TV library.
+	"anime"
+	"audiobooks"
+	"books"
+	"comics"
+	"manga"
+	"movies"
+	"music"
+	"tv-shows"
 )
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"backrest-cache-volume" 		# Backrest cache.
-	"backrest-config-volume" 		# Backrest configuration.
-	"backrest-data-volume" 			# Backrest data.
-	"backrest-tmp-volume" 			# Backrest temporary files.
-	"beszel-agent-volume"           # Beszel agent cache.
-	"beszel-data-volume"            # Beszel data.
-	"beszel-socket-volume"          # Beszel socket cache.
-	"caddy-config-volume"           # Caddy configuration.
-	"caddy-data-volume"             # Caddy data.
-	"chhoto-volume"                 # Chhoto database.
-	"configarr-volume"              # Configarr data.
-	"dozzle-volume"                 # Dozzle configuration and data.
-	"gatus-db-backups-volume"       # Gatus database backups.
-	"gatus-db-config-volume"        # Gatus database configuration.
-	"gatus-db-data-volume"          # Gatus database data.
-	"gluetun-volume"                # Gluetun cache.
-	"homarr-db-backups-volume"      # Homarr database backups.
-	"homarr-db-config-volume"       # Homarr database configuration.
-	"homarr-db-data-volume"         # Homarr database data.
-	"homarr-volume"                 # Homarr logs.
-	"huntarr-volume"                # Huntarr configuration and data.
-	"jellyfin-cache-volume"         # Jellyfin cache.
-	"jellyfin-config-volume"        # Jellyfin configuration and data.
-	"kavita-volume" 			    # Kavita configuration and data.
-	"lidarr-db-backups-volume"      # Lidarr database backups.
-	"lidarr-db-config-volume"       # Lidarr database configuration.
-	"lidarr-db-data-volume"         # Lidarr database data.
-	"lidarr-volume"                 # Lidarr configuration and data.
-	"navidrome-backups-volume" 		# Navidrome backups.
-	"navidrome-cache-volume" 		# Navidrome Cache.
-	"navidrome-data-volume"         # Navidrome configuration and data.
-	"opencloud-config-volume"       # OpenCloud configuration.
-	"prowlarr-db-backups-volume"    # Prowlarr database backups.
-	"prowlarr-db-config-volume"     # Prowlarr database configuration.
-	"prowlarr-db-data-volume"       # Prowlarr database data.
-	"prowlarr-volume"               # Prowlarr configuration and data.
-	"qbittorrent-config-volume"     # qBittorrent configuration.
-	"qbittorrent-data-volume"       # qBittorrent data.
-	"radarr-db-backups-volume"      # Radarr database backups.
-	"radarr-db-config-volume"       # Radarr database configuration.
-	"radarr-db-data-volume"         # Radarr database data.
-	"radarr-volume"                 # Radarr configuration and data.
-	"readarr-db-backups-volume"     # Readarr database backups.
-	"readarr-db-config-volume"      # Readarr database configuration.
-	"readarr-db-data-volume"        # Readarr database data.
-	"readarr-volume"                # Readarr configuration and data.
-	"slskd-volume"                  # slskd configuration and data.
-	"sonarr-db-backups-volume"      # Sonarr database backups.
-	"sonarr-db-config-volume"       # Sonarr database configuration.
-	"sonarr-db-data-volume"         # Sonarr database data.
-	"sonarr-volume"                 # Sonarr configuration and data.
-	"thelounge-volume"              # The Lounge configuration and data.
-	"unpackerr-volume"              # Unpackerr data.
-	"vaultwarden-db-backups-volume" # Vaultwarden database backups.
-	"vaultwarden-db-config-volume"  # Vaultwarden database configuration.
-	"vaultwarden-db-data-volume"    # vaultwarden database data.
-	"vaultwarden-volume"            # Vaultwarden data.
+	"backrest-cache-volume"
+	"backrest-config-volume"
+	"backrest-data-volume"
+	"backrest-tmp-volume"
+	"beszel-agent-volume"
+	"beszel-data-volume"
+	"beszel-socket-volume"
+	"caddy-config-volume"
+	"caddy-data-volume"
+	"chhoto-volume"
+	"configarr-volume"
+	"dozzle-volume"
+	"gatus-db-config-volume"
+	"gatus-db-data-volume"
+	"gluetun-volume"
+	"homarr-db-config-volume"
+	"homarr-db-data-volume"
+	"homarr-volume"
+	"huntarr-volume"
+	"jellyfin-cache-volume"
+	"jellyfin-config-volume"
+	"kavita-volume"
+	"lidarr-db-config-volume"
+	"lidarr-db-data-volume"
+	"lidarr-volume"
+	"navidrome-volume"
+	"opencloud-config-volume"
+	"prowlarr-db-config-volume"
+	"prowlarr-db-data-volume"
+	"prowlarr-volume"
+	"qbittorrent-config-volume"
+	"qbittorrent-data-volume"
+	"radarr-db-config-volume"
+	"radarr-db-data-volume"
+	"radarr-volume"
+	"slskd-volume"
+	"sonarr-db-config-volume"
+	"sonarr-db-data-volume"
+	"sonarr-volume"
+	"thelounge-volume"
+	"unpackerr-volume"
+	"vaultwarden-db-backups-volume"
+	"vaultwarden-db-config-volume"
+	"vaultwarden-db-data-volume"
+	"vaultwarden-volume"
 )
 
 # Docker volumes to take ownership of.
 readonly CHOWN_VOLUMES=(
 	"beszel-agent-volume"
 	"beszel-data-volume"
+	"caddy-config-volume"
+	"caddy-data-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
@@ -148,9 +140,7 @@ readonly CHOWN_VOLUMES=(
 	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"navidrome-cache-volume"
-	"navidrome-backups-volume"
-	"navidrome-data-volume"
+	"navidrome-volume"
 	"opencloud-config-volume"
 	"slskd-volume"
 	"thelounge-volume"
@@ -158,7 +148,7 @@ readonly CHOWN_VOLUMES=(
 	"vaultwarden-volume"
 )
 
-# Function to ensure a directory exists.
+# Function to create a directory.
 create_dirs() {
 	local base_path="$1"
 	shift
@@ -169,7 +159,7 @@ create_dirs() {
 	done
 }
 
-# Function to create a Docker volume if it doesn't exist.
+# Function to create a Docker volume.
 create_volume() {
 	local volume_name="$1"
 	if ! docker volume inspect "$volume_name" &>/dev/null; then
@@ -180,14 +170,36 @@ create_volume() {
 	fi
 }
 
+# Function to create a Docker network.
+create_network() {
+	local network_name="$1"
+	local ipv4_gateway="$2"
+	local ipv4_subnet="$3"
+
+	if ! docker network inspect "$network_name" &>/dev/null; then
+		echo "Creating Docker network: $network_name"
+		docker network create --gateway="$ipv4_gateway" --subnet="$ipv4_subnet" "$network_name"
+	else
+		echo "Docker network '$network_name' already exists."
+	fi
+}
+
 # Create bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
+create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
-create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 
 # Create Docker networks.
 echo -e "\nCreating Docker networks..."
+create_network "external-network" "172.18.0.1" "172.18.0.0/16"
+create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16"
+
+# Creates the private internal network.
+if ! docker network inspect "internal-network" &>/dev/null; then
+	echo "Creating Docker network: internal-network"
+	docker network create --gateway 172.20.0.1 --subnet "172.20.0.0/16" internal-network
+fi
 
 # Create Docker volumes.
 echo -e "\nCreating Docker volumes..."
@@ -195,15 +207,14 @@ for volume in "${VOLUMES[@]}"; do
 	create_volume "$volume"
 done
 
-# Create Chhoto database.
+# Create required application structure for specific apps.
 CHHOTO_DATA_PATH="${DOCKER_VOLUMES_PATH}/chhoto-volume/_data"
+HOMARR_DATA_PATH="${DOCKER_VOLUMES_PATH}/homarr-volume/_data"
+$SUDO mkdir -p "${OPENCLOUD_DATA_PATH}"
+$SUDO mkdir -p "${HOMARR_DATA_PATH}/redis"
 $SUDO touch "${CHHOTO_DATA_PATH}/urls.sqlite"
 
-# Create required folders.
-HOMARR_DATA_PATH="${DOCKER_VOLUMES_PATH}/homarr-volume/_data"
-$SUDO mkdir -p "${HOMARR_DATA_PATH}/redis"
-
-# Set ownership of volumes by chowning their _data directory on the host
+# Set ownership of volumes by chowning their _data directory on the host.
 echo -e "\nSetting volume permissions..."
 for volume in "${CHOWN_VOLUMES[@]}"; do
 	VOLUME_DATA_PATH="${DOCKER_VOLUMES_PATH}/${volume}/_data"
@@ -215,21 +226,21 @@ for volume in "${CHOWN_VOLUMES[@]}"; do
 	fi
 done
 
-# Set ownership of the main bind mount directories on the host.
+# Sets ownership of the main bind mount directories on the host.
 echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
-	"${OPENCLOUD_DATA_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
-	"${MEDIA_LIBRARY_PATH}"
+	"${MEDIA_LIBRARY_PATH}" \
+	"${OPENCLOUD_DATA_PATH}"
 
 # Set permissions of the main bind mount directories on the host.
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
-	"${OPENCLOUD_DATA_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
-	"${MEDIA_LIBRARY_PATH}"
+	"${MEDIA_LIBRARY_PATH}" \
+	"${OPENCLOUD_DATA_PATH}"
 
 echo -e "\nInitial setup complete!"

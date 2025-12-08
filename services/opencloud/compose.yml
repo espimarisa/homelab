@@ -5,7 +5,7 @@
 ---
 services:
   opencloud:
-    image: opencloudeu/opencloud-rolling:3
+    image: opencloudeu/opencloud-rolling:4
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh
@@ -16,7 +16,6 @@ services:
     environment:
       FRONTEND_ARCHIVER_MAX_SIZE: "1000000000"
       IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}"
-      IDM_CREATE_DEMO_USERS: "false"
       NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}"
       NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}"
       NOTIFICATIONS_SMTP_INSECURE: "false"

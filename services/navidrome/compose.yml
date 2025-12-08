@@ -12,34 +12,27 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      ND_BACKUP_COUNT: "7"
-      ND_BACKUP_PATH: "/backups"
-      ND_BACKUP_SCHEDULE: "0 6 * * *"
-      ND_CACHEFOLDER: "/cache"
       ND_DEFAULTDOWNLOADABLESHARE: "true"
+      ND_ENABLEGRAVATAR: "true"
       ND_ENABLEINSIGHTSCOLLECTOR: "false"
       ND_ENABLESHARING: "true"
       ND_LASTFM_APIKEY: "${LASTFM_API_KEY}"
       ND_LASTFM_ENABLED: "true"
-      ND_LASTFM_LANGUAGE: "en"
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}"
-      ND_LOGLEVEL: "info"
       ND_MUSICFOLDER: "/library/music"
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}"
       ND_SCANNER_SCHEDULE: "0 6 * * *"
       ND_SPOTIFY_ID: "${SPOTIFY_ID}"
       ND_SPOTIFY_SECRET: "${SPOTIFY_SECRET}"
       SQLITE_TMPDIR: "/data"
+      TZ: "${TZ}"
     expose:
       - 4533/tcp
     networks:
       - external
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - media-library:/library:ro
-      - navidrome-backups:/backups
-      - navidrome-cache:/cache
-      - navidrome-data:/data
+      - navidrome:/data
     cap_drop:
       - ALL
     deploy:
@@ -58,15 +51,9 @@ networks:
     name: external-network
 
 volumes:
-  navidrome-backups:
+  navidrome:
     external: true
-    name: navidrome-backups-volume
-  navidrome-cache:
-    external: true
-    name: navidrome-cache-volume
-  navidrome-data:
-    external: true
-    name: navidrome-data-volume
+    name: navidrome-volume
   media-library:
     name: media-library-bind
     driver_opts:

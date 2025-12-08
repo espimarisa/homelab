@@ -39,13 +39,11 @@ x-defaults-ro: &defaults-ro
 # Default database environment variables.
 x-defaults-db-env: &defaults-db-env
   TZ: "${TZ}"
-  POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
 
 # Default database options.
 x-defaults-db: &defaults-db
   <<: *defaults-ro
-  image: ghcr.io/11notes/postgres:17
-  shm_size: 512M
+  image: ghcr.io/11notes/postgres:18
   deploy:
     resources:
       limits:
@@ -92,7 +90,6 @@ services:
     networks:
       - internal
     volumes:
-      - lidarr-db-backups:/postgres/backup
       - lidarr-db-config:/postgres/etc
       - lidarr-db-data:/postgres/var
 
@@ -102,7 +99,7 @@ services:
 
   radarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/radarr:5
+    image: ghcr.io/11notes/radarr:6
     container_name: radarr
     hostname: radarr
     networks:
@@ -134,50 +131,8 @@ services:
     networks:
       - internal
     volumes:
-      - radarr-db-backups:/postgres/backup
       - radarr-db-config:/postgres/etc
       - radarr-db-data:/postgres/var
-
-  ###########################################################################
-  # Readarr: Book manager, organizer, and PVR, fork to work with Hardcover. #
-  ###########################################################################
-
-  readarr:
-    <<: *defaults
-    image: ghcr.io/pennydreadful/bookshelf:hardcover
-    container_name: readarr
-    hostname: readarr
-    expose:
-      - 8787/tcp
-    networks:
-      external:
-      gluetun:
-        ipv4_address: 172.19.3.22
-      internal:
-    volumes:
-      - downloads:/downloads
-      - media-library:/library
-      - readarr:/config
-    depends_on:
-      readarr-db:
-        condition: service_healthy
-        restart: true
-    healthcheck:
-      test: "curl --fail --retry 0 --silent http://127.0.0.1:8787/api/v1/system/status?apikey=${READARR_API_KEY} || exit 1"
-
-  readarr-db:
-    <<: *defaults-db
-    container_name: readarr-db
-    hostname: readarr-db
-    environment:
-      <<: *defaults-db-env
-      POSTGRES_PASSWORD: "${READARR_DB_PASSWORD}"
-    networks:
-      - internal
-    volumes:
-      - readarr-db-backups:/postgres/backup
-      - readarr-db-config:/postgres/etc
-      - readarr-db-data:/postgres/var
 
   ###########################################################################
   # Sonarr: Series manager, organizer, and PVR - https://sonarr.tv          #
@@ -216,7 +171,6 @@ services:
     networks:
       - internal
     volumes:
-      - sonarr-db-backups:/postgres/backup
       - sonarr-db-config:/postgres/etc
       - sonarr-db-data:/postgres/var
 
@@ -252,7 +206,6 @@ services:
       gluetun:
         ipv4_address: 172.19.3.31
     volumes:
-      - prowlarr-db-backups:/postgres/backup
       - prowlarr-db-config:/postgres/etc
       - prowlarr-db-data:/postgres/var
 
@@ -323,7 +276,7 @@ services:
     container_name: configarr
     env_file: ../../.env
     environment:
-      CONFIGARR_SCHEDULE: "0 5 * * *"
+      CONFIGARR_SCHEDULE: "0 6 * * *"
       TZ: "${TZ}"
     networks:
       - external
@@ -336,9 +289,6 @@ services:
         condition: service_healthy
         restart: true
       radarr:
-        condition: service_healthy
-        restart: true
-      readarr:
         condition: service_healthy
         restart: true
       sonarr:
@@ -356,7 +306,7 @@ services:
 
   huntarr:
     <<: *defaults
-    image: ghcr.io/plexguide/huntarr:8.2.10
+    image: ghcr.io/plexguide/huntarr:latest
     container_name: huntarr
     hostname: huntarr
     user: ${PUID}:${PGID}
@@ -388,9 +338,6 @@ volumes:
   lidarr:
     name: lidarr-volume
     external: true
-  lidarr-db-backups:
-    name: lidarr-db-backups-volume
-    external: true
   lidarr-db-config:
     name: lidarr-db-config-volume
     external: true
@@ -403,9 +350,6 @@ volumes:
   prowlarr:
     name: prowlarr-volume
     external: true
-  prowlarr-db-backups:
-    name: prowlarr-db-backups-volume
-    external: true
   prowlarr-db-config:
     name: prowlarr-db-config-volume
     external: true
@@ -415,32 +359,14 @@ volumes:
   radarr:
     name: radarr-volume
     external: true
-  radarr-db-backups:
-    name: radarr-db-backups-volume
-    external: true
   radarr-db-config:
     name: radarr-db-config-volume
     external: true
   radarr-db-data:
     name: radarr-db-data-volume
     external: true
-  readarr:
-    name: readarr-volume
-    external: true
-  readarr-db-backups:
-    name: readarr-db-backups-volume
-    external: true
-  readarr-db-config:
-    name: readarr-db-config-volume
-    external: true
-  readarr-db-data:
-    name: readarr-db-data-volume
-    external: true
   sonarr:
     name: sonarr-volume
-    external: true
-  sonarr-db-backups:
-    name: sonarr-db-backups-volume
     external: true
   sonarr-db-config:
     name: sonarr-db-config-volume

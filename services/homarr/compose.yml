@@ -61,13 +61,11 @@ services:
 
   homarr-db:
     <<: *defaults
-    image: ghcr.io/11notes/postgres:17
+    image: ghcr.io/11notes/postgres:18
     container_name: homarr-db
     hostname: homarr-db
     read_only: true
-    shm_size: 512M
     environment:
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
       POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}"
       TZ: "${TZ}"
     networks:
@@ -76,7 +74,6 @@ services:
       - "/postgres/log:uid=${PUID},gid=${PGID}"
       - "/postgres/run:uid=${PUID},gid=${PGID}"
     volumes:
-      - homarr-db-backups:/postgres/backup
       - homarr-db-config:/postgres/etc
       - homarr-db-data:/postgres/var
     cap_drop:
