@@ -68,7 +68,7 @@ services:
     networks:
       external:
       gluetun:
-        ipv4_address: 172.19.1.21
+        ipv4_address: 172.19.1.20
       internal:
     volumes:
       - downloads:/downloads
@@ -106,7 +106,7 @@ services:
     networks:
       external:
       gluetun:
-        ipv4_address: 172.19.0.21
+        ipv4_address: 172.19.1.21
       internal:
     expose:
       - 7878/tcp
