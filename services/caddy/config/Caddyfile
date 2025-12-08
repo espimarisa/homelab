@@ -4,7 +4,7 @@
 	email {$ACME_EMAIL} # Configures the email to use for ACME.
 
 	servers {
-		trusted_proxies private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+		trusted_proxies static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	}
 }
 
