@@ -2,6 +2,10 @@
 	# ACME configuration.
 	acme_ca https://acme.zerossl.com/v2/DV90 # Use ZeroSSL for SSL certificates.
 	email {$ACME_EMAIL} # Configures the email to use for ACME.
+
+	servers {
+		trusted_proxies private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	}
 }
 
 # Snippet for security headers.
@@ -18,7 +22,6 @@
 # Snippet for externally accessible reverse proxied services.
 (external_proxy) {
 	encode zstd gzip
-	trusted_proxies private_ranges
 	reverse_proxy {args[0]}
 }
 
@@ -29,7 +32,6 @@
 	abort @not_internal
 	encode zstd gzip
 	tls internal
-	trusted_proxies private_ranges
 	reverse_proxy {args[0]}
 }
 
