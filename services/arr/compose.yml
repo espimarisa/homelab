@@ -66,9 +66,9 @@ services:
     ports:
       - 8686:8686/tcp
     networks:
-      external:
-      gluetun:
-      internal:
+      - external
+      - gluetun
+      - internal
     volumes:
       - downloads:/downloads
       - media-library:/library
