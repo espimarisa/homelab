@@ -61,7 +61,7 @@ services:
 
   homarr-db:
     <<: *defaults
-    image: ghcr.io/11notes/postgres:18
+    image: ghcr.io/11notes/postgres:17
     container_name: homarr-db
     hostname: homarr-db
     read_only: true

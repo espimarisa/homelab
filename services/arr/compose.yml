@@ -43,7 +43,7 @@ x-defaults-db-env: &defaults-db-env
 # Default database options.
 x-defaults-db: &defaults-db
   <<: *defaults-ro
-  image: ghcr.io/11notes/postgres:18
+  image: ghcr.io/11notes/postgres:17
   deploy:
     resources:
       limits:
