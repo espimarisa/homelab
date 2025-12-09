@@ -24,7 +24,7 @@ services:
       DB_USER: "postgres"
       TZ: "${TZ}"
     expose:
-      - 5055:5055/tcp
+      - 5055/tcp
     networks:
       - external
       - gluetun
