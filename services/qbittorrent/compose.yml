@@ -51,8 +51,12 @@ services:
     volumes:
       - qui-config:/config
       - qui-logs:/config/logs
-    cap_add:
-      - CHOWN
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       gluetun:
         condition: service_healthy

@@ -3,7 +3,11 @@ x-defaults: &defaults
   restart: unless-stopped
   user: "${PUID}:${PGID}"
   cap_drop:
-    - ALL
+    - AUDIT_WRITE
+    - MKNOD
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
   security_opt:
     - no-new-privileges:true
 
@@ -58,6 +62,8 @@ services:
     volumes:
       - seerr-db-config:/postgres/etc
       - seerr-db-data:/postgres/var
+    cap_drop:
+      - ALL
     deploy:
       resources:
         limits:
