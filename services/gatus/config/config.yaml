@@ -155,13 +155,13 @@ endpoints:
 
   # Immich server.
   - name: Immich Cache
-    <<: *defaults-http
+    <<: *defaults-container
     group: Immich
     url: ${SOCKET_PROXY_URL}/immich-cache/json
 
   # Immich server.
   - name: Immich Database
-    <<: *defaults-http
+    <<: *defaults-container
     group: Immich
     url: ${SOCKET_PROXY_URL}/immich-db/json
 
@@ -173,7 +173,7 @@ endpoints:
 
   # Immich server.
   - name: Immich Server
-    <<: *defaults-http
+    <<: *defaults-container
     group: Immich
     url: ${SOCKET_PROXY_URL}/immich-server/json
 
