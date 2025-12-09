@@ -140,7 +140,6 @@ readonly CHOWN_VOLUMES=(
 	"caddy-data-volume"
 	"caddy-logs-volume"
 	"immich-cache-volume"
-	"immich-ml-cache-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"

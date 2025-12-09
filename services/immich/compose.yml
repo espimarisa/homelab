@@ -74,7 +74,6 @@ services:
     <<: *defaults
     image: ghcr.io/immich-app/immich-machine-learning:v2-openvino
     container_name: immich-ml
-    user: "${PUID}:${PGID}"
     networks:
       - internal
     devices:
