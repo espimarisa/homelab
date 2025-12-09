@@ -12,6 +12,7 @@ services:
     environment:
       BACKREST_CONFIG: "/config/config.json"
       BACKREST_DATA: "/data"
+      DOCKER_HOST: "tcp://socket-proxy:2375"
       TMPDIR: "/tmp"
       TZ: "${TZ}"
       XDG_CACHE_HOME: "/cache"
@@ -33,6 +34,10 @@ services:
       - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE
+    depends_on:
+      socket-proxy:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:

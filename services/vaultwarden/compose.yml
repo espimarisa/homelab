@@ -73,7 +73,7 @@ services:
     image: ghcr.io/11notes/postgres:18
     container_name: vaultwarden-db
     hostname: vaultwarden-db
-    shm_size: 256mb
+    shm_size: 256MB
     environment:
       POSTGRES_BACKUP_RETENTION: "14"
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"

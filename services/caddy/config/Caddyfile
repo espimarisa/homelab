@@ -119,6 +119,11 @@
 	}
 }
 
+{$SEERR_URL} {
+	import external_proxy seerr:5055
+	import security_headers
+}
+
 {$THELOUNGE_URL} {
 	import external_proxy thelounge:9000
 	import security_headers
@@ -134,6 +139,10 @@
 ###############################################################################
 # Internal-only services; accessible with a DNS rewrite.					  #
 ###############################################################################
+
+autobrr.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:7474
+}
 
 backrest.{$INTERNAL_DOMAIN} {
 	import internal_proxy backrest:9898
@@ -161,6 +170,10 @@ prowlarr.{$INTERNAL_DOMAIN} {
 
 qbittorrent.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:8080
+}
+
+qui.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:7476
 }
 
 radarr.{$INTERNAL_DOMAIN} {

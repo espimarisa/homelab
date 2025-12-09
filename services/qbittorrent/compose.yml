@@ -3,34 +3,68 @@
 ###########################################################################
 
 ---
+x-defaults: &defaults
+  network_mode: service:gluetun
+  read_only: true
+  restart: unless-stopped
+  user: "${PUID}:${PGID}"
+  environment:
+    TZ: "${TZ}"
+  cap_drop:
+    - ALL
+  depends_on:
+    gluetun:
+      condition: service_healthy
+      restart: true
+  security_opt:
+    - no-new-privileges:true
+
 services:
   qbittorrent:
+    <<: *defaults
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
-    network_mode: service:gluetun
-    read_only: true
-    restart: unless-stopped
-    user: "${PUID}:${PGID}"
-    environment:
-      TZ: "${TZ}"
     volumes:
       - downloads:/downloads
       - downloads-incomplete:/downloads-incomplete
       - qbittorrent-config:/qbittorrent/etc
       - qbittorrent-data:/qbittorrent/var
-    cap_drop:
-      - ALL
-    depends_on:
-      gluetun:
-        condition: service_healthy
-        restart: true
     deploy:
       resources:
         limits:
           cpus: 8
           memory: 8GB
-    security_opt:
-      - no-new-privileges:true
+
+  ###########################################################################
+  # qui: Alternate web UI for qBittorrent - https://github.com/autobrr/qui  #
+  ###########################################################################
+
+  qui:
+    <<: *defaults
+    image: ghcr.io/autobrr/qui:v1.9
+    container_name: qui
+    environment:
+      QUI__PORT: "7476"
+      QUI__LOG_PATH: "/config/logs/qui.log"
+      QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}"
+      TZ: "${TZ}"
+    volumes:
+      - qui-config:/config
+      - qui-logs:/config/logs
+    cap_add:
+      - CHOWN
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      qbittorrent:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
 
 volumes:
   qbittorrent-config:
@@ -38,6 +72,12 @@ volumes:
     external: true
   qbittorrent-data:
     name: qbittorrent-data-volume
+    external: true
+  qui-config:
+    name: qui-config-volume
+    external: true
+  qui-logs:
+    name: qui-logs-volume
     external: true
   downloads:
     name: downloads-bind

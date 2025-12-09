@@ -1,0 +1,87 @@
+---
+x-defaults: &defaults
+  restart: unless-stopped
+  user: "${PUID}:${PGID}"
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  seerr:
+    <<: *defaults
+    image: ghcr.io/fallenbagel/jellyseerr:preview-seerr
+    container_name: seerr
+    hostname: seerr
+    environment:
+      DB_HOST: "seerr-db"
+      DB_LOG_QUERIES: "true"
+      DB_NAME: "postgres"
+      DB_PASS: "${SEERR_DB_PASSWORD}"
+      DB_PORT: "5432"
+      DB_TYPE: "postgres"
+      DB_USE_SSL: "false"
+      DB_USER: "postgres"
+      TZ: "${TZ}"
+    expose:
+      - 5055:5055/tcp
+    networks:
+      - external
+      - gluetun
+      - internal
+    volumes:
+      - seerr:/app/config
+    depends_on:
+      seerr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+
+  seerr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:18
+    container_name: seerr-db
+    hostname: seerr-db
+    shm_size: 256MB
+    environment:
+      POSTGRES_PASSWORD: "${SEERR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      - internal
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - seerr-db-config:/postgres/etc
+      - seerr-db-data:/postgres/var
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  seerr:
+    name: seerr-volume
+    external: true
+  seerr-db-config:
+    name: seerr-db-config-volume
+    external: true
+  seerr-db-data:
+    name: seerr-db-data-volume
+    external: true

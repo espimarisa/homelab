@@ -1,5 +1,6 @@
 ---
 include:
+  - ./services/autobrr/compose.yml
   - ./services/arr/compose.yml
   - ./services/backrest/compose.yml
   - ./services/beszel/compose.yml
@@ -16,7 +17,9 @@ include:
   - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/qbittorrent/compose.yml
+  - ./services/seerr/compose.yml
   - ./services/slskd/compose.yml
   - ./services/socket-proxy/compose.yml
   - ./services/thelounge/compose.yml
   - ./services/vaultwarden/compose.yml
+  - ./services/watchtower/compose.yml

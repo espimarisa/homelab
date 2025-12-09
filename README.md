@@ -4,6 +4,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 
 ## Services
 
+- Autobrr
 - Backrest
 - Beszel
 - Byparr
@@ -23,12 +24,15 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 - Configarr
 - Prowlarr
 - qBittorrent
+- qui
 - Radarr
+- Seerr
 - slskd
 - Sonarr
 - The Lounge
 - Unpackerr
 - Vaultwarden
+- Watchtower
 
 ## License
 

@@ -111,7 +111,7 @@ services:
     <<: *defaults
     image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3
     container_name: immich-db
-    shm_size: 256mb
+    shm_size: 256MB
     environment:
       DB_STORAGE_TYPE: "HDD"
       POSTGRES_DB: "immich"
@@ -128,6 +128,14 @@ services:
         limits:
           cpus: 2
           memory: 4G
+
+networks:
+  external:
+    external: true
+    name: external-network
+  internal:
+    external: true
+    name: internal-network
 
 volumes:
   immich-cache:

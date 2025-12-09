@@ -32,6 +32,8 @@ services:
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}"
     expose:
       - 5030/tcp # slskd.
+      - 7474/tcp # Autobrr.
+      - 7476/tcp # qui.
       - 8080/tcp # qBittorrent.
       - 8191/tcp # Byparr.
       - 9696/tcp # Prowlarr.

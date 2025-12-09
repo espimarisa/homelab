@@ -45,6 +45,12 @@ endpoints:
   # Databases.                                                              #
   ###########################################################################
 
+  # Autobrr DB.
+  - name: Autobrr - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/autobrr-db/json
+
   # Gatus DB.
   - name: Gatus - PostgreSQL
     <<: *defaults-container
@@ -69,6 +75,12 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/radarr-db/json
 
+  # Seerr DB.
+  - name: Seerr - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/seerr-db/json
+
   # Sonarr DB.
   - name: Sonarr - PostgreSQL
     <<: *defaults-container
@@ -90,6 +102,12 @@ endpoints:
     <<: *defaults-container
     group: Downloads
     url: ${SOCKET_PROXY_URL}/gluetun/json
+
+  # qui.
+  - name: qui
+    <<: *defaults-container
+    group: Downloads
+    url: ${SOCKET_PROXY_URL}/qui/json
 
   # qBittorrent.
   - name: qBittorrent
@@ -125,6 +143,12 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/socket-proxy/json
 
+  # Watchtower.
+  - name: Watchtower
+    <<: *defaults-container
+    group: Infrastructure
+    url: ${SOCKET_PROXY_URL}/watchtower/json
+
   ###########################################################################
   # Immich.                                                                 #
   ###########################################################################
@@ -156,6 +180,12 @@ endpoints:
   ###########################################################################
   # Media management.                                                       #
   ###########################################################################
+
+  # Autobrr.
+  - name: Autobrr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/autobrr/json
 
   # Byparr.
   - name: Byparr
@@ -284,6 +314,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
+
+  # Seerr.
+  - name: Seerr
+    <<: *defaults-http
+    group: Services
+    url: https://${SEERR_URL}
 
   # The Lounge.
   - name: The Lounge

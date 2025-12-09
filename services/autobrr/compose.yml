@@ -1,0 +1,97 @@
+###########################################################################
+# autobrr: Download automation and ratio manager - https://autobrr.com    #
+###########################################################################
+
+---
+x-defaults: &defaults
+  read_only: true
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  autobrr:
+    <<: *defaults
+    image: ghcr.io/autobrr/autobrr:v1.70
+    container_name: autobrr
+    network_mode: service:gluetun
+    user: "${PUID}:${PGID}"
+    environment:
+      AUTOBRR__CHECK_FOR_UPDATES: "false"
+      AUTOBRR__DATABASE_TYPE: "postgres"
+      AUTOBRR__HOST: "0.0.0.0"
+      AUTOBRR__LOG_LEVEL: "info"
+      AUTOBRR__LOG_MAX_SIZE: "10"
+      AUTOBRR__LOG_PATH: "/logs/autobrr.log"
+      AUTOBRR__POSTGRES_DATABASE: "postgres"
+      AUTOBRR__POSTGRES_HOST: "172.19.1.31"
+      AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}"
+      AUTOBRR__POSTGRES_PORT: "5432"
+      AUTOBRR__POSTGRES_USER: "postgres"
+      TZ: "${TZ}"
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - autobrr-data:/config
+      - autobrr-logs:/logs
+    depends_on:
+      autobrr-db:
+        condition: service_healthy
+        restart: true
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:7474 || exit 1"
+
+  autobrr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:18
+    container_name: autobrr-db
+    shm_size: 256MB
+    environment:
+      POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}"
+      TZ: "${TZ}"
+    networks:
+      gluetun:
+        ipv4_address: 172.19.1.31
+    tmpfs:
+      - "/postgres/log:uid=${PUID},gid=${PGID}"
+      - "/postgres/run:uid=${PUID},gid=${PGID}"
+    volumes:
+      - autobrr-db-config:/postgres/etc
+      - autobrr-db-data:/postgres/var
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
+
+networks:
+  gluetun:
+    name: gluetun-network
+    external: true
+  internal:
+    name: internal-network
+    external: true
+
+volumes:
+  autobrr-data:
+    name: autobrr-data-volume
+    external: true
+  autobrr-logs:
+    name: autobrr-logs-volume
+    external: true
+  autobrr-db-config:
+    name: autobrr-db-config-volume
+    external: true
+  autobrr-db-data:
+    name: autobrr-db-data-volume
+    external: true
