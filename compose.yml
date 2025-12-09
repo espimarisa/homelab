@@ -9,6 +9,7 @@ include:
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
   - ./services/homarr/compose.yml
+  - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/kavita/compose.yml
   - ./services/mam-ip-helper/compose.yml

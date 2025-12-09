@@ -7,6 +7,7 @@ set -euo pipefail
 readonly REQUIRED_VARS=(
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
+	"IMMICH_DATA_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_DATA_PATH"
 	"PGID"
@@ -100,6 +101,9 @@ readonly VOLUMES=(
 	"homarr-db-data-volume"
 	"homarr-volume"
 	"huntarr-volume"
+	"immich-cache-volume"
+	"immich-db-volume"
+	"immich-ml-cache-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"kavita-volume"
@@ -135,6 +139,8 @@ readonly CHOWN_VOLUMES=(
 	"caddy-config-volume"
 	"caddy-data-volume"
 	"caddy-logs-volume"
+	"immich-cache-volume"
+	"immich-ml-cache-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
@@ -221,6 +227,7 @@ done
 # Creates required application structure for specific apps.
 CHHOTO_DATA_PATH="${DOCKER_VOLUMES_PATH}/chhoto-volume/_data"
 HOMARR_DATA_PATH="${DOCKER_VOLUMES_PATH}/homarr-volume/_data"
+$SUDO mkdir -p "${IMMICH_DATA_PATH}"
 $SUDO mkdir -p "${OPENCLOUD_DATA_PATH}"
 $SUDO mkdir -p "${HOMARR_DATA_PATH}/redis"
 $SUDO touch "${CHHOTO_DATA_PATH}/urls.sqlite"
@@ -243,6 +250,7 @@ echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${IMMICH_DATA_PATH}" \
 	"${MEDIA_LIBRARY_PATH}" \
 	"${OPENCLOUD_DATA_PATH}"
 
@@ -251,6 +259,7 @@ echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${IMMICH_DATA_PATH}" \
 	"${MEDIA_LIBRARY_PATH}" \
 	"${OPENCLOUD_DATA_PATH}"
 

@@ -49,6 +49,7 @@ services:
     image: ghcr.io/11notes/postgres:18
     container_name: gatus-db
     hostname: gatus-db
+    shm_size: 256mb
     environment:
       POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}"
       TZ: "${TZ}"

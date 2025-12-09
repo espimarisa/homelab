@@ -84,6 +84,16 @@
 	import security_headers
 }
 
+{$IMMICH_URL} {
+	import external_proxy immich-server:2283
+	import security_headers
+
+	# Allow large uploads.
+	request_body {
+		max_size 0
+	}
+}
+
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
 	import security_headers
@@ -102,6 +112,11 @@
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
 	import security_headers
+
+	# Allow large uploads.
+	request_body {
+		max_size 0
+	}
 }
 
 {$THELOUNGE_URL} {

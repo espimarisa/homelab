@@ -14,6 +14,7 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 - Gluetun
 - Homarr
 - Huntarr
+- Immich
 - Jellyfin
 - Lidarr
 - mam-ip-helper

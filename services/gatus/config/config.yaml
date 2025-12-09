@@ -126,6 +126,34 @@ endpoints:
     url: ${SOCKET_PROXY_URL}/socket-proxy/json
 
   ###########################################################################
+  # Immich.                                                                 #
+  ###########################################################################
+
+  # Immich server.
+  - name: Immich Cache
+    <<: *defaults-http
+    group: Immich
+    url: ${SOCKET_PROXY_URL}/immich-cache/json
+
+  # Immich server.
+  - name: Immich Database
+    <<: *defaults-http
+    group: Immich
+    url: ${SOCKET_PROXY_URL}/immich-db/json
+
+  # Immich Machine Learning.
+  - name: Immich Machine Learning
+    <<: *defaults-container
+    group: Immich
+    url: ${SOCKET_PROXY_URL}/immich-ml/json
+
+  # Immich server.
+  - name: Immich Server
+    <<: *defaults-http
+    group: Immich
+    url: ${SOCKET_PROXY_URL}/immich-server/json
+
+  ###########################################################################
   # Media management.                                                       #
   ###########################################################################
 
@@ -226,6 +254,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${HOMARR_URL}
+
+  # Immich.
+  - name: Immich
+    <<: *defaults-http
+    group: Services
+    url: https://${IMMICH_URL}
 
   # Jellyfin.
   - name: Jellyfin

@@ -45,6 +45,7 @@ x-defaults-db-env: &defaults-db-env
 x-defaults-db: &defaults-db
   <<: *defaults-ro
   image: ghcr.io/11notes/postgres:18
+  shm_size: 256mb
   deploy:
     resources:
       limits:
