@@ -75,16 +75,12 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:v2-openvino
     container_name: immich-ml
     user: "${PUID}:${PGID}"
-    read_only: true
     networks:
       - internal
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
       - immich-ml-cache:/cache
-    tmpfs:
-      - /tmp:mode=1777,uid=${PUID},gid=${PGID}
-      - /config:mode=1777,uid=${PUID},gid=${PGID}
     deploy:
       resources:
         limits:
