@@ -1,6 +1,7 @@
 {
 	# Configures ACME options.
 	email {$ACME_EMAIL}
+	acme_ca https://acme.zerossl.com/v2/DV90
 
 	# Store data to the filesystem.
 	storage file_system /caddy/var
