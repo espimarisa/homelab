@@ -23,6 +23,7 @@ services:
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
     hostname: gatus
+    env_file: ../../.env
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375"
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}"
