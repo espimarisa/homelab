@@ -33,7 +33,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 2G
+          memory: 1G
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:5000 || exit 1"
     security_opt:

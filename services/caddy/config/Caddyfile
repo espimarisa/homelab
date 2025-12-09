@@ -1,50 +1,73 @@
 {
-	# ACME configuration.
-	# acme_ca https://acme.zerossl.com/v2/DV90 # Use ZeroSSL for SSL certificates.
-	email {$ACME_EMAIL} # Configures the email to use for ACME.
+	# Configures ACME options.
+	email {$ACME_EMAIL}
 
-	servers {
-		trusted_proxies static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
-	}
-
+	# Store data to the filesystem.
 	storage file_system /caddy/var
 }
 
-# Snippet for security headers.
-(security_headers) {
-	header {
-		-Server # Remove the Server header.
-		Referrer-Policy "strict-origin-when-cross-origin" # Control referrer information.
-		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" # Enable HSTS.
-		X-Content-Type-Options "nosniff" # Prevent browser from MIME-type sniffing.
-		X-Frame-Options "DENY" # Prevent clickjacking attacks.
+# Snippet used to configure logging.
+(logging) {
+	log {
+		# args[0] becomes the filename.
+		output file /caddy/logs/{args[0]}.log {
+			roll_size 10mb # Roll logs after they reach 10mb.
+			roll_keep 5 # Keep up to 5 log files.
+			roll_keep_for 720h # Keep logs for 30 days.
+		}
 	}
 }
 
-# Snippet for externally accessible reverse proxied services.
+# Snippet for common global security headers.
+(security_headers) {
+	header {
+		-Server
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+	}
+}
+
+# Snippet for reverse proxying externally accessible services.
 (external_proxy) {
+	# Enables compression.
 	encode zstd gzip
-	reverse_proxy {args[0]}
+
+	# Log to external-access.log.
+	import logging external-access
+
+	# Reverse proxies traffic.
+	reverse_proxy {args[0]} {
+		# Trust private ranges and Tailscale IPs for correct client IP detection.
+		trusted_proxies private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	}
 }
 
-# Snippet for internal-only reverse proxied services.
 (internal_proxy) {
-	# Define @not_internal as non-private ranges + non-Tailscale ranges.
-	@not_internal not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
-	abort @not_internal
+	# Abort traffic NOT from private ranges or Tailscale.
+	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	abort @denied
+
+	# Enables compression.
 	encode zstd gzip
+
+	# Use Caddy's internal CA; may require CA installation.
 	tls internal
-	reverse_proxy {args[0]}
+
+	# Log to internal-access.log.
+	import logging internal-access
+
+	# Reverse proxies traffic.
+	reverse_proxy {args[0]} {
+		# Trust private ranges and Tailscale IPs for correct client IP detection.
+		trusted_proxies private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	}
 }
 
-# Internal healthcheck.
-:3000 {
-	respond / 200
-}
-
-#################################################
-# Externally accessible services.				#
-#################################################
+###############################################################################
+# Externally accessible services.											  #
+###############################################################################
 
 {$CHHOTO_URL} {
 	import external_proxy chhoto:4567
@@ -89,14 +112,13 @@
 {$VAULTWARDEN_URL} {
 	import external_proxy vaultwarden:80
 
-	header {
-		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-	}
+	# Vaultwarden sets its own security headers minus HSTS.
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 }
 
-#################################################
-# Internal-only services.						#
-#################################################
+###############################################################################
+# Internal-only services; accessible with a DNS rewrite.					  #
+###############################################################################
 
 backrest.{$INTERNAL_DOMAIN} {
 	import internal_proxy backrest:9898
@@ -136,4 +158,22 @@ slskd.{$INTERNAL_DOMAIN} {
 
 sonarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy sonarr:8989
+}
+
+# Internal healthcheck endpoint.
+:3000 {
+	respond "OK" 200
+}
+
+###############################################################################
+# Global catch-all for unhandled traffic.								      #
+###############################################################################
+
+* {
+	handle {
+		abort
+	}
+
+	# Log unhandled traffic to unhandled-access.log.
+	import logging unhandled-access
 }

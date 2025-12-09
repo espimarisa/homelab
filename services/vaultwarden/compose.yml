@@ -6,6 +6,7 @@
 x-defaults: &defaults
   restart: unless-stopped
   read_only: true
+  user: "${PUID}:${PGID}"
   cap_drop:
     - ALL
   security_opt:
@@ -17,7 +18,6 @@ services:
     image: ghcr.io/dani-garcia/vaultwarden:latest-alpine
     container_name: vaultwarden
     hostname: vaultwarden
-    user: "${PUID}:${PGID}"
     environment:
       ADMIN_RATELIMIT_MAX_BURST: "3"
       ADMIN_RATELIMIT_SECONDS: "300"

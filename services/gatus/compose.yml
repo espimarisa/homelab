@@ -6,6 +6,7 @@
 x-defaults: &defaults
   read_only: true
   restart: unless-stopped
+  user: "${PUID}:${PGID}"
   cap_drop:
     - ALL
   deploy:
@@ -22,7 +23,6 @@ services:
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
     hostname: gatus
-    user: "${PUID}:${PGID}"
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375"
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}"

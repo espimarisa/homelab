@@ -12,6 +12,7 @@ services:
     hostname: caddy
     read_only: true
     restart: unless-stopped
+    user: "${PUID}:${PGID}"
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375"
       TZ: "${TZ}"
@@ -27,9 +28,10 @@ services:
       - ./config/Caddyfile:/caddy/etc/Caddyfile:ro
       - caddy-config:/caddy/etc
       - caddy-data:/caddy/var
+      - caddy-logs:/caddy/logs
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
-      - "/caddy/backup:uid=${PUID},gid=${PGID}"
+      - "/caddy/backups:uid=${PUID},gid=${PGID}"
     cap_add:
       - NET_BIND_SERVICE
       - NET_ADMIN
@@ -64,4 +66,7 @@ volumes:
     external: true
   caddy-data:
     name: caddy-data-volume
+    external: true
+  caddy-logs:
+    name: caddy-logs-volume
     external: true

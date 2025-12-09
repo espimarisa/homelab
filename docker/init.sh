@@ -89,6 +89,7 @@ readonly VOLUMES=(
 	"beszel-socket-volume"
 	"caddy-config-volume"
 	"caddy-data-volume"
+	"caddy-logs-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
@@ -133,6 +134,7 @@ readonly CHOWN_VOLUMES=(
 	"beszel-data-volume"
 	"caddy-config-volume"
 	"caddy-data-volume"
+	"caddy-logs-volume"
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
@@ -184,30 +186,39 @@ create_network() {
 	fi
 }
 
+# Function to create an internal Docker network.
+create_internal_network() {
+	local network_name="$1"
+	local ipv4_gateway="$2"
+	local ipv4_subnet="$3"
+
+	if ! docker network inspect "$network_name" &>/dev/null; then
+		echo "Creating Docker network: $network_name"
+		docker network create --internal --gateway="$ipv4_gateway" --subnet="$ipv4_subnet" "$network_name"
+	else
+		echo "Docker network '$network_name' already exists."
+	fi
+}
+
 # Create bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
-# Create Docker networks.
+# Creates Docker networks.
 echo -e "\nCreating Docker networks..."
 create_network "external-network" "172.18.0.1" "172.18.0.0/16"
 create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16"
+create_internal_network "internal-network" "172.20.0.1" "172.20.0.0/16"
 
-# Creates the private internal network.
-if ! docker network inspect "internal-network" &>/dev/null; then
-	echo "Creating Docker network: internal-network"
-	docker network create --gateway 172.20.0.1 --subnet "172.20.0.0/16" internal-network
-fi
-
-# Create Docker volumes.
+# Creates Docker volumes.
 echo -e "\nCreating Docker volumes..."
 for volume in "${VOLUMES[@]}"; do
 	create_volume "$volume"
 done
 
-# Create required application structure for specific apps.
+# Creates required application structure for specific apps.
 CHHOTO_DATA_PATH="${DOCKER_VOLUMES_PATH}/chhoto-volume/_data"
 HOMARR_DATA_PATH="${DOCKER_VOLUMES_PATH}/homarr-volume/_data"
 $SUDO mkdir -p "${OPENCLOUD_DATA_PATH}"

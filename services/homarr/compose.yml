@@ -64,6 +64,7 @@ services:
     image: ghcr.io/11notes/postgres:18
     container_name: homarr-db
     hostname: homarr-db
+    user: "${PUID}:${PGID}"
     read_only: true
     environment:
       POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}"

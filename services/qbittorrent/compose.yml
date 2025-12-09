@@ -10,6 +10,7 @@ services:
     network_mode: service:gluetun
     read_only: true
     restart: unless-stopped
+    user: "${PUID}:${PGID}"
     environment:
       TZ: "${TZ}"
     volumes:

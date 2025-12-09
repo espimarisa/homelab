@@ -29,6 +29,7 @@ x-defaults: &defaults
 x-defaults-ro: &defaults-ro
   <<: *defaults
   read_only: true
+  user: "${PUID}:${PGID}"
   tmpfs:
     - "/tmp:uid=${PUID},gid=${PGID}"
   cap_add:
