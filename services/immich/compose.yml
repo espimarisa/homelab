@@ -34,8 +34,8 @@ services:
     tmpfs:
       - "/run:uid=${PUID},gid=${PGID},exec"
       - "/tmp:uid=${PUID},gid=${PGID},exec"
-      - "/usr/src/app/.npmuid=${PUID},gid=${PGID},exec"
-      - "/usr/src/app/.configuid=${PUID},gid=${PGID},exec"
+      - "/usr/src/app/.npm:uid=${PUID},gid=${PGID},exec"
+      - "/usr/src/app/.config:uid=${PUID},gid=${PGID},exec"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - immich-data:/data
@@ -62,8 +62,11 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:v2-openvino # https://docs.immich.app/features/ml-hardware-acceleration
     container_name: immich-ml
     read_only: true
+    user: "${PUID}:${PGID}"
     devices:
       - /dev/dri:/dev/dri # Video device passthrough for transcoding.
+    environment:
+      MPLCONFIGDIR: "/tmp" # Sets the matplotlib directory.
     networks:
       - internal
     tmpfs:
