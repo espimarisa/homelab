@@ -26,13 +26,13 @@ services:
       - ALL
     depends_on:
       lidarr:
-        condition: service_healthy
+        condition: service_started
         restart: true
       radarr:
-        condition: service_healthy
+        condition: service_started
         restart: true
       sonarr:
-        condition: service_healthy
+        condition: service_started
         restart: true
     deploy:
       resources:

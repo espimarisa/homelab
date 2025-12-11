@@ -43,8 +43,6 @@ services:
         limits:
           cpus: 2
           memory: 4G
-    healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
 
   sonarr-db:
     <<: *defaults

@@ -35,8 +35,6 @@ services:
         limits:
           cpus: 1
           memory: 2G
-    healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
 
   prowlarr-db:
     <<: *defaults

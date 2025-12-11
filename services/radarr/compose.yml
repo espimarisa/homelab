@@ -44,8 +44,6 @@ services:
         limits:
           cpus: 2
           memory: 4G
-    healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
 
   radarr-db:
     <<: *defaults
