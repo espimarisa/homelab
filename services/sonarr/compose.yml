@@ -8,6 +8,8 @@ x-defaults: &defaults
   env_file: ../../.env
   read_only: true
   restart: unless-stopped
+  cap_add:
+    - CHOWN
   cap_drop:
     - ALL
   security_opt:
