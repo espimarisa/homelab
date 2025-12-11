@@ -7,6 +7,7 @@ set -euo pipefail
 readonly REQUIRED_VARS=(
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
+	"DOWNLOADS_PERMASEED_PATH"
 	"IMMICH_DATA_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_DATA_PATH"
@@ -271,6 +272,7 @@ echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${DOWNLOADS_PATH}" \
+	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${IMMICH_DATA_PATH}" \
 	"${MEDIA_LIBRARY_PATH}" \

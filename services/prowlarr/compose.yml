@@ -28,6 +28,8 @@ services:
       prowlarr-db:
         condition: service_healthy
         restart: true
+    tmpfs:
+      - "/tmp:uid=1000,gid=1000,exec"
     deploy:
       resources:
         limits:

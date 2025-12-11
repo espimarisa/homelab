@@ -28,6 +28,8 @@ services:
       internal:
     expose:
       - 7878/tcp
+    tmpfs:
+      - "/tmp:uid=1000,gid=1000,exec"
     volumes:
       - ./scripts:/scripts:ro
       - downloads:/downloads
