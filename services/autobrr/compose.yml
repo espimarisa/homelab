@@ -34,7 +34,7 @@ services:
       AUTOBRR__POSTGRES_USER: "postgres" # Use the postgres user.
       TZ: "${TZ}" # Sets the timezone.
     tmpfs:
-      - "/tmpuid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
     volumes:
       - autobrr-data:/config
       - autobrr-logs:/logs

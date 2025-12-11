@@ -32,8 +32,8 @@ services:
       - external
       - internal
     tmpfs:
-      - "/runuid=${PUID},gid=${PGID},exec"
-      - "/tmpuid=${PUID},gid=${PGID},exec"
+      - "/run:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
       - "/usr/src/app/.npmuid=${PUID},gid=${PGID},exec"
       - "/usr/src/app/.configuid=${PUID},gid=${PGID},exec"
     volumes:
@@ -67,8 +67,8 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/tmpuid=${PUID},gid=${PGID},exec"
-      - "/configuid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
+      - "/config:uid=${PUID},gid=${PGID},exec"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - immich-ml-cache:/cache
@@ -117,9 +117,9 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/etc/postgresqlexec"
-      - "/runexec"
-      - "/tmpexec"
+      - "/etc/postgresql:exec"
+      - "/run:exec"
+      - "/tmp:exec"
     volumes:
       - immich-db:/var/lib/postgresql
     cap_drop:

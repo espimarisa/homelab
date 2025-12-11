@@ -39,7 +39,7 @@ services:
     networks:
       - external
     tmpfs:
-      - "/tmpuid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
     volumes:
       - opencloud-config:/etc/opencloud
       - opencloud-data:/var/lib/opencloud

@@ -20,7 +20,7 @@ services:
     expose:
       - 9000/tcp
     tmpfs:
-      - "/tmpuid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
     volumes:
       - thelounge:/var/opt/thelounge
     cap_drop:

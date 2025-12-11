@@ -22,7 +22,7 @@ services:
     networks:
       - external
     tmpfs:
-      - "/tmpuid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - jellyfin-cache:/cache

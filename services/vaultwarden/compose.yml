@@ -61,7 +61,7 @@ services:
       - external
       - internal
     tmpfs:
-      - "/tmpuid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID},exec"
     volumes:
       - vaultwarden:/data
     depends_on:
