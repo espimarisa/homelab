@@ -45,9 +45,7 @@ services:
           cpus: 4
           memory: 8G
     healthcheck:
-      interval: 1m
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
-      timeout: 5s
 
   lidarr-db:
     <<: *defaults

@@ -51,9 +51,7 @@ services:
           cpus: 1
           memory: 1G
     healthcheck:
-      interval: 1m
       test: "curl --fail --retry 0 --silent http://127.0.0.1:7474 || exit 1"
-      timeout: 5s
 
   autobrr-db:
     <<: *defaults

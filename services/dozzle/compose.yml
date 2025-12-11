@@ -37,9 +37,7 @@ services:
           cpus: 0.25
           memory: 256M
     healthcheck:
-      interval: 1m
-      test: "./dozzle healthcheck || exit 1"
-      timeout: 5s
+      test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:
       - no-new-privileges:true
 

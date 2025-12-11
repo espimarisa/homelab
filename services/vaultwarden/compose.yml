@@ -74,9 +74,7 @@ services:
           cpus: 1
           memory: 512M
     healthcheck:
-      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:80/alive || exit 1"
-      timeout: 5s
 
   vaultwarden-db:
     <<: *defaults

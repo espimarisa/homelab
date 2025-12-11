@@ -41,9 +41,7 @@ services:
           cpus: 4
           memory: 4G
     healthcheck:
-      interval: 1m
       test: "curl --fail --retry 0 --silent http://127.0.0.1:5656 || exit 1"
-      timeout: 5s
     security_opt:
       - no-new-privileges:true
 

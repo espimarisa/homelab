@@ -38,9 +38,7 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4567/api/whoami || exit 1"
-      timeout: 5s
 
 networks:
   external:

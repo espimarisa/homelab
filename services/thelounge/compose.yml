@@ -31,9 +31,7 @@ services:
           cpus: 0.5
           memory: 256M
     healthcheck:
-      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9000 || exit 1"
-      timeout: 3s
     security_opt:
       - no-new-privileges:true
 
