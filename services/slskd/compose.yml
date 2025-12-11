@@ -26,7 +26,7 @@ services:
       SLSKD_UMASK: "${UMASK}" # Umask to apply to newly created files.
       TZ: "${TZ}" # Sets the timezone.
     tmpfs:
-      - "/.net:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/.net:mode=1777,uid=${PUID},gid=${PGID},exec"
       - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - downloads-incomplete:/downloads-incomplete
