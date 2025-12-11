@@ -61,7 +61,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # Replace sda with the downloads-incomplete disk name.
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Replace bcache0 with the storage disk name.
-      - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdd:ro # Replace sdd with the storage disk name.
+      - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdh:ro # Replace sdd with the storage disk name.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:
