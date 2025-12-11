@@ -49,8 +49,8 @@ services:
       gluetun:
         ipv4_address: 172.19.1.30
     tmpfs:
-      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
-      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/log:uid=1000,gid=1000,exec"
+      - "/postgres/run:uid=1000,gid=1000,exec"
     volumes:
       - prowlarr-db-config:/postgres/etc
       - prowlarr-db-data:/postgres/var

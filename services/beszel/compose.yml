@@ -39,7 +39,7 @@ services:
     healthcheck:
       test: ["CMD", "/beszel", "health --url http://127.0.0.1:8090"]
     tmpfs:
-      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/tmpuid=${PUID},gid=${PGID},exec"
 
   beszel-agent:
     <<: *defaults
@@ -80,7 +80,7 @@ services:
     healthcheck:
       test: ["CMD", "/agent", "health"]
     tmpfs:
-      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/tmpuid=${PUID},gid=${PGID},exec"
 
 networks:
   external:

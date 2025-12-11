@@ -31,7 +31,7 @@ services:
       - caddy-data:/caddy/var
       - caddy-logs:/caddy/logs
     tmpfs:
-      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=1000,gid=1000,exec"
     cap_add:
       - NET_ADMIN
     cap_drop:

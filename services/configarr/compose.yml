@@ -18,7 +18,7 @@ services:
       - external
       - internal
     tmpfs:
-      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=1000,gid=1000,exec"
     volumes:
       - ./config:/configarr/etc
       - configarr:/configarr/var

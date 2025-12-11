@@ -56,8 +56,8 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
-      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/log:uid=1000,gid=1000,exec"
+      - "/postgres/run:uid=1000,gid=1000,exec"
     volumes:
       - sonarr-db-config:/postgres/etc
       - sonarr-db-data:/postgres/var
