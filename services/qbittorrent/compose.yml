@@ -20,6 +20,8 @@ services:
       - downloads-permaseed:/downloads-permaseed
       - qbittorrent-config:/qbittorrent/etc
       - qbittorrent-data:/qbittorrent/var
+    cap_add:
+      - CHOWN
     cap_drop:
       - ALL
     depends_on:
