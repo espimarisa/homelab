@@ -1,6 +1,7 @@
-###########################################################################
-# OpenCloud: Self-hosted cloud storage service - https://opencloud.eu/en  #
-###########################################################################
+#################################################################################
+# OpenCloud: Self-hosted cloud storage service                                #
+# https://docs.opencloud.eu/docs/admin/configuration                          #
+#################################################################################
 
 ---
 services:
@@ -9,36 +10,36 @@ services:
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh
+    env_file: ../../.env
     hostname: opencloud
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      FRONTEND_ARCHIVER_MAX_SIZE: "1000000000"
-      IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}"
-      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}"
-      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}"
-      NOTIFICATIONS_SMTP_INSECURE: "false"
-      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}"
-      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}"
-      NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>"
-      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}"
-      OC_ADD_RUN_SERVICES: "notifications"
-      OC_INSECURE: "false"
-      OC_LOG_COLOR: "true"
-      OC_LOG_LEVEL: "info"
-      OC_LOG_PRETTY: "true"
-      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false"
-      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true"
+      FRONTEND_ARCHIVER_MAX_SIZE: "1000000000" # Maximum frontend archive size in bytes.
+      IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}" # Default administrator password to set.
+      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}" # SMTP transport encryption type.
+      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}" # SMTP server host.
+      NOTIFICATIONS_SMTP_INSECURE: "false" # Do not use insecure mode for SMTP.
+      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}" # SMTP server password.
+      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}" # SMTP server port.
+      NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>" # SMTP server sender.
+      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}" # SMTP server username.
+      OC_INSECURE: "false" # Disable insecure mode.
+      OC_LOG_COLOR: "true" # Log in color.
+      OC_LOG_LEVEL: "info" # Log at the info level.
+      OC_LOG_PRETTY: "true" # Use pretty logs.
+      OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false" # Allow passwordless read-only shares.
+      OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true" # Require passwords for read-write shares.
       OC_URL: "https://${OPENCLOUD_URL}"
-      PROXY_TLS: "false"
-      TZ: "${TZ}"
+      PROXY_TLS: "false" # Do not proxy internal services; keep off for reverse proxy support.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
       - 9200/tcp
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - opencloud-config:/etc/opencloud
       - opencloud-data:/var/lib/opencloud
@@ -50,7 +51,9 @@ services:
           cpus: 4
           memory: 4G
     healthcheck:
+      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
+      timeout: 5s
     security_opt:
       - no-new-privileges:true
 

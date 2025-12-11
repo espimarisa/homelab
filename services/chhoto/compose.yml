@@ -1,25 +1,27 @@
-###########################################################################
-# Chhoto URL: URL shortener - https://github.com/sintan1729/chhoto-url    #
-###########################################################################
+#################################################################################
+# Chhoto URL: URL forwarder and shortener.                                    #
+# https://github.com/sintan1729/chhoto-url                                    #
+#################################################################################
 
 ---
 services:
   chhoto:
     image: ghcr.io/sintan1729/chhoto-url:6-alpine
     container_name: chhoto
+    env_file: ../../.env
     hostname: chhoto
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      api_key: "${CHHOTO_API_KEY}"
-      db_url: "/db/urls.sqlite"
-      ensure_acid: "True"
-      password: "${CHHOTO_PASSWORD}"
-      site_url: https://${CHHOTO_URL}
-      slug_style: "Pair"
-      TZ: "${TZ}"
-      use_wal_mode: "True"
+      api_key: "${CHHOTO_API_KEY}" # openssl rand -hex 32
+      db_url: "/db/urls.sqlite" # Store database in /db/urls.sqlite.
+      ensure_acid: "True" # Ensures ACID compliance.
+      password: "${CHHOTO_PASSWORD}" # Administrator password to set.
+      site_url: https://${CHHOTO_URL} # URL to use.
+      slug_style: "Pair" # Use paired slug styling.
+      TZ: "${TZ}" # Sets the timezone.
+      use_wal_mode: "True" # Use WAL mode for SQLite.
     expose:
       - 4567/tcp
     networks:
@@ -36,7 +38,9 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
+      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4567/api/whoami || exit 1"
+      timeout: 5s
 
 networks:
   external:

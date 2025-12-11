@@ -1,0 +1,49 @@
+---
+services:
+  huntarr:
+    image: ghcr.io/plexguide/huntarr:latest
+    container_name: huntarr
+    env_file: ../../.env
+    hostname: huntarr
+    user: "${PUID}:${PGID}"
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+    expose:
+      - 9705/tcp
+    networks:
+      - external
+      - gluetun
+    volumes:
+      - huntarr:/config
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    healthcheck:
+      interval: 1m
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
+      timeout: 5s
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+
+volumes:
+  huntarr:
+    name: huntarr-volume
+    external: true

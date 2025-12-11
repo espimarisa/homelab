@@ -1,20 +1,22 @@
-###########################################################################
-# Dozzle: Docker log viewer - https://dozzle.dev/                         #
-###########################################################################
+#################################################################################
+# Dozzle: Docker log viewer.                                                  #
+# https://dozzle.dev/                                                         #
+#################################################################################
 
 ---
 services:
   dozzle:
     image: ghcr.io/amir20/dozzle:v8
     container_name: dozzle
+    env_file: ../../.env
     hostname: dozzle
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      DOZZLE_ENABLE_ACTIONS: "true"
-      DOZZLE_ENABLE_SHELL: "true"
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to the socket proxy.
+      DOZZLE_ENABLE_ACTIONS: "true" # Enables container actions.
+      DOZZLE_ENABLE_SHELL: "true" # Enables entering container shells.
     expose:
       - 8080/tcp
     networks:
@@ -35,7 +37,9 @@ services:
           cpus: 0.25
           memory: 256M
     healthcheck:
-      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 1m
+      test: "./dozzle healthcheck || exit 1"
+      timeout: 5s
     security_opt:
       - no-new-privileges:true
 

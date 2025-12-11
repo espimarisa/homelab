@@ -1,26 +1,28 @@
-###########################################################################
-# Jellyfin: Media Server - https://jellyfin.org                           #
-###########################################################################
+#################################################################################
+# Jellyfin: Home media server.                                                #
+# https://jellyfin.org/docs/                                                  #
+#################################################################################
 
 ---
 services:
   jellyfin:
     image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
+    env_file: ../../.env
     hostname: jellyfin
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri:/dev/dri # Video device passthrough for encoding.
     environment:
-      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}"
+      JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:
       - 8096/tcp
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - jellyfin-cache:/cache
@@ -28,17 +30,19 @@ services:
       - media-library:/library:ro
     cap_drop:
       - ALL
-    security_opt:
-      - no-new-privileges:true
     deploy:
       resources:
         limits:
           cpus: 4
           memory: 8G
     group_add:
-      - "${RENDER_PGID}"
+      - "${RENDER_PGID}" # Required for video rendering.
     healthcheck:
+      interval: 1m
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8096/health || exit 1"
+      timeout: 5s
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   external:

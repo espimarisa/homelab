@@ -1,0 +1,99 @@
+#################################################################################
+# Lidarr: Music manager, organizer, and PVR.                                  #
+# https://lidarr.audio/                                                       #
+#################################################################################
+
+---
+x-defaults: &defaults
+  env_file: ../../.env
+  restart: unless-stopped
+  cap_drop:
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  lidarr:
+    <<: *defaults
+    image: ghcr.io/hotio/lidarr:pr-plugins
+    container_name: lidarr
+    hostname: lidarr
+    ports:
+      - 8686:8686/tcp
+    networks:
+      external:
+      gluetun:
+        ipv4_address: 172.19.1.20
+      internal:
+    volumes:
+      - downloads:/downloads
+      - media-library:/library
+      - lidarr:/config
+    depends_on:
+      lidarr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 4
+          memory: 8G
+    healthcheck:
+      interval: 1m
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
+      timeout: 5s
+
+  lidarr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:18
+    container_name: lidarr-db
+    hostname: lidarr-db
+    read_only: true
+    shm_size: 256MB
+    environment:
+      POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}" # Sets the password.
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - internal
+    tmpfs:
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
+    volumes:
+      - lidarr-db-config:/postgres/etc
+      - lidarr-db-data:/postgres/var
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+
+volumes:
+  lidarr:
+    name: lidarr-volume
+    external: true
+  lidarr-db-config:
+    name: lidarr-db-config-volume
+    external: true
+  lidarr-db-data:
+    name: lidarr-db-data-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

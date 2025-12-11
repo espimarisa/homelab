@@ -1,25 +1,28 @@
+#################################################################################
+# Backrest: Web UI and orchestrator for Restic backups.                       #
+# https://garethgeorge.github.io/backrest/introduction/getting-started/       #
+#################################################################################
+
 ---
 services:
-  ###########################################################################
-  # Backrest: Web UI and orchestrator for restic backup.                    #
-  ###########################################################################
-
   backrest:
     image: garethgeorge/backrest:v1
     container_name: backrest
-    restart: unless-stopped
+    env_file: ../../.env
     hostname: backrest
+    restart: unless-stopped
     environment:
-      BACKREST_CONFIG: "/config/config.json"
-      BACKREST_DATA: "/data"
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      TMPDIR: "/tmp"
-      TZ: "${TZ}"
-      XDG_CACHE_HOME: "/cache"
+      BACKREST_CONFIG: "/config/config.json" # Sets the config file path.
+      BACKREST_DATA: "/data" # Sets the config data path.
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket-proxy.
+      TMPDIR: "/tmp" # Use /tmp for temporary files.
+      TZ: "${TZ}" # Sets the timezone.
+      XDG_CACHE_HOME: "/cache" # Use /cache for cached files.
     expose:
       - 9898/tcp
     networks:
       - external
+      - internal
     volumes:
       - backrest-cache:/cache
       - backrest-config:/config
@@ -44,13 +47,18 @@ services:
           cpus: 4
           memory: 4G
     healthcheck:
+      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9898 || exit 1"
+      timeout: 5s
     security_opt:
       - no-new-privileges:true
 
 networks:
   external:
     name: external-network
+    external: true
+  internal:
+    name: internal-network
     external: true
 
 volumes:

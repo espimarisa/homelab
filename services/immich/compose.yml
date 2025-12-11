@@ -1,20 +1,14 @@
-###########################################################################
-# Immich: Self-hosted photo management system - https://immich.app/       #
-###########################################################################
+#################################################################################
+# Immich: Self-hosted photo manager and organizer.                            #
+# https://immich.app/                                                         #
+#################################################################################
 
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   restart: unless-stopped
-  environment:
-    TZ: "${TZ}"
   cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SETFCAP
-    - SETPCAP
-    - SYS_ADMIN
-    - SYS_CHROOT
-    - SYS_PTRACE
+    - ALL
   security_opt:
     - no-new-privileges:true
 
@@ -23,32 +17,25 @@ services:
     <<: *defaults
     image: ghcr.io/immich-app/immich-server:v2
     container_name: immich-server
-    user: "${PUID}:${PGID}"
     read_only: true
+    user: "${PUID}:${PGID}"
     environment:
-      DB_DATABASE_NAME: "immich"
-      DB_HOSTNAME: "immich-db"
-      DB_PASSWORD: "${IMMICH_DB_PASSWORD}"
-      DB_PORT: "5432"
-      DB_STORAGE_TYPE: "HDD"
-      DB_USERNAME: "postgres"
-      IMMICH_MACHINE_LEARNING_URL: "http://immich-ml:3003"
-      REDIS_DBINDEX: "0"
-      REDIS_HOSTNAME: "immich-cache"
-      REDIS_PORT: "6379"
-      UPLOAD_LOCATION: "/library"
+      REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
+      DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connects to PostgreSQL.
+      IMMICH_MACHINE_LEARNING_URL: "http://immich-ml:3003" # Connect to immich-ml for ML.
+      REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache for Redis.
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
-    ports:
-      - 2283:2283/tcp
-    tmpfs:
-      - /tmp:mode=1777,uid=${PUID},gid=${PGID}
-      - /run:mode=1777,uid=${PUID},gid=${PGID}
-      - /usr/src/app/.config:mode=1777,uid=${PUID},gid=${PGID}
-      - /usr/src/app/.npm:mode=1777,uid=${PUID},gid=${PGID}
+      - /dev/dri:/dev/dri # Video device passthrough for transcoding.
+    expose:
+      - 2283/tcp
     networks:
-      - internal
       - external
+      - internal
+    tmpfs:
+      - /run:mode=1777,uid=${PUID},gid=${PGID}
+      - /tmp:mode=1777,uid=${PUID},gid=${PGID}
+      - /usr/src/app/.npm:mode=1777,uid=${PUID},gid=${PGID}
+      - /usr/src/app/.config:mode=1777,uid=${PUID},gid=${PGID}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - immich-data:/data
@@ -68,17 +55,22 @@ services:
           cpus: 4
           memory: 8G
     group_add:
-      - "${RENDER_PGID}"
+      - "${RENDER_PGID}" # Required for video transcoding.
 
   immich-ml:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v2-openvino
+    image: ghcr.io/immich-app/immich-machine-learning:v2-openvino # https://docs.immich.app/features/ml-hardware-acceleration
     container_name: immich-ml
+    read_only: true
+    devices:
+      - /dev/dri:/dev/dri # Video device passthrough for transcoding.
     networks:
       - internal
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
+    tmpfs:
+      - /tmp:mode=1777,uid=${PUID},gid=${PGID}
+      - /config:mode=1777,uid=${PUID},gid=${PGID}
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - immich-ml-cache:/cache
     deploy:
       resources:
@@ -86,21 +78,23 @@ services:
           cpus: 4
           memory: 8G
     group_add:
-      - "${RENDER_PGID}"
+      - "${RENDER_PGID}" # Required for video transcoding.
 
   immich-cache:
     <<: *defaults
-    image: ghcr.io/valkey-io/valkey:9-alpine
+    image: ghcr.io/11notes/redis:8
     read_only: true
     container_name: immich-cache
+    environment:
+      REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the Redis password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
-    volumes:
-      - immich-cache:/data
     tmpfs:
-      - /tmp
-    healthcheck:
-      test: "redis-cli ping || exit 1"
+      - /tmp:mode=1777,uid=1000,gid=1000
+    volumes:
+      - immich-cache-config:/redis/etc
+      - immich-cache-data:/redis/var
     deploy:
       resources:
         limits:
@@ -111,18 +105,31 @@ services:
     <<: *defaults
     image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3
     container_name: immich-db
+    read_only: true
     shm_size: 256MB
     environment:
-      DB_STORAGE_TYPE: "HDD"
-      POSTGRES_DB: "immich"
-      POSTGRES_INITDB_ARGS: "--data-checksums"
-      POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}"
-      POSTGRES_USER: "postgres"
-      TZ: "${TZ}"
+      DB_STORAGE_TYPE: "HDD" # HDD or SSD; enables optimizations.
+      POSTGRES_DB: "immich" # Use the immich database.
+      POSTGRES_INITDB_ARGS: "--data-checksums" # Start with --data-checksums.
+      POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}" # Sets the password.
+      POSTGRES_USER: "postgres" # Use the Postgres user.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
+    tmpfs:
+      - /etc/postgresql:mode=1777
+      - /run:mode=1777
+      - /tmp:mode=1777
     volumes:
       - immich-db:/var/lib/postgresql
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     deploy:
       resources:
         limits:
@@ -138,8 +145,11 @@ networks:
     name: internal-network
 
 volumes:
-  immich-cache:
-    name: immich-cache-volume
+  immich-cache-config:
+    name: immich-cache-config-volume
+    external: true
+  immich-cache-data:
+    name: immich-cache-data-volume
     external: true
   immich-db:
     name: immich-db-volume

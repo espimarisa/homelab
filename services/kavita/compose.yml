@@ -1,19 +1,21 @@
+#################################################################################
+# Kavita: eBook/Comic/Manga media server.                                     #
+# https://wiki.kavitareader.com/                                              #
+#################################################################################
+
 ---
 services:
-  ###########################################################################
-  # Kavita: eBook/Comic/Manga media server - https://kavitareader.com  #
-  ###########################################################################
-
   kavita:
     image: lscr.io/linuxserver/kavita:0.8.8
     container_name: kavita
+    env_file: ../../.env
     hostname: kavita
     restart: unless-stopped
     environment:
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      TZ: "${TZ}"
-      UMASK: "${UMASK}"
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      TZ: "${TZ}" # Sets the timezone.
+      UMASK: "${UMASK}" # Umask to apply to newly created files.
     expose:
       - 5000/tcp
     networks:
@@ -35,7 +37,9 @@ services:
           cpus: 1
           memory: 1G
     healthcheck:
+      interval: 1m
       test: "curl --fail --retry 0 --silent http://127.0.0.1:5000 || exit 1"
+      timeout: 5s
     security_opt:
       - no-new-privileges:true
 

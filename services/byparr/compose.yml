@@ -1,20 +1,18 @@
 #################################################################################
-# MaM-IP-Helper: MyAnonaMouse dynamic seedbox IP synchronization tool.        #
-# https://github.com/tyzen9/docker-myanonamouse-ip-helper                     #
+# Byparr: Captcha solver and cookie scraper. Alternative to Flaresolverr.     #
+# https://github.com/ThePhaseless/Byparr                                      #
 #################################################################################
 
 ---
 services:
-  mam-ip-helper:
-    image: tyzen9/myanonamouse-ip-helper:1.0.0
-    container_name: mam-ip-helper
+  byparr:
+    image: ghcr.io/thephaseless/byparr:main
+    container_name: byparr
     env_file: ../../.env
     network_mode: service:gluetun
-    read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      MAM_ID: "${MAM_ID}" # https://www.myanonamouse.net/preferences/index.php?view=security
       TZ: "${TZ}" # Sets the timezone.
     cap_drop:
       - ALL
@@ -25,7 +23,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 64M
+          cpus: 1
+          memory: 1G
     security_opt:
       - no-new-privileges:true

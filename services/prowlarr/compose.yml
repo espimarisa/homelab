@@ -1,0 +1,79 @@
+#################################################################################
+# Prowlarr: Indexer manager and synchronization for 'ARR apps.                #
+# https://prowlarr.com/                                                       #
+#################################################################################
+
+---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  prowlarr:
+    <<: *defaults
+    image: ghcr.io/11notes/prowlarr:2
+    container_name: prowlarr
+    network_mode: service:gluetun
+    volumes:
+      - prowlarr:/prowlarr/etc
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      prowlarr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2G
+    healthcheck:
+      interval: 1m
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
+      timeout: 5s
+
+  prowlarr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:18
+    container_name: prowlarr-db
+    hostname: prowlarr-db
+    shm_size: 256MB
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Sets the database password.
+    networks:
+      gluetun:
+        ipv4_address: 172.19.1.30
+    tmpfs:
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
+    volumes:
+      - prowlarr-db-config:/postgres/etc
+      - prowlarr-db-data:/postgres/var
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+
+networks:
+  gluetun:
+    external: true
+    name: gluetun-network
+
+volumes:
+  prowlarr:
+    name: prowlarr-volume
+    external: true
+  prowlarr-db-config:
+    name: prowlarr-db-config-volume
+    external: true
+  prowlarr-db-data:
+    name: prowlarr-db-data-volume
+    external: true

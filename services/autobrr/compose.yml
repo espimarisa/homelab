@@ -1,9 +1,11 @@
-###########################################################################
-# autobrr: Download automation and ratio manager - https://autobrr.com    #
-###########################################################################
+#################################################################################
+# Autobrr: Download automation tool and ratio manager.                        #
+# https://autobrr.com/introduction                                            #
+#################################################################################
 
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
@@ -19,20 +21,20 @@ services:
     network_mode: service:gluetun
     user: "${PUID}:${PGID}"
     environment:
-      AUTOBRR__CHECK_FOR_UPDATES: "false"
-      AUTOBRR__DATABASE_TYPE: "postgres"
-      AUTOBRR__HOST: "0.0.0.0"
-      AUTOBRR__LOG_LEVEL: "info"
-      AUTOBRR__LOG_MAX_SIZE: "10"
-      AUTOBRR__LOG_PATH: "/logs/autobrr.log"
-      AUTOBRR__POSTGRES_DATABASE: "postgres"
-      AUTOBRR__POSTGRES_HOST: "172.19.1.31"
-      AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}"
-      AUTOBRR__POSTGRES_PORT: "5432"
-      AUTOBRR__POSTGRES_USER: "postgres"
-      TZ: "${TZ}"
+      AUTOBRR__CHECK_FOR_UPDATES: "false" # Do not check for updates.
+      AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
+      AUTOBRR__HOST: "0.0.0.0" # Bind to 0.0.0.0.
+      AUTOBRR__LOG_LEVEL: "info" # Log at the info level.
+      AUTOBRR__LOG_MAX_SIZE: "10" # Keep log files until they reach 10mb.
+      AUTOBRR__LOG_PATH: "/logs/autobrr.log" # Sets the log file path.
+      AUTOBRR__POSTGRES_DATABASE: "postgres" # Use the Postgres database.
+      AUTOBRR__POSTGRES_HOST: "172.19.1.31" # Connect to the Gluetun-network'd database.
+      AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Database password to authenticate with.
+      AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
+      AUTOBRR__POSTGRES_USER: "postgres" # Use the postgres user.
+      TZ: "${TZ}" # Sets the timezone.
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - autobrr-data:/config
       - autobrr-logs:/logs
@@ -49,7 +51,9 @@ services:
           cpus: 1
           memory: 1G
     healthcheck:
+      interval: 1m
       test: "curl --fail --retry 0 --silent http://127.0.0.1:7474 || exit 1"
+      timeout: 5s
 
   autobrr-db:
     <<: *defaults
@@ -57,14 +61,14 @@ services:
     container_name: autobrr-db
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}" # Sets the password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       gluetun:
         ipv4_address: 172.19.1.31
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - autobrr-db-config:/postgres/etc
       - autobrr-db-data:/postgres/var

@@ -1,27 +1,29 @@
-###########################################################################
-# Socket Proxy: Proxy wrapper for the Docker socket for secure access.    #
-###########################################################################
+#################################################################################
+# Socket Proxy: Docker socket proxy for secure proxy access.                  #
+# https://docs.linuxserver.io/images/docker-socket-proxy/                     #
+#################################################################################
 
 ---
 services:
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:3.2.9
     container_name: socket-proxy
+    env_file: ../../.env
     hostname: socket-proxy
     read_only: true
     restart: unless-stopped
     environment:
-      ALLOW_RESTARTS: "1"
-      ALLOW_START: "1"
-      ALLOW_STOP: "1"
-      CONTAINERS: "1"
-      EVENTS: "1"
-      IMAGES: "1"
-      INFO: "1"
-      NETWORKS: "1"
-      PING: "1"
-      SERVICES: "1"
-      TZ: "${TZ}"
+      ALLOW_RESTARTS: "1" # Allows restarting containers.
+      ALLOW_START: "1" # Allows starting containers.
+      ALLOW_STOP: "1" # Allows stopping containers.
+      CONTAINERS: "1" # Allows access to the containers endpoint.
+      EVENTS: "1" # Allows access to the events endpoint.
+      IMAGES: "1" # Allows access to the images endpoint.
+      INFO: "1" # Allows access to the info endpoint.
+      NETWORKS: "1" # Allows access to the networks endpoint.
+      PING: "1" # Allows access to the ping endpoint.
+      SERVICES: "1" # Allows access to the services endpoint.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     volumes:
@@ -36,8 +38,10 @@ services:
           cpus: 0.25
           memory: 64M
     healthcheck:
-      interval: 10s
+      interval: 1m
+      start_interval: 10s
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:2375/_ping || exit 1"
+      timeout: 5s
     security_opt:
       - no-new-privileges:true
 

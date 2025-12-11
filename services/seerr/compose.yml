@@ -1,7 +1,12 @@
+#################################################################################
+# Seerr: Media request manager and discovery tool.                            #
+# https://docs.seerr.dev/                                                     #
+#################################################################################
+
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   restart: unless-stopped
-  user: "${PUID}:${PGID}"
   cap_drop:
     - AUDIT_WRITE
     - MKNOD
@@ -18,15 +23,15 @@ services:
     container_name: seerr
     hostname: seerr
     environment:
-      DB_HOST: "seerr-db"
-      DB_LOG_QUERIES: "true"
-      DB_NAME: "postgres"
-      DB_PASS: "${SEERR_DB_PASSWORD}"
-      DB_PORT: "5432"
-      DB_TYPE: "postgres"
-      DB_USE_SSL: "false"
-      DB_USER: "postgres"
-      TZ: "${TZ}"
+      DB_HOST: "seerr-db" # Connect to seerr-db.
+      DB_LOG_QUERIES: "true" # Log database queries.
+      DB_NAME: "postgres" # Use the Postgres database.
+      DB_PASS: "${SEERR_DB_PASSWORD}" # Sets the password.
+      DB_PORT: "5432" # Connect to port 5432.
+      DB_TYPE: "postgres" # Use PostgreSQL.
+      DB_USE_SSL: "false" # Do not use SSL.
+      DB_USER: "postgres" # Use the PostgreSQL user.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
       - 5055/tcp
     networks:
@@ -52,13 +57,13 @@ services:
     hostname: seerr-db
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${SEERR_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${SEERR_DB_PASSWORD}" # Sets the password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - seerr-db-config:/postgres/etc
       - seerr-db-data:/postgres/var

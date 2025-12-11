@@ -1,9 +1,11 @@
-###########################################################################
-# Homarr: Dashboard and homepage - https://homarr.dev/                    #
-###########################################################################
+#################################################################################
+# Homarr: Dashboard and homepage.                                             #
+# https://homarr.dev/docs/getting-started/installation/docker/                #
+#################################################################################
 
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -15,19 +17,15 @@ services:
     container_name: homarr
     hostname: homarr
     environment:
-      DB_DIALECT: "postgresql"
-      DB_DRIVER: "node-postgres"
-      DB_HOST: "homarr-db"
-      DB_NAME: "postgres"
-      DB_PASSWORD: "${HOMARR_DB_PASSWORD}"
-      DB_PORT: "5432"
-      DB_USER: "postgres"
-      DOCKER_HOSTNAMES: "socket-proxy"
-      DOCKER_PORTS: "2375"
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}"
-      TZ: "${TZ}"
+      DB_URL: "postgres://postgres:${HOMARR_DB_PASSWORD}@homarr-db:5432/postgres" # Connect to PostgreSQL.
+      DB_DIALECT: "postgresql" # Use PostgreSQL.
+      DB_DRIVER: "node-postgres" # Use PostgreSQL database driver.
+      DOCKER_HOSTNAMES: "socket-proxy" # Connect to the socket-proxy host.
+      DOCKER_PORTS: "2375" # Connect to the socket-proxy port.
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}" # openssl rand -hex 32
+      TZ: "${TZ}" # Sets the timezone.
     expose:
       - 7575/tcp
     networks:
@@ -55,26 +53,27 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 2G
+          memory: 1G
     healthcheck:
+      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
+      timeout: 5s
 
   homarr-db:
     <<: *defaults
     image: ghcr.io/11notes/postgres:18
     container_name: homarr-db
     hostname: homarr-db
-    user: "${PUID}:${PGID}"
     read_only: true
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets the password.
+      TZ: "${TZ}" # Timezone to set.
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - homarr-db-config:/postgres/etc
       - homarr-db-data:/postgres/var
@@ -106,7 +105,4 @@ volumes:
     external: true
   homarr-db-config:
     name: homarr-db-config-volume
-    external: true
-  homarr-db-backups:
-    name: homarr-db-backups-volume
     external: true

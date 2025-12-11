@@ -1,0 +1,97 @@
+#################################################################################
+# Sonarr: Series manager, organizer, and PVR.                                 #
+# https://sonarr.tv/                                                          #
+#################################################################################
+
+---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  sonarr:
+    <<: *defaults
+    image: ghcr.io/11notes/sonarr:4
+    container_name: sonarr
+    hostname: sonarr
+    networks:
+      external:
+      gluetun:
+        ipv4_address: 172.19.1.22
+      internal:
+    expose:
+      - 8989/tcp
+    volumes:
+      - downloads:/downloads
+      - media-library:/library
+      - sonarr:/sonarr/etc
+    depends_on:
+      sonarr-db:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      interval: 1m
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
+      timeout: 5s
+
+  sonarr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:18
+    container_name: sonarr-db
+    hostname: sonarr-db
+    shm_size: 256MB
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}" # Sets the database password.
+    networks:
+      - internal
+    tmpfs:
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
+    volumes:
+      - sonarr-db-config:/postgres/etc
+      - sonarr-db-data:/postgres/var
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  sonarr:
+    name: sonarr-volume
+    external: true
+  sonarr-db-config:
+    name: sonarr-db-config-volume
+    external: true
+  sonarr-db-data:
+    name: sonarr-db-data-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

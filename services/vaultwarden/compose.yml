@@ -1,12 +1,13 @@
-###########################################################################
-# Vaultwarden: Unofficial Bitwarden-compatible server.                    #
-###########################################################################
+#################################################################################
+# Vaultwarden: Self-hosted Bitwarden-compatible server.                       #
+# https://github.com/dani-garcia/vaultwarden/wiki                             #
+#################################################################################
 
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   restart: unless-stopped
   read_only: true
-  user: "${PUID}:${PGID}"
   cap_drop:
     - ALL
   security_opt:
@@ -18,55 +19,64 @@ services:
     image: ghcr.io/dani-garcia/vaultwarden:latest-alpine
     container_name: vaultwarden
     hostname: vaultwarden
+    user: "${PUID}:${PGID}"
     environment:
-      ADMIN_RATELIMIT_MAX_BURST: "3"
-      ADMIN_RATELIMIT_SECONDS: "300"
-      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
-      DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres"
-      DOMAIN: "https://${VAULTWARDEN_URL}"
-      EMAIL_CHANGE_ALLOWED: "true"
-      EMERGENCY_ACCESS_ALLOWED: "true"
-      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments"
-      IP_HEADER: "X-Forwarded-For"
-      LOGIN_RATELIMIT_MAX_BURST: "10"
-      LOGIN_RATELIMIT_SECONDS: "60"
-      PUSH_ENABLED: "true"
+      ADMIN_RATELIMIT_MAX_BURST: "3" # Sets the admin login ratelimit burst.
+      ADMIN_RATELIMIT_SECONDS: "300" # Sets the admin login.
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN} # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-admin-page#using-argon2
+      DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres" # Connects to PostgreSQL.
+      DOMAIN: "https://${VAULTWARDEN_URL}" # Sets the URL to use.
+      EMAIL_2FA_AUTO_FALLBACK: "true" # Use email for 2FA fallback.
+      EMAIL_2FA_ENFORCE_ON_VERIFIED_INVITE: "true" # Require email 2FA if no other options are set.
+      EMAIL_CHANGE_ALLOWED: "true" # Allow users to change their emails.
+      EMERGENCY_ACCESS_ALLOWED: "true" # Enables the emergency access feature.
+      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
+      EXTENDED_LOGGING: "true" # Enables extended logging.
+      IP_HEADER: "X-Forwarded-For" # Use X-Forwarded-For for IP identification.
+      LOG_LEVEL: "info" # Sets the log level.
+      LOG_TIMESTAMP_FORMAT: "%Y-%m-%d %H:%M:%S.%3f" # Logging timestamp format.
+      LOGIN_RATELIMIT_MAX_BURST: "10" # Sets the login ratelimit burst.
+      LOGIN_RATELIMIT_SECONDS: "60" # Sets the login ratelimit.
+      PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles push notification support.
       PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}"
       PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}"
-      REQUIRE_DEVICE_EMAIL: "true"
-      SENDS_ALLOWED: "true"
-      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}"
-      SIGNUPS_VERIFY: "true"
-      SMTP_FROM: "${SMTP_SENDER}"
-      SMTP_HOST: "${SMTP_HOST}"
-      SMTP_PASSWORD: "${SMTP_PASSWORD}"
-      SMTP_PORT: "${SMTP_PORT}"
-      SMTP_SECURITY: "${SMTP_SECURITY}"
-      SMTP_TIMEOUT: "15s"
-      SMTP_USERNAME: "${SMTP_USERNAME}"
-      TZ: "${TZ}"
-      WEB_VAULT_ENABLED: "true"
-      WEBSOCKET_ENABLED: "true"
+      REQUIRE_DEVICE_EMAIL: "true" # Require new devices to verify by email.
+      SENDS_ALLOWED: "true" # Enables send functionality.
+      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles signups.
+      SIGNUPS_VERIFY: "true" # Require new accounts to be verified.
+      SMTP_FROM: "${SMTP_SENDER}" # SMTP sender address.
+      SMTP_HOST: "${SMTP_HOST}" # SMTP server host.
+      SMTP_PASSWORD: "${SMTP_PASSWORD}" # SMTP server password.
+      SMTP_PORT: "${SMTP_PORT}" # SMTP server port.
+      SMTP_SECURITY: "${SMTP_SECURITY}" # SMTP server security type. starttls, force_tls, or off.
+      SMTP_TIMEOUT: "15s" # SMTP server timeout.
+      SMTP_USERNAME: "${SMTP_USERNAME}" # SMTP server username.
+      TRASH_AUTO_DELETE_DAYS: "30" # Wait 30 days before deleting items in the trash.
+      TZ: "${TZ}" # Sets the timezone.
+      WEB_VAULT_ENABLED: "true" # Enables the web vault.
+      WEBSOCKET_ENABLED: "true" # Enables websockets.
     expose:
       - 80/tcp
     networks:
       - external
       - internal
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - vaultwarden:/data
+    depends_on:
+      vaultwarden-db:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 512M
-    depends_on:
-      vaultwarden-db:
-        condition: service_healthy
-        restart: true
     healthcheck:
+      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:80/alive || exit 1"
+      timeout: 5s
 
   vaultwarden-db:
     <<: *defaults
@@ -75,15 +85,15 @@ services:
     hostname: vaultwarden-db
     shm_size: 256MB
     environment:
-      POSTGRES_BACKUP_RETENTION: "14"
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *"
-      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_BACKUP_RETENTION: "14" # Retain backups for 14 days.
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
+      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Database password to set.
+      TZ: "${TZ}" # Timezone to set.
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - vaultwarden-db-backups:/postgres/backup
       - vaultwarden-db-config:/postgres/etc

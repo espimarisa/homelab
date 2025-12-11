@@ -1,0 +1,98 @@
+#################################################################################
+# Radarr: Movie manager, organizer, and PVR.                                  #
+# https://radarr.video/                                                       #
+#################################################################################
+
+---
+x-defaults: &defaults
+  env_file: ../../.env
+  read_only: true
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  radarr:
+    <<: *defaults
+    image: ghcr.io/11notes/radarr:6
+    container_name: radarr
+    hostname: radarr
+    networks:
+      external:
+      gluetun:
+        ipv4_address: 172.19.1.21
+      internal:
+    expose:
+      - 7878/tcp
+    volumes:
+      - ./scripts:/scripts:ro
+      - downloads:/downloads
+      - media-library:/library
+      - radarr:/radarr/etc
+    depends_on:
+      radarr-db:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      interval: 1m
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
+      timeout: 5s
+
+  radarr-db:
+    <<: *defaults
+    image: ghcr.io/11notes/postgres:18
+    container_name: radarr-db
+    hostname: radarr-db
+    shm_size: 256MB
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_PASSWORD: "${RADARR_DB_PASSWORD}" # Sets the database password.
+    networks:
+      - internal
+    tmpfs:
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
+    volumes:
+      - radarr-db-config:/postgres/etc
+      - radarr-db-data:/postgres/var
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  radarr:
+    name: radarr-volume
+    external: true
+  radarr-db-config:
+    name: radarr-db-config-volume
+    external: true
+  radarr-db-data:
+    name: radarr-db-data-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

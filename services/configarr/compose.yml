@@ -1,0 +1,56 @@
+#################################################################################
+# Configarr: 'ARR profile synchronization and management service.             #
+# https://configarr.de/docs/configuration/config-file/                        #
+#################################################################################
+
+---
+services:
+  configarr:
+    image: ghcr.io/11notes/configarr:1
+    container_name: configarr
+    env_file: ../../.env
+    read_only: true
+    restart: unless-stopped
+    environment:
+      CONFIGARR_SCHEDULE: "0 6 * * *" # Synchronize every day at 6:00 AM.
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - external
+      - internal
+    tmpfs:
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
+    volumes:
+      - ./config:/configarr/etc
+      - configarr:/configarr/var
+    cap_drop:
+      - ALL
+    depends_on:
+      lidarr:
+        condition: service_healthy
+        restart: true
+      radarr:
+        condition: service_healthy
+        restart: true
+      sonarr:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  configarr:
+    name: configarr-volume
+    external: true

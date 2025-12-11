@@ -1,0 +1,64 @@
+#################################################################################
+# Unpackerr: Auto-extract compressed downloads.                               #
+# https://unpackerr.zip                                                       #
+#################################################################################
+
+---
+services:
+  unpackerr:
+    image: ghcr.io/hotio/unpackerr:release
+    container_name: unpackerr
+    env_file: ../../.env
+    hostname: unpackerr
+    restart: unless-stopped
+    networks:
+      - internal
+    volumes:
+      - unpackerr:/config
+      - downloads:/downloads
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
+      UN_RADARR_0_URL: "http://radarr:7878"
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}"
+      UN_SONARR_0_URL: "http://sonarr:8989"
+      UN_WEBSERVER_LISTEN_ADDR: "0.0.0.0:5656"
+      UN_WEBSERVER_METRICS: "true"
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 4
+          memory: 4G
+    healthcheck:
+      interval: 1m
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:5656 || exit 1"
+      timeout: 5s
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  internal:
+    name: internal-network
+    external: true
+
+volumes:
+  unpackerr:
+    name: unpackerr-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none

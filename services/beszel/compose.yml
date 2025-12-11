@@ -1,10 +1,11 @@
-###########################################################################
-# Beszel: Server monitoring hub - https://beszel.dev/                     #
-###########################################################################
+################################################################################
+# Beszel: Server monitoring agent and hub.                                     #
+# https://beszel.dev/guide/getting-started                                     #
+################################################################################
 
 ---
-# Default container options.
 x-defaults: &defaults
+  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   deploy:
@@ -23,7 +24,7 @@ services:
     hostname: beszel
     user: "${PUID}:${PGID}"
     environment:
-      APP_URL: "https://beszel.${INTERNAL_DOMAIN}"
+      APP_URL: "https://beszel.${INTERNAL_DOMAIN}" # Connect to beszel.${INTERNAL_DOMAIN}.
     ports:
       - 127.0.0.1:8090:8090/tcp
     networks:
@@ -36,35 +37,36 @@ services:
     cap_drop:
       - ALL
     healthcheck:
-      test: ["CMD", "/beszel", "health", "--url", "http://127.0.0.1:8090"]
+      interval: 1m
+      test: "/beszel health --url http://127.0.0.1:8090 || exit 1"
+      timeout: 5s
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
-
-  ###########################################################################
-  # Beszel Agent: Beszel agent for server monitoring.                       #
-  ###########################################################################
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent:0
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0 # -intel for Intel GPUs; ARC isn't supported yet?
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host
+    devices:
+      - /dev/dri:/dev/dri
     environment:
-      HUB_URL: "http://127.0.0.1:8090"
-      KEY: "${BESZEL_KEY}"
-      LISTEN: "0.0.0.0:45876"
-      TOKEN: "${BESZEL_TOKEN}"
+      HUB_URL: "http://127.0.0.1:8090" # Use the local hub.
+      KEY: "${BESZEL_KEY}" # Beszel hub key to use; set post-install.
+      LISTEN: "0.0.0.0:45876" # Listen on 0.0.0.0:45876.
+      TOKEN: "${BESZEL_TOKEN}" # Beszel hub token to use; set post-install.
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # path to downloads disk
-      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # path to storage disk
+      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # Replace sda with the downloads-incomplete disk name.
+      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Replace bcache0 with the storage disk name.
+      - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdd:ro # Replace sdd with the storage disk name.
       - beszel-agent:/var/lib/beszel-agent
       - beszel-socket:/beszel_socket
     cap_add:
-      - PERFMON
-      - SYS_ADMIN
+      - PERFMON # Required for future GPU monitoring.
+      - SYS_ADMIN # Required for future GPU monitoring.
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -78,9 +80,11 @@ services:
         condition: service_healthy
         restart: true
     healthcheck:
-      test: ["CMD", "/agent", "health"]
+      interval: 1m
+      test: "/agent health || exit 1"
+      timeout: 5s
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
 
 networks:
   external:

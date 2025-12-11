@@ -1,12 +1,12 @@
-###########################################################################
-# Gatus: Status page and uptime monitoring - https://gatus.io             #
-###########################################################################
+#################################################################################
+# Gatus: Status page and uptime monitoring.                                   #
+# https://gatus.io                                                            #
+#################################################################################
 
 ---
 x-defaults: &defaults
   read_only: true
   restart: unless-stopped
-  user: "${PUID}:${PGID}"
   cap_drop:
     - ALL
   deploy:
@@ -24,12 +24,13 @@ services:
     container_name: gatus
     hostname: gatus
     env_file: ../../.env
+    user: "${PUID}:${PGID}"
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}"
-      GATUS_URL: "${GATUS_URL}"
-      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/"
-      TZ: "${TZ}"
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Database password to authenticate with.
+      GATUS_URL: "${GATUS_URL}" # External URL to use.
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Docker socket proxy base URL.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
       - 8080/tcp
     networks:
@@ -52,13 +53,13 @@ services:
     hostname: gatus-db
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}"
-      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=${PUID},gid=${PGID}"
-      - "/postgres/run:uid=${PUID},gid=${PGID}"
+      - "/postgres/log:mode=1777,uid=${PUID},gid=${PGID}"
+      - "/postgres/run:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - gatus-db-config:/postgres/etc
       - gatus-db-data:/postgres/var
@@ -70,13 +71,11 @@ networks:
   internal:
     external: true
     name: internal-network
+
 volumes:
   gatus-db-config:
     name: gatus-db-config-volume
     external: true
   gatus-db-data:
     name: gatus-db-data-volume
-    external: true
-  gatus-db-backups:
-    name: gatus-db-backups-volume
     external: true

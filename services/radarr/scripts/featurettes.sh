@@ -3,11 +3,11 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-###############################################################################
+#################################################################################
 # This script scans for a "Featurettes" folder alongside a movie file and     #
 # copies it to the movie's final destination folder in the library.           #
 # Configure Radarr to run this script on import.                              #
-###############################################################################
+#################################################################################
 
 echo "=== Running Radarr Featurettes Importer ==="
 # shellcheck disable=SC2154

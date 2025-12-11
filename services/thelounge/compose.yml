@@ -1,24 +1,26 @@
-###########################################################################
-# The Lounge: Web-based IRC client - https://thelounge.chat               #
-###########################################################################
+#################################################################################
+# The Lounge: Web-based IRC client.                                           #
+# https://thelounge.chat                                                      #
+#################################################################################
 
 ---
 services:
   thelounge:
     image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
+    env_file: ../../.env
     hostname: thelounge
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
     expose:
       - 9000/tcp
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
     volumes:
       - thelounge:/var/opt/thelounge
     cap_drop:
@@ -29,7 +31,9 @@ services:
           cpus: 0.5
           memory: 256M
     healthcheck:
+      interval: 1m
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9000 || exit 1"
+      timeout: 3s
     security_opt:
       - no-new-privileges:true
 
