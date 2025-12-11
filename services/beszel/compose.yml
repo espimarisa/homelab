@@ -37,9 +37,7 @@ services:
     cap_drop:
       - ALL
     healthcheck:
-      interval: 1m
       test: "/beszel health --url http://127.0.0.1:8090 || exit 1"
-      timeout: 5s
     tmpfs:
       - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
 
@@ -80,9 +78,7 @@ services:
         condition: service_healthy
         restart: true
     healthcheck:
-      interval: 1m
       test: "/agent health || exit 1"
-      timeout: 5s
     tmpfs:
       - "/tmp:mode=1777,uid=${PUID},gid=${PGID}"
 
