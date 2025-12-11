@@ -163,7 +163,6 @@ readonly CHOWN_VOLUMES=(
 	"huntarr-volume"
 	"immich-cache-config-volume"
 	"immich-cache-data-volume"
-	"immich-cache-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"navidrome-cache-volume"
