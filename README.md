@@ -32,7 +32,6 @@ Compose setups, configuration files, and scripts taken from my homelab setup.
 - The Lounge
 - Unpackerr
 - Vaultwarden
-- Watchtower
 
 ## License
 

@@ -1,10 +1,16 @@
+###############################################################################
+# Huntarr: Automatic scanner for missing 'ARR content.                        #
+# https://plexguide.github.io/Huntarr.io/                                     #
+###############################################################################
+
 ---
 services:
   huntarr:
-    image: ghcr.io/plexguide/huntarr:latest
+    image: ghcr.io/plexguide/huntarr:8.2.10
     container_name: huntarr
     env_file: ../../.env
     hostname: huntarr
+    read_only: true
     user: "${PUID}:${PGID}"
     environment:
       TZ: "${TZ}" # Sets the timezone.
@@ -13,8 +19,11 @@ services:
     networks:
       - external
       - gluetun
+    tmpfs:
+      - "/.config:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - huntarr:/config
+      - huntarr:/config:rw
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -26,8 +35,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 4G
+          cpus: 1
+          memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 256M
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
     security_opt:

@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # Configarr: 'ARR profile synchronization and management service.             #
 # https://configarr.de/docs/configuration/config-file/                        #
-#################################################################################
+###############################################################################
 
 ---
 services:
   configarr:
-    image: ghcr.io/11notes/configarr:1
+    image: ghcr.io/11notes/configarr:1.17.2
     container_name: configarr
     env_file: ../../.env
     read_only: true
@@ -18,27 +18,30 @@ services:
       - external
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000,exec"
+      - "/tmp:uid=1000,gid=1000"
     volumes:
-      - ./config:/configarr/etc
-      - configarr:/configarr/var
+      - ./config:/configarr/etc:rw
+      - configarr:/configarr/var:rw
     cap_drop:
       - ALL
     depends_on:
       lidarr:
-        condition: service_started
+        condition: service_healthy
         restart: true
       radarr:
-        condition: service_started
+        condition: service_healthy
         restart: true
       sonarr:
-        condition: service_started
+        condition: service_healthy
         restart: true
     deploy:
       resources:
         limits:
           cpus: 0.25
           memory: 128M
+        reservations:
+          cpus: 0.15
+          memory: 32M
     security_opt:
       - no-new-privileges:true
 

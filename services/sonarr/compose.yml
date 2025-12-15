@@ -1,15 +1,13 @@
-#################################################################################
+###############################################################################
 # Sonarr: Series manager, organizer, and PVR.                                 #
 # https://sonarr.tv/                                                          #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
   env_file: ../../.env
   read_only: true
   restart: unless-stopped
-  cap_add:
-    - CHOWN
   cap_drop:
     - ALL
   security_opt:
@@ -18,22 +16,21 @@ x-defaults: &defaults
 services:
   sonarr:
     <<: *defaults
-    image: ghcr.io/11notes/sonarr:4
+    image: ghcr.io/11notes/sonarr:4.0.16
     container_name: sonarr
     hostname: sonarr
     networks:
-      external:
-      gluetun:
-        ipv4_address: 172.19.1.22
-      internal:
+      - external
+      - gluetun
+      - internal
     expose:
       - 8989/tcp
     tmpfs:
-      - "/tmp:uid=1000,gid=1000,exec"
+      - "/tmp:uid=1000,gid=1000"
     volumes:
-      - downloads:/downloads
-      - media-library:/library
-      - sonarr:/sonarr/etc
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - sonarr:/sonarr/etc:rw
     depends_on:
       sonarr-db:
         condition: service_healthy
@@ -43,6 +40,9 @@ services:
         limits:
           cpus: 2
           memory: 4G
+        reservations:
+          cpus: 0.25
+          memory: 512M
 
   sonarr-db:
     <<: *defaults
@@ -56,16 +56,19 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - sonarr-db-config:/postgres/etc
-      - sonarr-db-data:/postgres/var
+      - sonarr-db-config:/postgres/etc:rw
+      - sonarr-db-data:/postgres/var:rw
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256M
 
 networks:
   external:

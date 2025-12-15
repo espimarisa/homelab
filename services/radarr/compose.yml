@@ -1,15 +1,13 @@
-#################################################################################
+###############################################################################
 # Radarr: Movie manager, organizer, and PVR.                                  #
 # https://radarr.video/                                                       #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
   env_file: ../../.env
   read_only: true
   restart: unless-stopped
-  cap_add:
-    - CHOWN
   cap_drop:
     - ALL
   security_opt:
@@ -18,23 +16,22 @@ x-defaults: &defaults
 services:
   radarr:
     <<: *defaults
-    image: ghcr.io/11notes/radarr:6
+    image: ghcr.io/11notes/radarr:6.0.4
     container_name: radarr
     hostname: radarr
     networks:
-      external:
-      gluetun:
-        ipv4_address: 172.19.1.21
-      internal:
+      - external
+      - gluetun
+      - internal
     expose:
       - 7878/tcp
     tmpfs:
-      - "/tmp:uid=1000,gid=1000,exec"
+      - "/tmp:uid=1000,gid=1000"
     volumes:
       - ./scripts:/scripts:ro
-      - downloads:/downloads
-      - media-library:/library
-      - radarr:/radarr/etc
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - radarr:/radarr/etc:rw
     depends_on:
       radarr-db:
         condition: service_healthy
@@ -44,6 +41,9 @@ services:
         limits:
           cpus: 2
           memory: 4G
+        reservations:
+          cpus: 0.25
+          memory: 512M
 
   radarr-db:
     <<: *defaults
@@ -57,16 +57,19 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - radarr-db-config:/postgres/etc
-      - radarr-db-data:/postgres/var
+      - radarr-db-config:/postgres/etc:rw
+      - radarr-db-data:/postgres/var:rw
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256M
 
 networks:
   external:

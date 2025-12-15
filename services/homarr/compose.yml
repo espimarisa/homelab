@@ -1,21 +1,16 @@
-#################################################################################
+###############################################################################
 # Homarr: Dashboard and homepage.                                             #
 # https://homarr.dev/docs/getting-started/installation/docker/                #
-#################################################################################
+###############################################################################
 
 ---
-x-defaults: &defaults
-  env_file: ../../.env
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-
 services:
   homarr:
-    <<: *defaults
-    image: ghcr.io/homarr-labs/homarr:latest
+    image: ghcr.io/homarr-labs/homarr:v1.46.0
     container_name: homarr
+    env_file: ../../.env
     hostname: homarr
+    restart: unless-stopped
     environment:
       DB_URL: "postgres://postgres:${HOMARR_DB_PASSWORD}@homarr-db:5432/postgres" # Connect to PostgreSQL.
       DB_DIALECT: "postgresql" # Use PostgreSQL.
@@ -33,7 +28,7 @@ services:
       - gluetun
       - internal
     volumes:
-      - homarr:/appdata
+      - homarr:/appdata:rw
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -54,15 +49,21 @@ services:
         limits:
           cpus: 1
           memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 512M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
+    security_opt:
+      - no-new-privileges:true
 
   homarr-db:
-    <<: *defaults
     image: ghcr.io/11notes/postgres:18
     container_name: homarr-db
+    env_file: ../../.env
     hostname: homarr-db
     read_only: true
+    restart: unless-stopped
     shm_size: 256MB
     environment:
       POSTGRES_PASSWORD: "${HOMARR_DB_PASSWORD}" # Sets the password.
@@ -70,18 +71,23 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - homarr-db-config:/postgres/etc
-      - homarr-db-data:/postgres/var
+      - homarr-db-config:/postgres/etc:rw
+      - homarr-db-data:/postgres/var:rw
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
-          cpus: 1
+          cpus: 0.5
           memory: 256M
+        reservations:
+          cpus: 0.15
+          memory: 64M
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   external:
@@ -98,9 +104,9 @@ volumes:
   homarr:
     name: homarr-volume
     external: true
-  homarr-db-data:
-    name: homarr-db-data-volume
-    external: true
   homarr-db-config:
     name: homarr-db-config-volume
+    external: true
+  homarr-db-data:
+    name: homarr-db-data-volume
     external: true

@@ -1,40 +1,34 @@
-#################################################################################
+###############################################################################
 # Lidarr: Music manager, organizer, and PVR.                                  #
 # https://lidarr.audio/                                                       #
-#################################################################################
+###############################################################################
 
 ---
-x-defaults: &defaults
-  env_file: ../../.env
-  restart: unless-stopped
-  cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SETFCAP
-    - SETPCAP
-    - SYS_ADMIN
-    - SYS_CHROOT
-    - SYS_PTRACE
-  security_opt:
-    - no-new-privileges:true
-
 services:
   lidarr:
-    <<: *defaults
-    image: ghcr.io/hotio/lidarr:pr-plugins
+    image: ghcr.io/hotio/lidarr:pr-plugins-3.1.1.4884
     container_name: lidarr
+    env_file: ../../.env
     hostname: lidarr
-    ports:
-      - 8686:8686/tcp
+    restart: unless-stopped
+    expose:
+      - 8686/tcp
     networks:
-      external:
-      gluetun:
-        ipv4_address: 172.19.1.20
-      internal:
+      - external
+      - gluetun
+      - internal
     volumes:
-      - downloads:/downloads
-      - media-library:/library
-      - lidarr:/config
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - lidarr:/config:rw
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       lidarr-db:
         condition: service_healthy
@@ -42,17 +36,23 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 8G
+          cpus: 2
+          memory: 4G
+        reservations:
+          cpus: 0.25
+          memory: 512M
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/ping || exit 1"
+    security_opt:
+      - no-new-privileges:true
 
   lidarr-db:
-    <<: *defaults
     image: ghcr.io/11notes/postgres:18
     container_name: lidarr-db
+    env_file: ../../.env
     hostname: lidarr-db
     read_only: true
+    restart: unless-stopped
     shm_size: 256MB
     environment:
       POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}" # Sets the password.
@@ -60,11 +60,11 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - lidarr-db-config:/postgres/etc
-      - lidarr-db-data:/postgres/var
+      - lidarr-db-config:/postgres/etc:rw
+      - lidarr-db-data:/postgres/var:rw
     cap_drop:
       - ALL
     deploy:
@@ -72,6 +72,11 @@ services:
         limits:
           cpus: 1
           memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   lidarr:

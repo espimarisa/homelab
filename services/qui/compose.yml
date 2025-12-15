@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # qui: Alternative web interface for qBittorrent.                             #
 # https://github.com/autobrr/qui                                              #
-#################################################################################
+###############################################################################
 
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.9
+    image: ghcr.io/autobrr/qui:v1.9.1
     container_name: qui
     env_file: ../../.env
     network_mode: service:gluetun
@@ -14,13 +14,9 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      QUI__PORT: "7476"
-      QUI__LOG_PATH: "/logs/qui.log"
-      QUI__SESSION_SECRET: "${QUI_SESSION_SECRET}"
       TZ: "${TZ}"
     volumes:
-      - qui-config:/config
-      - qui-logs:/logs
+      - qui:/config
     cap_drop:
       - ALL
     depends_on:
@@ -34,14 +30,14 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1G
+          memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256MB
     security_opt:
       - no-new-privileges:true
 
 volumes:
-  qui-config:
-    name: qui-config-volume
-    external: true
-  qui-logs:
-    name: qui-logs-volume
+  qui:
+    name: qui-volume
     external: true

@@ -1,18 +1,15 @@
-#################################################################################
+###############################################################################
 # Seerr: Media request manager and discovery tool.                            #
 # https://docs.seerr.dev/                                                     #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
   env_file: ../../.env
+  read_only: true
   restart: unless-stopped
   cap_drop:
-    - AUDIT_WRITE
-    - MKNOD
-    - SYS_ADMIN
-    - SYS_CHROOT
-    - SYS_PTRACE
+    - ALL
   security_opt:
     - no-new-privileges:true
 
@@ -22,6 +19,8 @@ services:
     image: ghcr.io/fallenbagel/jellyseerr:preview-seerr
     container_name: seerr
     hostname: seerr
+    read_only: true
+    user: "${PUID}:${PGID}"
     environment:
       DB_HOST: "seerr-db" # Connect to seerr-db.
       DB_LOG_QUERIES: "true" # Log database queries.
@@ -38,8 +37,11 @@ services:
       - external
       - gluetun
       - internal
+    tmpfs:
+      - "/.local:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - seerr:/app/config
+      - seerr:/app/config:rw
     depends_on:
       seerr-db:
         condition: service_healthy
@@ -49,6 +51,9 @@ services:
         limits:
           cpus: 1
           memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 512M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5055 || exit 1"
 
@@ -64,17 +69,18 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - seerr-db-config:/postgres/etc
-      - seerr-db-data:/postgres/var
-    cap_drop:
-      - ALL
+      - seerr-db-config:/postgres/etc:rw
+      - seerr-db-data:/postgres/var:rw
     deploy:
       resources:
         limits:
           cpus: 0.5
+          memory: 512M
+        reservations:
+          cpus: 0.25
           memory: 256M
 
 networks:

@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # Caddy: Reverse proxy and web server.                                        #
 # https://caddyserver.com/                                                    #
-#################################################################################
+###############################################################################
 
 ---
 services:
   caddy:
-    image: ghcr.io/11notes/caddy:2
+    image: ghcr.io/11notes/caddy:2.10.0
     command: ["run", "--config", "/caddy/etc/Caddyfile"]
     container_name: caddy
     env_file: ../../.env
@@ -23,17 +23,14 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
-      - 443:443/udp
     volumes:
       - ./config/Caddyfile:/caddy/etc/Caddyfile:ro
-      - caddy-backups:/caddy/backup
-      - caddy-config:/caddy/etc
-      - caddy-data:/caddy/var
-      - caddy-logs:/caddy/logs
+      - caddy-backups:/caddy/backup:rw
+      - caddy-config:/caddy/etc:rw
+      - caddy-data:/caddy/var:rw
+      - caddy-logs:/caddy/logs:rw
     tmpfs:
-      - "/tmp:uid=1000,gid=1000,exec"
-    cap_add:
-      - NET_ADMIN
+      - "/tmp:uid=1000,gid=1000"
     cap_drop:
       - ALL
     depends_on:
@@ -45,6 +42,9 @@ services:
         limits:
           cpus: 1
           memory: 512M
+        reservations:
+          cpus: 0.5
+          memory: 128M
     security_opt:
       - no-new-privileges:true
     sysctls:

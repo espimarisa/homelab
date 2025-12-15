@@ -6,7 +6,7 @@
 ---
 services:
   jellyfin:
-    image: ghcr.io/jellyfin/jellyfin:10.11
+    image: ghcr.io/jellyfin/jellyfin:10.11.4
     container_name: jellyfin
     env_file: ../../.env
     hostname: jellyfin
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri:/dev/dri # Video device passthrough for encoding.
+      - /dev/dri:/dev/dri
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:
@@ -22,11 +22,11 @@ services:
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - jellyfin-cache:/cache
-      - jellyfin-config:/config
+      - jellyfin-cache:/cache:rw
+      - jellyfin-config:/config:rw
       - media-library:/library:ro
     cap_drop:
       - ALL
@@ -35,6 +35,9 @@ services:
         limits:
           cpus: 4
           memory: 8G
+        reservations:
+          cpus: 2
+          memory: 2G
     group_add:
       - "${RENDER_PGID}" # Required for video rendering.
     healthcheck:

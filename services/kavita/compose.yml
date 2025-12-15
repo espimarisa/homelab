@@ -1,41 +1,39 @@
-#################################################################################
+###############################################################################
 # Kavita: eBook/Comic/Manga media server.                                     #
 # https://wiki.kavitareader.com/                                              #
-#################################################################################
+###############################################################################
 
 ---
 services:
   kavita:
-    image: lscr.io/linuxserver/kavita:0.8.8
+    image: ghcr.io/kareadita/kavita:0.8.8
     container_name: kavita
     env_file: ../../.env
     hostname: kavita
     restart: unless-stopped
+    read_only: true
+    user: "${PUID}:${PGID}"
     environment:
-      PGID: "${PGID}" # Group ID to run as.
-      PUID: "${PUID}" # User ID to run as.
       TZ: "${TZ}" # Sets the timezone.
-      UMASK: "${UMASK}" # Umask to apply to newly created files.
     expose:
       - 5000/tcp
     networks:
       - external
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - kavita:/config
+      - kavita:/kavita/config:rw
       - media-library:/library:ro
     cap_drop:
-      - AUDIT_WRITE
-      - MKNOD
-      - SETFCAP
-      - SETPCAP
-      - SYS_ADMIN
-      - SYS_CHROOT
-      - SYS_PTRACE
+      - ALL
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 256MB
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:5000 || exit 1"
     security_opt:

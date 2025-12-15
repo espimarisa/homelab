@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # qBittorrent: BitTorrent client.                                             #
 # https://github.com/qbittorrent/qBittorrent/wiki                             #
-#################################################################################
+###############################################################################
 
 ---
 services:
   qbittorrent:
-    image: ghcr.io/11notes/qbittorrent:5
+    image: ghcr.io/11notes/qbittorrent:5.1.4
     container_name: qbittorrent
     env_file: ../../.env
     network_mode: service:gluetun
@@ -15,13 +15,11 @@ services:
     environment:
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - downloads:/downloads
-      - downloads-incomplete:/downloads-incomplete
-      - downloads-permaseed:/downloads-permaseed
-      - qbittorrent-config:/qbittorrent/etc
-      - qbittorrent-data:/qbittorrent/var
-    cap_add:
-      - CHOWN
+      - downloads:/downloads:rw
+      - downloads-incomplete:/downloads-incomplete:rw
+      - downloads-permaseed:/downloads-permaseed:rw
+      - qbittorrent-config:/qbittorrent/etc:rw
+      - qbittorrent-data:/qbittorrent/var:rw
     cap_drop:
       - ALL
     depends_on:
@@ -31,8 +29,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 8
-          memory: 8GB
+          cpus: 4
+          memory: 4GB
+        reservations:
+          cpus: 1
+          memory: 1G
     security_opt:
       - no-new-privileges:true
 

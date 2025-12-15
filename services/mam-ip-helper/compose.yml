@@ -1,7 +1,7 @@
-#################################################################################
+###############################################################################
 # MaM-IP-Helper: MyAnonaMouse dynamic seedbox IP synchronization tool.        #
 # https://github.com/tyzen9/docker-myanonamouse-ip-helper                     #
-#################################################################################
+###############################################################################
 
 ---
 services:
@@ -26,6 +26,9 @@ services:
       resources:
         limits:
           cpus: 0.25
-          memory: 64M
+          memory: 32M
+        reservations:
+          cpus: 0.15
+          memory: 16M
     security_opt:
       - no-new-privileges:true

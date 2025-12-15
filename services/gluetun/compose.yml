@@ -1,7 +1,7 @@
-#################################################################################
+###############################################################################
 # Gluetun: Container VPN client. I'm currently using AirVPN.                  #
 # https://github.com/qdm12/gluetun-wiki/tree/main/setup/options               #
-#################################################################################
+###############################################################################
 
 ---
 services:
@@ -12,25 +12,20 @@ services:
     hostname: gluetun
     restart: unless-stopped
     devices:
-      - /dev/net/tun:/dev/net/tun
+      - /dev/net/tun:/dev/net/tun:rw
     environment:
-      BLOCK_ADS: "off" # Disable unbound adblocking; reduces resource usage.
       BLOCK_MALICIOUS: "off" # Disable unbound malware blocking; reduces resource usage.
-      BLOCK_SURVEILLANCE: "off" # Disable unbound surveillance blocking; reduces resource usage.
       DNS_UPSTREAM_RESOLVERS: "quad9" # Use Quad9 for DNS.
       DOT: "on" # Enables DNS over TLS.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}" # List of subnets allowed to access the Gluetun network.
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/firewall.md
       HEALTH_TARGET_ADDRESSES: "quad9.net:443" # Use Quad9 for healthchecks.
-      HTTPPROXY: "off" # Disables the built-in HTTP proxy server.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
       SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities to connect to.
       SERVER_COUNTRIES: "${SERVER_COUNTRIES}" # Optional list of server countries to connect to.
-      SHADOWSOCKS: "off" # Disables the built-in Shadowsocks server.
       TZ: "${TZ}" # Sets the timezone.
       UPDATER_PERIOD: "24h" # Update server list every 24 hours.
-      VERSION_INFORMATION: "off" # Disable update checker notifications.
       VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}" # https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers
       VPN_TYPE: "wireguard" # Use Wireguard for VPN connections.
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # List of VPN addresses to connect to.
@@ -48,10 +43,9 @@ services:
       - 8191/tcp # Byparr server.
       - 9696/tcp # Prowlarr web interface.
     networks:
-      gluetun:
-        ipv4_address: 172.19.1.10
+      - gluetun
     volumes:
-      - gluetun:/gluetun
+      - gluetun:/gluetun:rw
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -68,6 +62,9 @@ services:
         limits:
           cpus: 1
           memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 256M
     security_opt:
       - no-new-privileges:true
 

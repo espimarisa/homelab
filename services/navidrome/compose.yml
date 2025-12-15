@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # Navidrome: Music collection server and streamer.                            #
 # https://www.navidrome.org/docs/usage/configuration-options/                 #
-#################################################################################
+###############################################################################
 
 ---
 services:
   navidrome:
-    image: ghcr.io/navidrome/navidrome:latest
+    image: ghcr.io/navidrome/navidrome:0.59.0
     container_name: navidrome
     env_file: ../../.env
     hostname: navidrome
@@ -22,7 +22,6 @@ services:
       ND_LASTFM_ENABLED: "true" # Enables Last.fm integrations.
       ND_DATAFOLDER: "/data" # Configures the data path.
       ND_CACHEFOLDER: "/cache" # Configures the cache path.
-      ND_LOGFILE: "/logs/navidrome.log" # Sets the log file path.
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}" # https://www.last.fm/api/authentication
       ND_MUSICFOLDER: "/library/music" # Configures the music library path.
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}" # openssl rand -hex 32
@@ -37,16 +36,18 @@ services:
       - external
     volumes:
       - media-library:/library:ro
-      - navidrome-cache:/cache
-      - navidrome-data:/data
-      - navidrome-logs:/logs
+      - navidrome-cache:/cache:rw
+      - navidrome-data:/data:rw
     cap_drop:
       - ALL
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 4G
+          cpus: 2
+          memory: 2G
+        reservations:
+          cpus: 0.5
+          memory: 512M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4533/ping || exit 1"
     security_opt:
@@ -64,9 +65,6 @@ volumes:
   navidrome-data:
     external: true
     name: navidrome-data-volume
-  navidrome-logs:
-    external: true
-    name: navidrome-logs-volume
   media-library:
     name: media-library-bind
     driver_opts:

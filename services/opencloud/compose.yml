@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # OpenCloud: Self-hosted cloud storage service                                #
 # https://docs.opencloud.eu/docs/admin/configuration                          #
-#################################################################################
+###############################################################################
 
 ---
 services:
   opencloud:
-    image: opencloudeu/opencloud-rolling:4
+    image: opencloudeu/opencloud-rolling:4.0.0
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh
@@ -33,16 +33,16 @@ services:
       OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true" # Require passwords for read-write shares.
       OC_URL: "https://${OPENCLOUD_URL}"
       PROXY_TLS: "false" # Do not proxy internal services; keep off for reverse proxy support.
-      TZ: "${TZ}" # Sets the timezone.
     expose:
       - 9200/tcp
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - opencloud-config:/etc/opencloud
-      - opencloud-data:/var/lib/opencloud
+      - /etc/localtime:/etc/localtime:ro
+      - opencloud-config:/etc/opencloud:rw
+      - opencloud-data:/var/lib/opencloud:rw
     cap_drop:
       - ALL
     deploy:
@@ -50,6 +50,9 @@ services:
         limits:
           cpus: 4
           memory: 4G
+        reservations:
+          cpus: 1
+          memory: 2G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
     security_opt:

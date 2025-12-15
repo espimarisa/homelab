@@ -1,17 +1,22 @@
-################################################################################
-# Beszel: Server monitoring agent and hub.                                     #
-# https://beszel.dev/guide/getting-started                                     #
-################################################################################
+###############################################################################
+# Beszel: Server monitoring agent and hub.                                    #
+# https://beszel.dev/guide/getting-started                                    #
+###############################################################################
 
 ---
 x-defaults: &defaults
   env_file: ../../.env
   read_only: true
   restart: unless-stopped
+  tmpfs:
+    - "/tmp:uid=${PUID},gid=${PGID}"
   deploy:
     resources:
       limits:
         cpus: 0.25
+        memory: 128M
+      reservations:
+        cpus: 0.15
         memory: 64M
   security_opt:
     - no-new-privileges:true
@@ -19,55 +24,62 @@ x-defaults: &defaults
 services:
   beszel:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel:0
+    image: ghcr.io/henrygd/beszel/beszel:0.17.0
     container_name: beszel
     hostname: beszel
     user: "${PUID}:${PGID}"
     environment:
-      APP_URL: "https://beszel.${INTERNAL_DOMAIN}" # Connect to beszel.${INTERNAL_DOMAIN}.
-    ports:
-      - 127.0.0.1:8090:8090/tcp
+      USER_EMAIL: "${BESZEL_EMAIL}" # Beszel administrator email to set.
+      USER_PASSWORD: "${BESZEL_PASSWORD}" # Beszel administrator password to set.
+    expose:
+      - 8090/tcp
     networks:
       - external
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - beszel-data:/beszel_data
-      - beszel-socket:/beszel_socket
+      - beszel-data:/beszel_data:rw
+      - beszel-socket:/beszel_socket:rw
     cap_drop:
       - ALL
     healthcheck:
+      interval: 1m
+      start_period: 5s
       test: ["CMD", "/beszel", "health --url http://127.0.0.1:8090"]
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0 # -intel for Intel GPUs; ARC isn't supported yet?
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.17.0 # -intel for our iGPU/ARC
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host
     devices:
-      - /dev/dri:/dev/dri
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw # dGPU path
     environment:
-      HUB_URL: "http://127.0.0.1:8090" # Use the local hub.
-      KEY: "${BESZEL_KEY}" # Beszel hub key to use; set post-install.
-      LISTEN: "0.0.0.0:45876" # Listen on 0.0.0.0:45876.
-      TOKEN: "${BESZEL_TOKEN}" # Beszel hub token to use; set post-install.
+      HUB_URL: http://localhost:8090
+      LISTEN: /beszel_socket/beszel.sock
+      KEY: "${BESZEL_KEY}" # Beszel hub key to register with.
+      TOKEN: "${BESZEL_TOKEN}" # Beszel hub token to register with.
     volumes:
+      # https://beszel.dev/guide/additional-disks, my server's stuff is hardcoded here
+      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro
+      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro
+      - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdh:ro
+
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro # Replace sda with the downloads-incomplete disk name.
-      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro # Replace bcache0 with the storage disk name.
-      - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdh:ro # Replace sdd with the storage disk name.
-      - beszel-agent:/var/lib/beszel-agent
-      - beszel-socket:/beszel_socket
+      - beszel-agent:/var/lib/beszel-agent:rw
+      - beszel-socket:/beszel_socket:rw
     cap_add:
-      - PERFMON # Required for future GPU monitoring.
-      - SYS_ADMIN # Required for future GPU monitoring.
+      - CAP_PERFMON # Required for GPU monitoring.
+      - SYS_ADMIN # Required for NVME SMART data.
+      - SYS_RAWIO # Required for SMART data.
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE
     depends_on:
@@ -78,9 +90,8 @@ services:
         condition: service_healthy
         restart: true
     healthcheck:
+      interval: 1m
       test: ["CMD", "/agent", "health"]
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
 
 networks:
   external:

@@ -1,7 +1,7 @@
-#################################################################################
+###############################################################################
 # Prowlarr: Indexer manager and synchronization for 'ARR apps.                #
 # https://prowlarr.com/                                                       #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
@@ -16,11 +16,11 @@ x-defaults: &defaults
 services:
   prowlarr:
     <<: *defaults
-    image: ghcr.io/11notes/prowlarr:2
+    image: ghcr.io/11notes/prowlarr:2.3.0
     container_name: prowlarr
     network_mode: service:gluetun
     volumes:
-      - prowlarr:/prowlarr/etc
+      - prowlarr:/prowlarr/etc:rw
     depends_on:
       gluetun:
         condition: service_healthy
@@ -29,12 +29,15 @@ services:
         condition: service_healthy
         restart: true
     tmpfs:
-      - "/tmp:uid=1000,gid=1000,exec"
+      - "/tmp:uid=1000,gid=1000"
     deploy:
       resources:
         limits:
           cpus: 1
-          memory: 2G
+          memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 256MB
 
   prowlarr-db:
     <<: *defaults
@@ -46,19 +49,21 @@ services:
       TZ: "${TZ}" # Sets the timezone.
       POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Sets the database password.
     networks:
-      gluetun:
-        ipv4_address: 172.19.1.30
+      - gluetun
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - prowlarr-db-config:/postgres/etc
-      - prowlarr-db-data:/postgres/var
+      - prowlarr-db-config:/postgres/etc:rw
+      - prowlarr-db-data:/postgres/var:rw
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256M
 
 networks:
   gluetun:

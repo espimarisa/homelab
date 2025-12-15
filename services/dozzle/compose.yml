@@ -1,12 +1,12 @@
-#################################################################################
-# Dozzle: Docker log viewer.                                                  #
-# https://dozzle.dev/                                                         #
-#################################################################################
+###############################################################################
+# Dozzle: Docker container log viewer.                                        #
+# https://dozzle.dev/guide/getting-started                                    #
+###############################################################################
 
 ---
 services:
   dozzle:
-    image: ghcr.io/amir20/dozzle:v8
+    image: ghcr.io/amir20/dozzle:v8.14.11
     container_name: dozzle
     env_file: ../../.env
     hostname: dozzle
@@ -17,6 +17,7 @@ services:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to the socket proxy.
       DOZZLE_ENABLE_ACTIONS: "true" # Enables container actions.
       DOZZLE_ENABLE_SHELL: "true" # Enables entering container shells.
+      DOZZLE_NO_ANALYTICS: "true" # Opts out of data analytics.
     expose:
       - 8080/tcp
     networks:
@@ -24,7 +25,7 @@ services:
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - dozzle:/data
+      - dozzle:/data:rw
     cap_drop:
       - ALL
     depends_on:
@@ -36,6 +37,9 @@ services:
         limits:
           cpus: 0.25
           memory: 256M
+        reservations:
+          cpus: 0.15
+          memory: 128M
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:

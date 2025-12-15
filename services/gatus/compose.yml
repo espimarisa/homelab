@@ -1,19 +1,15 @@
-#################################################################################
+###############################################################################
 # Gatus: Status page and uptime monitoring.                                   #
 # https://gatus.io                                                            #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
+  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
     - ALL
-  deploy:
-    resources:
-      limits:
-        cpus: 0.5
-        memory: 256M
   security_opt:
     - no-new-privileges:true
 
@@ -23,7 +19,6 @@ services:
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
     hostname: gatus
-    env_file: ../../.env
     user: "${PUID}:${PGID}"
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
@@ -45,6 +40,14 @@ services:
       socket-proxy:
         condition: service_healthy
         restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 128M
+        reservations:
+          cpus: 0.15
+          memory: 64M
 
   gatus-db:
     <<: *defaults
@@ -58,11 +61,19 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - gatus-db-config:/postgres/etc
-      - gatus-db-data:/postgres/var
+      - gatus-db-config:/postgres/etc:rw
+      - gatus-db-data:/postgres/var:rw
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 256M
+        reservations:
+          cpus: 0.15
+          memory: 64M
 
 networks:
   external:

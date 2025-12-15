@@ -143,12 +143,6 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/socket-proxy/json
 
-  # Watchtower.
-  - name: Watchtower
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/watchtower/json
-
   ###########################################################################
   # Immich.                                                                 #
   ###########################################################################
@@ -164,12 +158,6 @@ endpoints:
     <<: *defaults-container
     group: Immich
     url: ${SOCKET_PROXY_URL}/immich-db/json
-
-  # Immich Machine Learning.
-  - name: Immich Machine Learning
-    <<: *defaults-container
-    group: Immich
-    url: ${SOCKET_PROXY_URL}/immich-ml/json
 
   # Immich server.
   - name: Immich Server

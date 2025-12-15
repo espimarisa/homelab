@@ -1,7 +1,7 @@
-#################################################################################
+###############################################################################
 # Autobrr: Download automation tool and ratio manager.                        #
 # https://autobrr.com/introduction                                            #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
@@ -16,28 +16,22 @@ x-defaults: &defaults
 services:
   autobrr:
     <<: *defaults
-    image: ghcr.io/autobrr/autobrr:v1.70
+    image: ghcr.io/s0up4200/autobrr-distroless:v1.71.0
     container_name: autobrr
     network_mode: service:gluetun
     user: "${PUID}:${PGID}"
     environment:
-      AUTOBRR__CHECK_FOR_UPDATES: "false" # Do not check for updates.
       AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
-      AUTOBRR__HOST: "0.0.0.0" # Bind to 0.0.0.0.
-      AUTOBRR__LOG_LEVEL: "info" # Log at the info level.
-      AUTOBRR__LOG_MAX_SIZE: "10" # Keep log files until they reach 10mb.
-      AUTOBRR__LOG_PATH: "/logs/autobrr.log" # Sets the log file path.
       AUTOBRR__POSTGRES_DATABASE: "postgres" # Use the Postgres database.
-      AUTOBRR__POSTGRES_HOST: "172.19.1.31" # Connect to the Gluetun-network'd database.
+      AUTOBRR__POSTGRES_HOST: "autobrr-db" # Connect to the database.
       AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Database password to authenticate with.
       AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
       AUTOBRR__POSTGRES_USER: "postgres" # Use the postgres user.
-      TZ: "${TZ}" # Sets the timezone.
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - autobrr-data:/config
-      - autobrr-logs:/logs
+      - /etc/localtime:/etc/localtime:ro
+      - autobrr:/config:rw
     depends_on:
       autobrr-db:
         condition: service_healthy
@@ -50,6 +44,9 @@ services:
         limits:
           cpus: 1
           memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 128M
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:7474 || exit 1"
 
@@ -62,19 +59,21 @@ services:
       POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}" # Sets the password.
       TZ: "${TZ}" # Sets the timezone.
     networks:
-      gluetun:
-        ipv4_address: 172.19.1.31
+      - gluetun
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000,exec"
-      - "/postgres/run:uid=1000,gid=1000,exec"
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
     volumes:
-      - autobrr-db-config:/postgres/etc
-      - autobrr-db-data:/postgres/var
+      - autobrr-db-config:/postgres/etc:rw
+      - autobrr-db-data:/postgres/var:rw
     deploy:
       resources:
         limits:
           cpus: 0.5
           memory: 256M
+        reservations:
+          cpus: 0.15
+          memory: 64M
 
 networks:
   gluetun:
@@ -85,11 +84,8 @@ networks:
     external: true
 
 volumes:
-  autobrr-data:
-    name: autobrr-data-volume
-    external: true
-  autobrr-logs:
-    name: autobrr-logs-volume
+  autobrr:
+    name: autobrr-volume
     external: true
   autobrr-db-config:
     name: autobrr-db-config-volume

@@ -1,12 +1,13 @@
-#################################################################################
-# Immich: Self-hosted photo manager and organizer.                            #
+###############################################################################
+# Immich: Self-hosted photo manager and organizer (no ML enabled here).       #
 # https://immich.app/                                                         #
-#################################################################################
+###############################################################################
 
 ---
 x-defaults: &defaults
   env_file: ../../.env
   restart: unless-stopped
+  read_only: true
   cap_drop:
     - ALL
   security_opt:
@@ -15,27 +16,25 @@ x-defaults: &defaults
 services:
   immich-server:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v2
+    image: ghcr.io/immich-app/immich-server:v2.3.1
     container_name: immich-server
-    read_only: true
     user: "${PUID}:${PGID}"
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
       DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connects to PostgreSQL.
-      IMMICH_MACHINE_LEARNING_URL: "http://immich-ml:3003" # Connect to immich-ml for ML.
       REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache for Redis.
     devices:
-      - /dev/dri:/dev/dri # Video device passthrough for transcoding.
+      - /dev/dri/renderD128:/dev/dri/renderD128
     expose:
       - 2283/tcp
     networks:
       - external
       - internal
     tmpfs:
-      - "/run:uid=${PUID},gid=${PGID},exec"
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
-      - "/usr/src/app/.npm:uid=${PUID},gid=${PGID},exec"
-      - "/usr/src/app/.config:uid=${PUID},gid=${PGID},exec"
+      - "/run:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/usr/src/app/.npm:uid=${PUID},gid=${PGID}"
+      - "/usr/src/app/.config:uid=${PUID},gid=${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - immich-data:/data
@@ -46,35 +45,6 @@ services:
       immich-db:
         condition: service_healthy
         restart: true
-      immich-ml:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 4
-          memory: 8G
-    group_add:
-      - "${RENDER_PGID}" # Required for video transcoding.
-
-  immich-ml:
-    <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v2-openvino # https://docs.immich.app/features/ml-hardware-acceleration
-    container_name: immich-ml
-    read_only: true
-    user: "${PUID}:${PGID}"
-    devices:
-      - /dev/dri:/dev/dri # Video device passthrough for transcoding.
-    environment:
-      MPLCONFIGDIR: "/tmp" # Sets the matplotlib directory.
-    networks:
-      - internal
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
-      - "/config:uid=${PUID},gid=${PGID},exec"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - immich-ml-cache:/cache
     deploy:
       resources:
         limits:
@@ -85,8 +55,7 @@ services:
 
   immich-cache:
     <<: *defaults
-    image: ghcr.io/11notes/redis:8
-    read_only: true
+    image: ghcr.io/11notes/redis:8.4.0
     container_name: immich-cache
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the Redis password.
@@ -94,21 +63,23 @@ services:
     networks:
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000,exec"
+      - "/tmp:uid=1000,gid=1000"
     volumes:
-      - immich-cache-config:/redis/etc
-      - immich-cache-data:/redis/var
+      - immich-cache-config:/redis/etc:rw
+      - immich-cache-data:/redis/var:rw
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 256M
 
   immich-db:
     <<: *defaults
     image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3
     container_name: immich-db
-    read_only: true
     shm_size: 256MB
     environment:
       DB_STORAGE_TYPE: "HDD" # HDD or SSD; enables optimizations.
@@ -121,10 +92,10 @@ services:
       - internal
     tmpfs:
       - "/etc/postgresql:exec"
-      - "/run:exec"
-      - "/tmp:exec"
+      - "/run"
+      - "/tmp"
     volumes:
-      - immich-db:/var/lib/postgresql
+      - immich-db:/var/lib/postgresql:rw
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -136,8 +107,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 4G
+          cpus: 1
+          memory: 1G
+        reservations:
+          cpus: 0.25
+          memory: 256M
 
 networks:
   external:
@@ -156,9 +130,6 @@ volumes:
     external: true
   immich-db:
     name: immich-db-volume
-    external: true
-  immich-ml-cache:
-    name: immich-ml-cache-volume
     external: true
   immich-data:
     name: immich-data-bind

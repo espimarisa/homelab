@@ -1,12 +1,12 @@
-#################################################################################
+###############################################################################
 # Chhoto URL: URL forwarder and shortener.                                    #
 # https://github.com/sintan1729/chhoto-url                                    #
-#################################################################################
+###############################################################################
 
 ---
 services:
   chhoto:
-    image: ghcr.io/sintan1729/chhoto-url:6-alpine
+    image: ghcr.io/sintan1729/chhoto-url:6.5.2-alpine
     container_name: chhoto
     env_file: ../../.env
     hostname: chhoto
@@ -27,7 +27,7 @@ services:
     networks:
       - external
     volumes:
-      - chhoto:/db
+      - chhoto:/db:rw
     cap_drop:
       - ALL
     deploy:
@@ -35,6 +35,9 @@ services:
         limits:
           cpus: 0.25
           memory: 64M
+        reservations:
+          cpus: 0.15
+          memory: 32M
     security_opt:
       - no-new-privileges:true
     healthcheck:
