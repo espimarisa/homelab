@@ -6,10 +6,11 @@
 ---
 services:
   backrest:
-    image: garethgeorge/backrest:v1.10.1
+    image: garethgeorge/backrest:v1.10.1-scratch
     container_name: backrest
     env_file: ../../.env
     hostname: backrest
+    read_only: true
     restart: unless-stopped
     environment:
       BACKREST_CONFIG: "/config/config.json" # Sets the config file path.
@@ -49,8 +50,6 @@ services:
         reservations:
           cpus: 1
           memory: 1G
-    healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9898 || exit 1"
     security_opt:
       - no-new-privileges:true
 

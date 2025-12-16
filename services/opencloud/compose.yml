@@ -6,7 +6,7 @@
 ---
 services:
   opencloud:
-    image: opencloudeu/opencloud-rolling:4.0.0
+    image: opencloudeu/opencloud-rolling:4.1.0
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh

@@ -6,7 +6,7 @@
 ---
 services:
   jellyfin:
-    image: ghcr.io/jellyfin/jellyfin:10.11.4
+    image: ghcr.io/jellyfin/jellyfin:10.11.5
     container_name: jellyfin
     env_file: ../../.env
     hostname: jellyfin

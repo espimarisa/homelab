@@ -245,6 +245,9 @@ $SUDO mkdir -p "${OPENCLOUD_DATA_PATH}"
 $SUDO mkdir -p "${HOMARR_DATA_PATH}/redis"
 $SUDO touch "${CHHOTO_DATA_PATH}/urls.sqlite"
 
+# Updates exec permissions for seerr.
+$SUDO chmod 777 -R "${DOCKER_VOLUMES_PATH}/seerr-volume/_data"
+
 # Set ownership of volumes by chowning their _data directory on the host.
 echo -e "\nSetting volume permissions..."
 for volume in "${CHOWN_VOLUMES[@]}"; do
