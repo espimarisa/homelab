@@ -38,7 +38,7 @@ services:
       - gluetun
       - internal
     tmpfs:
-      - "/.local:uid=${PUID},gid=${PGID},exec"
+      - "/.local/share/pnpm:uid=${PUID},gid=${PGID},exec"
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - seerr:/app/config:rw
