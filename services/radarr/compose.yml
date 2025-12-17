@@ -19,6 +19,8 @@ services:
     image: ghcr.io/11notes/radarr:6.0.4
     container_name: radarr
     hostname: radarr
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
       - gluetun

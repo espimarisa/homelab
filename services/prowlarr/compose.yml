@@ -19,6 +19,8 @@ services:
     image: ghcr.io/11notes/prowlarr:2.3.0
     container_name: prowlarr
     network_mode: service:gluetun
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
     volumes:
       - prowlarr:/prowlarr/etc:rw
     depends_on:

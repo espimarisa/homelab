@@ -6,11 +6,20 @@
 ---
 services:
   lidarr:
-    image: ghcr.io/hotio/lidarr:pr-plugins-3.1.1.4884
+    image: ghcr.io/linuxserver-labs/prarr:lidarr-plugins
     container_name: lidarr
     env_file: ../../.env
     hostname: lidarr
     restart: unless-stopped
+    environment:
+      DOCKER_MODS: "linuxserver/mods:universal-package-install"
+      INSTALL_PACKAGES: "git|ffmpeg|flac|imagemagick"
+      INSTALL_PIP_PACKAGES: "git+https://github.com/beetbox/beets.git|git+https://github.com/MxMarx/gazelle-origin@orpheus|git+https://github.com/MxMarx/beets-originquery|pyacoustid|beetcamp|pylast|python3-discogs-client"
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      RED_API_KEY: "${RED_API_KEY}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
       - 8686/tcp
     networks:
@@ -18,9 +27,11 @@ services:
       - gluetun
       - internal
     volumes:
+      - ./beets:/beets:rw
+      - ./scripts:/scripts:rw
       - downloads:/downloads:rw
-      - media-library:/library:rw
       - lidarr:/config:rw
+      - media-library:/library:rw
     cap_drop:
       - AUDIT_WRITE
       - MKNOD

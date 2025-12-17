@@ -19,12 +19,14 @@ services:
     image: ghcr.io/11notes/sonarr:4.0.16
     container_name: sonarr
     hostname: sonarr
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+    expose:
+      - 8989/tcp
     networks:
       - external
       - gluetun
       - internal
-    expose:
-      - 8989/tcp
     tmpfs:
       - "/tmp:uid=1000,gid=1000"
     volumes:

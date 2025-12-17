@@ -307,6 +307,7 @@ radarr:
           - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
           - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
           - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
         assign_scores_to:
           - name: Remux + WEB 1080p
           - name: Remux + WEB 2160p
@@ -426,11 +427,11 @@ sonarr:
       - template: sonarr-v4-custom-formats-web-1080p
       - template: sonarr-v4-custom-formats-web-2160p
       - template: sonarr-v4-quality-profile-anime
-      - template: sonarr-v4-quality-profile-web-1080p-alternative
-      - template: sonarr-v4-quality-profile-web-2160p-alternative
+      - template: sonarr-v4-quality-profile-web-1080p
+      - template: sonarr-v4-quality-profile-web-2160p
 
-    # Custom Format definition for YayPonies/YayBingo/etc
     customFormatDefinitions:
+      # Custom Format definition for YayPonies/YayBingo/etc.
       - trash_id: sonarr-yayponies
         trash_scores:
           default: 10000
@@ -457,6 +458,7 @@ sonarr:
           - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
           - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
           - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+          - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
 
           # Misc.
           - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
@@ -474,10 +476,13 @@ sonarr:
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
           - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
+          - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
         assign_scores_to:
           - name: Remux-2160p
           - name: WEB-1080p
           - name: WEB-2160p
+          - name: SD-480p
+          - name: SD-576p
 
       # Allow AV1 and x265, but don"t prefer it.
       - trash_ids:
@@ -492,6 +497,10 @@ sonarr:
           - name: WEB-1080p
             score: 0
           - name: WEB-2160p
+            score: 0
+          - name: SD-480p
+            score: 0
+          - name: SD-576p
             score: 0
 
       # 10bit boost.
@@ -518,6 +527,10 @@ sonarr:
           - name: WEB-1080p
             score: 25
           - name: WEB-2160p
+            score: 25
+          - name: SD-480p
+            score: 25
+          - name: SD-576p
             score: 25
 
       # Anime Dual Audio boost.
@@ -553,6 +566,34 @@ sonarr:
             qualities:
               - WEBDL-2160p
               - WEBRip-2160p
+
+        # Dedicated 480p-only format.
+      - name: SD-480p
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: Bluray-480p
+        quality_sort: top
+        qualities:
+          - name: Bluray-480p
+          - name: WEBDL-480p
+          - name: WEBRip-480p
+          - name: DVD
+          - name: TV
+
+        # Dedicated 576p-only format.
+      - name: SD-576p
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: Bluray-576p
+        quality_sort: top
+        qualities:
+          - name: Bluray-576p
+          - name: DVD
+          - name: TV
 
       # Custom YayPonies profile for MLP, Bluey, etc.
       - name: YayPonies-1080p
