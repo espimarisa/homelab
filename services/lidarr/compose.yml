@@ -14,7 +14,7 @@ services:
     environment:
       DOCKER_MODS: "linuxserver/mods:universal-package-install"
       INSTALL_PACKAGES: "git|ffmpeg|flac|imagemagick"
-      INSTALL_PIP_PACKAGES: "git+https://github.com/beetbox/beets.git|git+https://github.com/MxMarx/gazelle-origin@orpheus|git+https://github.com/MxMarx/beets-originquery|pyacoustid|beetcamp|pylast|python3-discogs-client|beets-xtractor"
+      INSTALL_PIP_PACKAGES: "git+https://github.com/beetbox/beets.git|git+https://github.com/MxMarx/gazelle-origin@orpheus|git+https://github.com/MxMarx/beets-originquery|pyacoustid|beetcamp|pylast|lib-essentia|python3-discogs-client|beets-xtractor"
       PGID: "${PGID}"
       PUID: "${PUID}"
       RED_API_KEY: "${RED_API_KEY}"

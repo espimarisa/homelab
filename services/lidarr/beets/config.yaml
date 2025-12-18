@@ -88,7 +88,7 @@ lyrics:
   force: no # By default, beets won’t fetch lyrics if the files already have ones.
   sources: # List of sources to search for lyrics.
     - lrclib
-    - genius
+    # - genius
     - musixmatch # Possibly just 30% of a whole song text
   synced: yes
 
