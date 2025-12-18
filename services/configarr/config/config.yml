@@ -135,7 +135,7 @@ lidarr:
       # Vinyl releases.
       - trash_id: lidarr-vinyl
         trash_scores:
-          default: 1 # Lower priority for Vinyl releases.
+          default: 0 # Lower priority for Vinyl releases.
         includeCustomFormatWhenRenaming: false
         name: Vinyl
         trash_description: Vinyl
