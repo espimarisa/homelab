@@ -525,7 +525,6 @@ sonarr:
         upgrade:
           allowed: true
           until_quality: Bluray-480p
-        min_format_score: 100
         quality_sort: top
         qualities:
           - name: Bluray-480p
