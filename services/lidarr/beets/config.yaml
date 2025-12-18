@@ -62,9 +62,6 @@ originquery: # Get tags from gazelle-origin
     catalognum: '$."Catalog number"'
     albumdisambig: "$.Edition"
 
-chroma:
-  auto: yes # The Acoustid plugin extends the autotagger to use acoustic fingerprinting to find information for arbitrary audio.
-
 # Parentwork
 parentwork:
   force: no # As a default, parentwork only fetches work info for recordings that do not already have a parentwork tag.
@@ -90,9 +87,10 @@ lyrics:
   fallback: "" # By default, the file will be left unchanged when no lyrics are found.
   force: no # By default, beets won’t fetch lyrics if the files already have ones.
   sources: # List of sources to search for lyrics.
+    - lrclib
     - genius
-    - google # The google source will be automatically deactivated if no google_API_key is setup.
     - musixmatch # Possibly just 30% of a whole song text
+  synced: yes
 
 # Pictures
 art_filename: cover # When importing album art, the name of the file (without extension) where the cover art image should be placed.

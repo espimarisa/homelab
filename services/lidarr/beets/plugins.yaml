@@ -1,6 +1,5 @@
 plugins: [
     bandcamp, # Beetcamp. Use bandcamp as an autotagger source for eg. artwork and lyrics.
-    chroma, # Use acoustic fingerprinting to identify audio files with missing or incorrect metadata.
     fromfilename, # TGuess metadata for untagged tracks from their filenames.
     originquery, # Augments MusicBrainz queries with locally-sourced data to improve autotagger results.
     xtractor,
