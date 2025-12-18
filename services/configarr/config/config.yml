@@ -5,10 +5,6 @@ lidarrEnabled: true
 readarrEnabled: false
 whisparrEnabled: false
 
-#################################################
-# Lidarr configuration.                         #
-#################################################
-
 lidarr:
   lidarr:
     # Connect to the local Lidarr server.
@@ -213,10 +209,6 @@ lidarr:
           - name: FLAC # FLAC.
           - name: WAV # Allow WAV releases, but at the lowest priority.
 
-#################################################
-# Radarr configuration.                         #
-#################################################
-
 radarr:
   radarr:
     base_url: http://radarr:7878
@@ -256,23 +248,16 @@ radarr:
       - /library/movies
 
     include:
-      # Anime custom formats and quality profiles.
       - template: radarr-custom-formats-anime
-      - template: radarr-quality-definition-anime
-      - template: radarr-quality-profile-anime
-
-      # Movie quality definitions.
-      - template: radarr-quality-definition-movie
-
-      # Remux + WEB 1080p custom formats and quality profiles.
       - template: radarr-custom-formats-remux-web-1080p
-      - template: radarr-quality-profile-remux-web-1080p
-
-      # Remux + WEB 2160p custom formats and quality profiles.
       - template: radarr-custom-formats-remux-web-2160p
+      - template: radarr-quality-definition-anime
+      - template: radarr-quality-definition-movie
+      - template: radarr-quality-profile-anime
+      - template: radarr-quality-profile-remux-web-1080p
       - template: radarr-quality-profile-remux-web-2160p
 
-    # Custom Format definition for YayPonies/YayBingo/etc
+    # Custom Format definition for YayPonies.
     customFormatDefinitions:
       - trash_id: radarr-yayponies
         trash_scores:
@@ -289,25 +274,18 @@ radarr:
 
     custom_formats:
       - trash_ids:
-          # HDR bonuses.
-          - 493b6d1dbec3c3364c59d7607f7e3405 # HDR
-          - caa37d0df9c348912df1fb1d88f9273a # HDR10+ Boost
-
-          # Movie format bonuses.
-          - eecf3a857724171f968a66cb5719e152 # IMAX
-          - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
-
-          # Movie bonuses.
-          - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
-          - 0f12c086e289cf966fa5948eac571f44 # Hybrid
-          - 570bc9ebecd92723d2d21500f4be314c # Remaster
-
-          # Unwanted formats.
-          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
-          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
-          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
-          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
           - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
+          - 0f12c086e289cf966fa5948eac571f44 # Hybrid
+          - 493b6d1dbec3c3364c59d7607f7e3405 # HDR
+          - 570bc9ebecd92723d2d21500f4be314c # Remaster
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - caa37d0df9c348912df1fb1d88f9273a # HDR10+ Boost
+          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
+          - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+          - eecf3a857724171f968a66cb5719e152 # IMAX
         assign_scores_to:
           - name: Remux + WEB 1080p
           - name: Remux + WEB 2160p
@@ -372,10 +350,6 @@ radarr:
         qualities:
           - name: WEBDL-1080p
 
-#################################################
-# Sonarr configuration.                         #
-#################################################
-
 sonarr:
   sonarr:
     base_url: http://sonarr:8989
@@ -406,13 +380,8 @@ sonarr:
     # Set up renaming to follow Jellyfin standards.
     media_naming:
       folder: jellyfin-tmdb
-      series: jellyfin-tmdb
-      season: jellyfin-tmdb
       episodes:
         rename: true
-        standard: jellyfin-tmdb
-        daily: jellyfin-tmdb
-        anime: jellyfin-tmdb
 
     # Sets root folders.
     root_folders:
@@ -431,7 +400,6 @@ sonarr:
       - template: sonarr-v4-quality-profile-web-2160p
 
     customFormatDefinitions:
-      # Custom Format definition for YayPonies/YayBingo/etc.
       - trash_id: sonarr-yayponies
         trash_scores:
           default: 10000
@@ -449,40 +417,32 @@ sonarr:
     custom_formats:
       # 2160p Remux formats.
       - trash_ids:
-          # Unified HDR.
+          - 69aa1e159f97d860440b04cd6d590c4f # Language: Not English
+          - 44e7c4de10ae50265753082e5dc76047 # Repack v3
+          - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
           - 505d871304820ba7106b693be6fe4a9e # HDR
-
-          # Unwanted.
           - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
-          - fbcb31d8dabd2a319072b84fc0b7249c # Extras
+          - 8a1d0c3d7497e741736761a1da866a2e # Remux Tier 02
+          - 9965a052eb87b0d10313b1cea89eb451 # Remux Tier 01
           - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
           - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
-          - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
-          - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
-
-          # Misc.
-          - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
           - eb3d5cc0a2be0db205fb823640db6a3c # Repack v2
-          - 44e7c4de10ae50265753082e5dc76047 # Repack v3
-
-          # Remux groups.
-          - 9965a052eb87b0d10313b1cea89eb451 # Remux Tier 01
-          - 8a1d0c3d7497e741736761a1da866a2e # Remux Tier 02
+          - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
+          - fbcb31d8dabd2a319072b84fc0b7249c # Extras
         assign_scores_to:
           - name: Remux-2160p
 
+      # Unwanted formats.
       - trash_ids:
-          # Unwanted formats.
+          - 69aa1e159f97d860440b04cd6d590c4f # Language: Not English
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
           - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
-          - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
         assign_scores_to:
           - name: Remux-2160p
           - name: WEB-1080p
           - name: WEB-2160p
           - name: SD-480p
-          - name: SD-576p
 
       # Allow AV1 and x265, but don"t prefer it.
       - trash_ids:
@@ -499,8 +459,6 @@ sonarr:
           - name: WEB-2160p
             score: 0
           - name: SD-480p
-            score: 0
-          - name: SD-576p
             score: 0
 
       # 10bit boost.
@@ -530,8 +488,6 @@ sonarr:
             score: 25
           - name: SD-480p
             score: 25
-          - name: SD-576p
-            score: 25
 
       # Anime Dual Audio boost.
       - trash_ids:
@@ -549,7 +505,7 @@ sonarr:
 
     # Custom quality profiles.
     quality_profiles:
-      # Dedicated Remux-2160p profile. Only ranks REMUX groups, will only grab if one is included.
+      # Dedicated Remux-2160p profile. Will only grab Remuxes.
       - name: Remux-2160p
         reset_unmatched_scores:
           enabled: true
@@ -561,41 +517,24 @@ sonarr:
         quality_sort: top
         qualities:
           - name: Bluray-2160p Remux
-          - name: Bluray-2160p
-          - name: WEB 2160p
-            qualities:
-              - WEBDL-2160p
-              - WEBRip-2160p
 
-        # Dedicated 480p-only format.
+      # Dedicated SD format. Will only grab 480p releases.
       - name: SD-480p
         reset_unmatched_scores:
           enabled: true
         upgrade:
           allowed: true
           until_quality: Bluray-480p
+        min_format_score: 100
         quality_sort: top
         qualities:
           - name: Bluray-480p
           - name: WEBDL-480p
           - name: WEBRip-480p
           - name: DVD
-          - name: TV
+          - name: SDTV
 
-        # Dedicated 576p-only format.
-      - name: SD-576p
-        reset_unmatched_scores:
-          enabled: true
-        upgrade:
-          allowed: true
-          until_quality: Bluray-576p
-        quality_sort: top
-        qualities:
-          - name: Bluray-576p
-          - name: DVD
-          - name: TV
-
-      # Custom YayPonies profile for MLP, Bluey, etc.
+      # Custom YayPonies profile.
       - name: YayPonies-1080p
         reset_unmatched_scores:
           enabled: true
