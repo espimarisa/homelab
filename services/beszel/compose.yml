@@ -13,11 +13,8 @@ x-defaults: &defaults
   deploy:
     resources:
       limits:
-        cpus: 0.25
+        cpus: 1
         memory: 128M
-      reservations:
-        cpus: 0.15
-        memory: 64M
   security_opt:
     - no-new-privileges:true
 

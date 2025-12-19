@@ -49,9 +49,6 @@ services:
         limits:
           cpus: 1
           memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 512M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
     security_opt:
@@ -81,11 +78,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 256M
-        reservations:
-          cpus: 0.15
-          memory: 64M
+          cpus: 1
+          memory: 512M
     security_opt:
       - no-new-privileges:true
 

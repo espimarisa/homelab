@@ -35,11 +35,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 256M
-        reservations:
-          cpus: 0.15
-          memory: 128M
+          cpus: 1
+          memory: 512M
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:

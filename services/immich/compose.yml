@@ -16,7 +16,7 @@ x-defaults: &defaults
 services:
   immich-server:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v2.3.1
+    image: ghcr.io/immich-app/immich-server:v2.4.0
     container_name: immich-server
     user: "${PUID}:${PGID}"
     environment:
@@ -71,10 +71,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 256M
+          memory: 2G
 
   immich-db:
     <<: *defaults
@@ -108,10 +105,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 256M
+          memory: 2G
 
 networks:
   external:

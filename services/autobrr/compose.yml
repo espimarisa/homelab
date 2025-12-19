@@ -44,9 +44,6 @@ services:
         limits:
           cpus: 1
           memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 128M
 
   autobrr-db:
     <<: *defaults
@@ -67,11 +64,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 256M
-        reservations:
-          cpus: 0.15
-          memory: 64M
+          cpus: 1
+          memory: 512M
 
 networks:
   gluetun:

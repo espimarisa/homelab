@@ -33,11 +33,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.25
-          memory: 64M
-        reservations:
-          cpus: 0.15
-          memory: 32M
+          cpus: 1
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     healthcheck:

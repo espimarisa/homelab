@@ -73,9 +73,6 @@ services:
         limits:
           cpus: 1
           memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 512M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:80/alive || exit 1"
 
@@ -102,11 +99,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.5
+          cpus: 1
           memory: 512M
-        reservations:
-          cpus: 0.25
-          memory: 256M
 
 networks:
   external:

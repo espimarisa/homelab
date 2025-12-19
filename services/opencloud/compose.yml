@@ -50,9 +50,6 @@ services:
         limits:
           cpus: 4
           memory: 4G
-        reservations:
-          cpus: 1
-          memory: 2G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
     security_opt:

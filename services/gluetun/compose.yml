@@ -62,9 +62,6 @@ services:
         limits:
           cpus: 1
           memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 256M
     security_opt:
       - no-new-privileges:true
 

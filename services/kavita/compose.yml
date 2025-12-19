@@ -31,9 +31,6 @@ services:
         limits:
           cpus: 1
           memory: 1G
-        reservations:
-          cpus: 0.25
-          memory: 256MB
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:5000 || exit 1"
     security_opt:

@@ -25,10 +25,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 0.25
+          cpus: 0.5
           memory: 32M
-        reservations:
-          cpus: 0.15
-          memory: 16M
     security_opt:
       - no-new-privileges:true

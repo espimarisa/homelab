@@ -6,7 +6,7 @@
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.10.0
+    image: ghcr.io/autobrr/qui:v1.11.0
     container_name: qui
     env_file: ../../.env
     network_mode: service:gluetun
@@ -31,9 +31,6 @@ services:
         limits:
           cpus: 1
           memory: 512M
-        reservations:
-          cpus: 0.25
-          memory: 256MB
     security_opt:
       - no-new-privileges:true
 

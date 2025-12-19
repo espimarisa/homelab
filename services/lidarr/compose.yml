@@ -49,9 +49,6 @@ services:
         limits:
           cpus: 2
           memory: 4G
-        reservations:
-          cpus: 0.25
-          memory: 512M
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/ping || exit 1"
     security_opt:
@@ -82,10 +79,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 512M
-        reservations:
-          cpus: 0.25
-          memory: 256M
+          memory: 1G
     security_opt:
       - no-new-privileges:true
 
