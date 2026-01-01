@@ -152,6 +152,10 @@ radarr:
           - name: WEBDL-1080p
         reset_unmatched_scores:
           enabled: true
+        upgrade:
+          allowed: true
+          until_quality: WEBDL-1080p
+          until_score: 10000
 
 ###############################################################################
 # Sonarr configuration.                                                       #
@@ -332,3 +336,7 @@ sonarr:
         quality_sort: top
         reset_unmatched_scores:
           enabled: true
+        upgrade:
+          allowed: true
+          until_quality: WEBDL-1080p
+          until_score: 10000
