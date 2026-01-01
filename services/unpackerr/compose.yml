@@ -1,12 +1,10 @@
-###############################################################################
-# Unpackerr: Auto-extract compressed downloads.                               #
-# https://unpackerr.zip/docs/introduction                                     #
-###############################################################################
+# Unpackerr: Auto-extract compressed downloads.
+# https://unpackerr.zip/docs/introduction
 
 ---
 services:
   unpackerr:
-    image: golift/unpackerr:0.14.5
+    image: golift/unpackerr:0
     container_name: unpackerr
     env_file: ../../.env
     hostname: unpackerr

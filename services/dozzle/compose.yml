@@ -1,12 +1,10 @@
-###############################################################################
-# Dozzle: Docker container log viewer.                                        #
-# https://dozzle.dev/guide/getting-started                                    #
-###############################################################################
+# Dozzle: Docker container log viewer.
+# https://dozzle.dev/guide/getting-started
 
 ---
 services:
   dozzle:
-    image: ghcr.io/amir20/dozzle:v8.14.12
+    image: ghcr.io/amir20/dozzle:v8
     container_name: dozzle
     env_file: ../../.env
     hostname: dozzle

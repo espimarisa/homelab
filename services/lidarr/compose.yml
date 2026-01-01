@@ -1,7 +1,5 @@
-###############################################################################
-# Lidarr: Music manager, organizer, and PVR.                                  #
-# https://lidarr.audio/                                                       #
-###############################################################################
+# Lidarr: Music manager, organizer, and PVR.
+# https://lidarr.audio/
 
 ---
 services:

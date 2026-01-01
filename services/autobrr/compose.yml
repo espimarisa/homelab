@@ -1,7 +1,5 @@
-###############################################################################
-# Autobrr: Download automation tool and ratio manager.                        #
-# https://autobrr.com/introduction                                            #
-###############################################################################
+# Autobrr: Download automation tool and ratio manager.
+# https://autobrr.com/introduction
 
 ---
 x-defaults: &defaults

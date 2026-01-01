@@ -1,12 +1,10 @@
-###############################################################################
-# The Lounge: Web-based IRC client.                                           #
-# https://github.com/thelounge/thelounge-docker                               #
-###############################################################################
+# The Lounge: Web-based IRC client.
+# https://github.com/thelounge/thelounge-docker
 
 ---
 services:
   thelounge:
-    image: ghcr.io/thelounge/thelounge:4.4.3
+    image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
     env_file: ../../.env
     hostname: thelounge

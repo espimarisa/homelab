@@ -86,10 +86,6 @@ readonly VOLUMES=(
 	"autobrr-volume"
 	"autobrr-db-config-volume"
 	"autobrr-db-data-volume"
-	"backrest-cache-volume"
-	"backrest-config-volume"
-	"backrest-data-volume"
-	"backrest-tmp-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"beszel-socket-volume"
@@ -103,9 +99,6 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"
-	"homarr-db-config-volume"
-	"homarr-db-data-volume"
-	"homarr-volume"
 	"huntarr-volume"
 	"immich-cache-config-volume"
 	"immich-cache-data-volume"
@@ -128,9 +121,6 @@ readonly VOLUMES=(
 	"radarr-db-config-volume"
 	"radarr-db-data-volume"
 	"radarr-volume"
-	"seerr-db-config-volume"
-	"seerr-db-data-volume"
-	"seerr-volume"
 	"slskd-volume"
 	"sonarr-db-config-volume"
 	"sonarr-db-data-volume"
@@ -154,7 +144,6 @@ readonly CHOWN_VOLUMES=(
 	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
-	"homarr-volume"
 	"huntarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
@@ -163,7 +152,6 @@ readonly CHOWN_VOLUMES=(
 	"kavita-volume"
 	"opencloud-config-volume"
 	"qui-volume"
-	"seerr-volume"
 	"slskd-volume"
 	"thelounge-volume"
 	"vaultwarden-volume"
@@ -239,14 +227,9 @@ done
 
 # Creates required application structure for specific apps.
 CHHOTO_DATA_PATH="${DOCKER_VOLUMES_PATH}/chhoto-volume/_data"
-HOMARR_DATA_PATH="${DOCKER_VOLUMES_PATH}/homarr-volume/_data"
 $SUDO mkdir -p "${IMMICH_DATA_PATH}"
 $SUDO mkdir -p "${OPENCLOUD_DATA_PATH}"
-$SUDO mkdir -p "${HOMARR_DATA_PATH}/redis"
 $SUDO touch "${CHHOTO_DATA_PATH}/urls.sqlite"
-
-# Updates exec permissions for seerr.
-$SUDO chmod 777 -R "${DOCKER_VOLUMES_PATH}/seerr-volume/_data"
 
 # Set ownership of volumes by chowning their _data directory on the host.
 echo -e "\nSetting volume permissions..."

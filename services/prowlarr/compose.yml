@@ -1,7 +1,5 @@
-###############################################################################
-# Prowlarr: Indexer manager and synchronization for 'ARR apps.                #
-# https://prowlarr.com/                                                       #
-###############################################################################
+# Prowlarr: Indexer manager and synchronization for 'ARR apps.
+# https://prowlarr.com/
 
 ---
 x-defaults: &defaults
@@ -16,7 +14,7 @@ x-defaults: &defaults
 services:
   prowlarr:
     <<: *defaults
-    image: ghcr.io/11notes/prowlarr:2.3.0
+    image: ghcr.io/11notes/prowlarr:2
     container_name: prowlarr
     network_mode: service:gluetun
     environment:

@@ -1,12 +1,10 @@
-###############################################################################
-# qui: Alternative web interface for qBittorrent.                             #
-# https://github.com/autobrr/qui                                              #
-###############################################################################
+# qui: Alternative web interface for qBittorrent.
+# https://github.com/autobrr/qui
 
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.11.0
+    image: ghcr.io/autobrr/qui:v1.11
     container_name: qui
     env_file: ../../.env
     network_mode: service:gluetun

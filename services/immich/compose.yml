@@ -16,7 +16,7 @@ x-defaults: &defaults
 services:
   immich-server:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v2.4.0
+    image: ghcr.io/immich-app/immich-server:v2.4.1
     container_name: immich-server
     user: "${PUID}:${PGID}"
     environment:
@@ -55,7 +55,7 @@ services:
 
   immich-cache:
     <<: *defaults
-    image: ghcr.io/11notes/redis:8.4.0
+    image: ghcr.io/11notes/redis:8
     container_name: immich-cache
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the Redis password.

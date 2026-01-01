@@ -1,12 +1,10 @@
-#################################################################################
-# Jellyfin: Home media server.                                                #
-# https://jellyfin.org/docs/                                                  #
-#################################################################################
+# Jellyfin: Home media server.
+# https://jellyfin.org/docs/
 
 ---
 services:
   jellyfin:
-    image: ghcr.io/jellyfin/jellyfin:10.11.5
+    image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
     env_file: ../../.env
     hostname: jellyfin

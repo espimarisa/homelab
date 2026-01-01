@@ -1,12 +1,10 @@
-###############################################################################
-# OpenCloud: Self-hosted cloud storage service                                #
-# https://docs.opencloud.eu/docs/admin/configuration                          #
-###############################################################################
+# OpenCloud: Self-hosted cloud storage service.
+# https://docs.opencloud.eu/docs/admin/configuration
 
 ---
 services:
   opencloud:
-    image: opencloudeu/opencloud-rolling:4.1.0
+    image: opencloudeu/opencloud-rolling:4
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh

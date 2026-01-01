@@ -1,7 +1,5 @@
-###############################################################################
-# Byparr: Captcha solver and cookie scraper. Alternative to Flaresolverr.     #
-# https://github.com/ThePhaseless/Byparr                                      #
-###############################################################################
+# Byparr: Captcha solver and cookie scraper. Alternative to Flaresolverr.
+# https://github.com/ThePhaseless/Byparr
 
 ---
 services:

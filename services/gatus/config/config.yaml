@@ -75,12 +75,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/radarr-db/json
 
-  # Seerr DB.
-  - name: Seerr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/seerr-db/json
-
   # Sonarr DB.
   - name: Sonarr - PostgreSQL
     <<: *defaults-container
@@ -124,12 +118,6 @@ endpoints:
   ###########################################################################
   # Infrastructure.                                                         #
   ###########################################################################
-
-  # Backrest.
-  - name: Backrest
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/backrest/json
 
   # Caddy.
   - name: Caddy
@@ -267,12 +255,6 @@ endpoints:
     group: Services
     url: https://${CHHOTO_URL}
 
-  # Homarr.
-  - name: Homarr
-    <<: *defaults-http
-    group: Services
-    url: https://${HOMARR_URL}
-
   # Immich.
   - name: Immich
     <<: *defaults-http
@@ -302,12 +284,6 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
-
-  # Seerr.
-  - name: Seerr
-    <<: *defaults-http
-    group: Services
-    url: https://${SEERR_URL}
 
   # The Lounge.
   - name: The Lounge

@@ -1,7 +1,5 @@
-###############################################################################
-# MaM-IP-Helper: MyAnonaMouse dynamic seedbox IP synchronization tool.        #
-# https://github.com/tyzen9/docker-myanonamouse-ip-helper                     #
-###############################################################################
+# MaM-IP-Helper: MyAnonaMouse dynamic seedbox IP synchronization tool.
+# https://github.com/tyzen9/docker-myanonamouse-ip-helper
 
 ---
 services:

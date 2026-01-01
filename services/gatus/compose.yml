@@ -1,7 +1,5 @@
-###############################################################################
-# Gatus: Status page and uptime monitoring.                                   #
-# https://gatus.io                                                            #
-###############################################################################
+# Gatus: Status page and uptime monitoring.
+# https://gatus.io
 
 ---
 x-defaults: &defaults

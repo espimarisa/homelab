@@ -80,11 +80,6 @@
 	import security_headers
 }
 
-{$HOMARR_URL} {
-	import external_proxy homarr:7575
-	import security_headers
-}
-
 {$IMMICH_URL} {
 	import external_proxy immich-server:2283
 	import security_headers
@@ -120,11 +115,6 @@
 	}
 }
 
-{$SEERR_URL} {
-	import external_proxy seerr:5055
-	import security_headers
-}
-
 {$THELOUNGE_URL} {
 	import external_proxy thelounge:9000
 	import security_headers
@@ -143,10 +133,6 @@
 
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474
-}
-
-backrest.{$INTERNAL_DOMAIN} {
-	import internal_proxy backrest:9898
 }
 
 beszel.{$INTERNAL_DOMAIN} {

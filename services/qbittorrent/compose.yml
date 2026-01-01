@@ -1,7 +1,5 @@
-###############################################################################
-# qBittorrent: BitTorrent client.                                             #
-# https://github.com/qbittorrent/qBittorrent/wiki                             #
-###############################################################################
+# qBittorrent: BitTorrent client.
+# https://github.com/qbittorrent/qBittorrent/wiki
 
 ---
 services:

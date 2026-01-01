@@ -1,7 +1,5 @@
-###############################################################################
-# Kavita: eBook/Comic/Manga media server.                                     #
-# https://wiki.kavitareader.com/                                              #
-###############################################################################
+# Kavita: eBook/Comic/Manga media server.
+# https://wiki.kavitareader.com/
 
 ---
 services:

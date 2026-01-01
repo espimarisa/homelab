@@ -1,7 +1,5 @@
-###############################################################################
-# Sonarr: Series manager, organizer, and PVR.                                 #
-# https://sonarr.tv/                                                          #
-###############################################################################
+# Sonarr: Series manager, organizer, and PVR.
+# https://sonarr.tv/
 
 ---
 x-defaults: &defaults
@@ -16,7 +14,7 @@ x-defaults: &defaults
 services:
   sonarr:
     <<: *defaults
-    image: ghcr.io/11notes/sonarr:4.0.16
+    image: ghcr.io/11notes/sonarr:4
     container_name: sonarr
     hostname: sonarr
     environment:

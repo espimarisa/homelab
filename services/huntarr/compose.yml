@@ -1,7 +1,5 @@
-###############################################################################
-# Huntarr: Automatic scanner for missing 'ARR content.                        #
-# https://plexguide.github.io/Huntarr.io/                                     #
-###############################################################################
+# Huntarr: Automatic scanner for missing 'ARR content.
+# https://plexguide.github.io/Huntarr.io/
 
 ---
 services:

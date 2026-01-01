@@ -6,7 +6,7 @@
 ---
 services:
   configarr:
-    image: ghcr.io/11notes/configarr:1.17.2
+    image: ghcr.io/11notes/configarr:1
     container_name: configarr
     env_file: ../../.env
     read_only: true

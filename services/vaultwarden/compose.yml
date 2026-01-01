@@ -1,7 +1,5 @@
-###############################################################################
-# Vaultwarden: Self-hosted Bitwarden-compatible server.                       #
-# https://github.com/dani-garcia/vaultwarden/wiki                             #
-###############################################################################
+# Vaultwarden: Self-hosted Bitwarden-compatible server.
+# https://github.com/dani-garcia/vaultwarden/wiki
 
 ---
 x-defaults: &defaults

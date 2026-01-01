@@ -1,7 +1,5 @@
-###############################################################################
-# Beszel: Server monitoring agent and hub.                                    #
-# https://beszel.dev/guide/getting-started                                    #
-###############################################################################
+# Beszel: Server monitoring agent and hub.
+# https://beszel.dev/guide/getting-started
 
 ---
 x-defaults: &defaults

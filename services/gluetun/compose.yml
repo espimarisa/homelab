@@ -1,7 +1,5 @@
-###############################################################################
-# Gluetun: Container VPN client. I'm currently using AirVPN.                  #
-# https://github.com/qdm12/gluetun-wiki/tree/main/setup/options               #
-###############################################################################
+# Gluetun: Container VPN client. I'm currently using AirVPN.
+# https://github.com/qdm12/gluetun-wiki/tree/main/setup/options
 
 ---
 services:

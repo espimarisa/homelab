@@ -1,12 +1,10 @@
-###############################################################################
 # Socket Proxy: Docker socket proxy for secure proxy access.                  #
-# https://docs.linuxserver.io/images/docker-socket-proxy/                     #
-###############################################################################
+# https://docs.linuxserver.io/images/docker-socket-proxy/
 
 ---
 services:
   socket-proxy:
-    image: lscr.io/linuxserver/socket-proxy:3.2.9
+    image: lscr.io/linuxserver/socket-proxy:3.2.10
     container_name: socket-proxy
     env_file: ../../.env
     hostname: socket-proxy

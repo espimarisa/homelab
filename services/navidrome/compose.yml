@@ -1,7 +1,5 @@
-###############################################################################
-# Navidrome: Music collection server and streamer.                            #
-# https://www.navidrome.org/docs/usage/configuration-options/                 #
-###############################################################################
+# Navidrome: Music collection server and streamer.
+# https://www.navidrome.org/docs/usage/configuration-options/
 
 ---
 services:

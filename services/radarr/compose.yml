@@ -1,7 +1,5 @@
-###############################################################################
-# Radarr: Movie manager, organizer, and PVR.                                  #
-# https://radarr.video/                                                       #
-###############################################################################
+# Radarr: Movie manager, organizer, and PVR.
+# https://radarr.video/
 
 ---
 x-defaults: &defaults
@@ -16,7 +14,7 @@ x-defaults: &defaults
 services:
   radarr:
     <<: *defaults
-    image: ghcr.io/11notes/radarr:6.0.4
+    image: ghcr.io/11notes/radarr:6
     container_name: radarr
     hostname: radarr
     environment:
