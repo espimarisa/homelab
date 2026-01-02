@@ -85,7 +85,7 @@ radarr:
       # However, I keep getting a lot of German and Italian releases picked up, and I'm lazy.
       # TODO: Make this a proper custom format and try not to block good MULTI releases.
 
-      - trash_id: strict-no-foreign
+      - trash_id: radarr-strict-no-foreign
         name: Strict No Foreign
         trash_description: Block common foreign and dubbed releases. May block certain multi releases.
         trash_scores:
@@ -96,12 +96,11 @@ radarr:
             negate: false
             required: false
             fields:
-              value: '(?i)\b(german|italian|spanish|ita|ger|esp|dubbed)\b'
+              value: '(?i)\b(arabic|german|italian|portuguese|spanish|turkish|ita|ger|esp|dubbed)\b'
 
     # Custom format scoring.
     custom_formats:
       - trash_ids:
-          - strict-no-foreign # Strict No Foreign
           - 0dc8aec3bd1c47cd6c40c46ecd27e846 # Language: Not English
           - 0f12c086e289cf966fa5948eac571f44 # Hybrid
           - 493b6d1dbec3c3364c59d7607f7e3405 # HDR
@@ -142,6 +141,15 @@ radarr:
         assign_scores_to:
           - name: YayPonies-1080p
             score: 10000
+
+      # Strict No Foreign custom format assignment.
+      - trash_ids:
+        - radarr-strict-no-foreign # Custom Strict No Foreign.
+        assign_scores_to:
+        - name: WEB-1080p
+          score: -10000
+        - name: WEB-2160p
+          score: -10000
 
     quality_profiles:
       # Custom YayPonies profile.
@@ -224,7 +232,7 @@ sonarr:
       # However, I keep getting a lot of German and Italian releases picked up, and I'm lazy.
       # TODO: Make this a proper custom format and try not to block good MULTI releases.
 
-      - trash_id: strict-no-foreign
+      - trash_id: sonarr-strict-no-foreign
         name: Strict No Foreign
         trash_description: Block common foreign and dubbed releases. May block certain multi releases.
         trash_scores:
@@ -235,7 +243,7 @@ sonarr:
             negate: false
             required: false
             fields:
-              value: '(?i)\b(german|italian|spanish|ita|ger|esp|dubbed)\b'
+              value: '(?i)\b(arabic|german|italian|portuguese|spanish|turkish|ita|ger|esp|dubbed)\b'
 
     # Custom format scoring.
     custom_formats:
@@ -258,7 +266,6 @@ sonarr:
 
       # Unwanted formats.
       - trash_ids:
-          - strict-no-foreign # Strict No Foreign
           - 69aa1e159f97d860440b04cd6d590c4f # Language: Not English
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
@@ -297,6 +304,19 @@ sonarr:
         assign_scores_to:
           - name: YayPonies-1080p
             score: 10000
+
+      # Strict No Foreign custom format assignment.
+      - trash_ids:
+        - sonarr-strict-no-foreign # Custom Strict No Foreign.
+        assign_scores_to:
+          - name: Remux-2160p
+            score: -10000
+          - name: WEB-1080p
+            score: -10000
+          - name: WEB-2160p
+            score: -10000
+          - name: SD-480p
+            score: -10000
 
     # Custom quality profiles.
     quality_profiles:
