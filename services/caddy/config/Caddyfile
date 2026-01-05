@@ -92,11 +92,6 @@
 	import security_headers
 }
 
-{$NAVIDROME_URL} {
-	import external_proxy navidrome:4533
-	import security_headers
-}
-
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
 	import security_headers

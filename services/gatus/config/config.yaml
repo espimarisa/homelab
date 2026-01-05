@@ -273,12 +273,6 @@ endpoints:
     group: Services
     url: https://${KAVITA_URL}
 
-  # Navidrome.
-  - name: Navidrome
-    <<: *defaults-http
-    group: Services
-    url: https://${NAVIDROME_URL}
-
   # OpenCloud.
   - name: OpenCloud
     <<: *defaults-http
