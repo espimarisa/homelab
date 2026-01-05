@@ -1,21 +1,20 @@
 #!/bin/bash
 
-# /etc/smartd.conf - DEVICESCAN -H -m email@bla.com -M exec /usr/local/bin/discord-smart-alert.sh -n standby
+# This script sends mdadm alerts to a Discord webhook. Requires curl.
+# Copy this to /usr/local/bin/discord-mdadm.sh and chmod 600 && chmod +x it.
+# You will need to update /etc/mdadm.conf to include a line with the following:
+# PROGRAM /usr/local/bin/discord-mdadm.sh
 
-WEBHOOK_URL="https://bla"
-SYSTEM_NAME="asdf"
+SYSTEM_NAME="hostname-of-the-system-change-me"
+TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+WEBHOOK_NAME="RAID Monitor"
+WEBHOOK_URL="https://webhook-url-change-me.discordapp.com"
 
-# mdadm passes these variables automatically
+# mdadm passes these variables automatically.
 EVENT=$1
 DEVICE=$2
 
-# Get current timestamp
-TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
-
-# Color Logic:
-# Red (15158332) for failures
-# Green (3066993) for tests/good news
-# Blue (3447003) for info
+# Color generation logic. Red = fail, green = success, blue = info.
 if [[ $EVENT == "Fail" || $EVENT == "Degraded" || $EVENT == "DeviceDisappeared" ]]; then
 	COLOR=15158332
 elif [[ $EVENT == "TestMessage" ]]; then
@@ -24,24 +23,25 @@ else
 	COLOR=3447003
 fi
 
-# Construct the JSON payload
+# Constructs the JSON payload to send to the Discord API.
 PAYLOAD=$(
 	cat <<EOF
 {
-  "username": "RAID Monitor",
+  "username": $WEBHOOK_NAME,
   "embeds": [{
-    "title": "MDADM Alert: $EVENT",
-    "description": "Storage event detected on **$SYSTEM_NAME**.",
-    "color": $COLOR,
-    "fields": [
-      { "name": "Device", "value": "\`$DEVICE\`", "inline": true },
-      { "name": "Event", "value": "\`$EVENT\`", "inline": true },
-      { "name": "Time", "value": "$TIMESTAMP", "inline": false }
-    ]
+	"title": "RAID Alert: $EVENT",
+	"description": "Storage event detected on **$SYSTEM_NAME**.",
+	"color": $COLOR,
+	"fields": [
+	  { "name": "Device", "value": "\`$DEVICE\`", "inline": true },
+	  { "name": "Event", "value": "\`$EVENT\`", "inline": true },
+	  { "name": "Time", "value": "$TIMESTAMP", "inline": false }
+	]
   }]
 }
+
 EOF
 )
 
-# Send to Discord.
+# Sends the event to the Discord API.
 curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$WEBHOOK_URL" >/dev/null 2>&1

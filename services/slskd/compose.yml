@@ -14,6 +14,7 @@ services:
     environment:
       SLSKD_API_KEY: "${SLSKD_API_KEY}" # API key to use.
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Directory to store downloaded files into.
+      SLSKD_FORCE_SHARE_SCAN: "true" # Automatically scan on startup.
       SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek" # Directory to store incomplete downloads.
       SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # https://jwtsecrets.com/#generator
       SLSKD_JWT_TTL: "604800000" # Sets the JWT TTL.

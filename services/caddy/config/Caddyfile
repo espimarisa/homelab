@@ -1,17 +1,32 @@
 {
 	# Use ZeroSSL for ACME and SSL certificates.
 	acme_ca https://acme.zerossl.com/v2/DV90
+
+	# Use Cloudflare for ACME DNS challenges.
+	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
 	email {$ACME_EMAIL}
 
-	# Store data to the filesystem.
-	storage file_system /caddy/var
+	# Use Cloudflare for Dynamic DNS.
+	# NOTE: Currently disabled due to weird networking at my house.
+	# dynamic_dns {
+	# 	provider cloudflare {$CLOUDFLARE_API_TOKEN}
+	# 	check_interval 1h
+	# 	versions ipv4 ipv6
+	# 	domains {
+	# 		{$DDNS_DOMAINS}
+	# 	}
+	# }
+
+	servers {
+		trusted_proxies static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	}
 }
 
 # Snippet used to configure logging.
 (logging) {
 	log {
 		# args[0] becomes the filename.
-		output file /caddy/logs/{args[0]}.log {
+		output file /data/logs/{args[0]}.log {
 			roll_size 10mb # Roll logs after they reach 10mb.
 			roll_keep 5 # Keep up to 5 log files.
 			roll_keep_for 720h # Keep logs for 30 days.
@@ -32,44 +47,21 @@
 
 # Snippet for reverse proxying externally accessible services.
 (external_proxy) {
-	# Enables compression.
 	encode zstd gzip
-
-	# Log to external-access.log.
 	import logging external-access
-
-	# Reverse proxies traffic.
-	reverse_proxy {args[0]} {
-		# Trust private ranges and Tailscale IPs for correct client IP detection.
-		trusted_proxies private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
-	}
+	reverse_proxy {args[0]}
 }
 
 (internal_proxy) {
 	# Abort traffic NOT from private ranges or Tailscale.
 	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	abort @denied
-
-	# Enables compression.
 	encode zstd gzip
-
-	# Use Caddy's internal CA; may require CA installation.
-	tls internal
-
-	# Log to internal-access.log.
 	import logging internal-access
-
-	# Reverse proxies traffic.
-	reverse_proxy {args[0]} {
-		# Trust private ranges and Tailscale IPs for correct client IP detection.
-		trusted_proxies private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
-	}
+	reverse_proxy {args[0]}
 }
 
-#################################################################################
-# Externally accessible services.											  #
-#################################################################################
-
+# Externally accessible services.
 {$CHHOTO_URL} {
 	import external_proxy chhoto:4567
 	import security_headers
@@ -122,15 +114,10 @@
 
 {$VAULTWARDEN_URL} {
 	import external_proxy vaultwarden:80
-
-	# Vaultwarden sets its own security headers minus HSTS.
 	header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 }
 
-#################################################################################
-# Internal-only services; accessible with a DNS rewrite.					  #
-#################################################################################
-
+# Internal-only services; accessible with a DNS rewrite.
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474
 }
@@ -180,10 +167,7 @@ sonarr.{$INTERNAL_DOMAIN} {
 	respond "OK" 200
 }
 
-#################################################################################
-# Global catch-all for unhandled traffic.								      #
-#################################################################################
-
+# Global catch-all for unhandled traffic.
 * {
 	handle {
 		abort
