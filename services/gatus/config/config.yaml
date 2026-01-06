@@ -151,7 +151,7 @@ endpoints:
   - name: Immich Server
     <<: *defaults-container
     group: Immich
-    url: ${SOCKET_PROXY_URL}/immich-server/json
+    url: ${SOCKET_PROXY_URL}/immich/json
 
   ###########################################################################
   # Media management.                                                       #
