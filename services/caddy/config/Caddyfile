@@ -65,12 +65,12 @@
 
 # Externally accessible services.
 {$CHHOTO_URL} {
-	import external_proxy chhoto:4567
+	import cloudflare_proxy chhoto:4567
 	import security_headers
 }
 
 {$GATUS_URL} {
-	import external_proxy gatus:8080
+	import cloudflare_proxy gatus:8080
 	import security_headers
 }
 
