@@ -4,7 +4,7 @@
 ---
 services:
   caddy:
-    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2026.01.01
+    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:latest
     container_name: caddy
     env_file: ../../.env
     hostname: caddy

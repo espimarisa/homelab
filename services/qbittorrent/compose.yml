@@ -4,7 +4,7 @@
 ---
 services:
   qbittorrent:
-    image: ghcr.io/11notes/qbittorrent:5.1.4
+    image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
     env_file: ../../.env
     network_mode: service:gluetun
@@ -13,7 +13,7 @@ services:
     environment:
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - downloads:/downloads:rw
+      - downloads-complete:/downloads:rw
       - downloads-incomplete:/downloads-incomplete:rw
       - downloads-permaseed:/downloads-permaseed:rw
       - qbittorrent-config:/qbittorrent/etc:rw
@@ -39,10 +39,10 @@ volumes:
   qbittorrent-data:
     name: qbittorrent-data-volume
     external: true
-  downloads:
-    name: downloads-bind
+  downloads-complete:
+    name: downloads-complete-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}"
       o: bind
       type: none
   downloads-incomplete:

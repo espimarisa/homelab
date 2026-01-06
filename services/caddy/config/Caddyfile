@@ -6,19 +6,10 @@
 	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
 	email {$ACME_EMAIL}
 
-	# Use Cloudflare for Dynamic DNS.
-	# NOTE: Currently disabled due to weird networking at my house.
-	# dynamic_dns {
-	# 	provider cloudflare {$CLOUDFLARE_API_TOKEN}
-	# 	check_interval 1h
-	# 	versions ipv4 ipv6
-	# 	domains {
-	# 		{$DDNS_DOMAINS}
-	# 	}
-	# }
-
 	servers {
-		trusted_proxies static private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+		# Trust Cloudflare IPs.
+		trusted_proxies cloudflare
+		client_ip_headers CF-Connecting-IP X-Forwarded-For X-Real-IP
 	}
 }
 
@@ -45,13 +36,24 @@
 	}
 }
 
-# Snippet for reverse proxying externally accessible services.
+# Snippet for services proxied through Cloudflare.
+(cloudflare_proxy) {
+	encode zstd gzip
+	import logging external-access
+
+	reverse_proxy {args[0]} {
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+# Snippet for external services.
 (external_proxy) {
 	encode zstd gzip
 	import logging external-access
 	reverse_proxy {args[0]}
 }
 
+# Snippet for internal-only services.
 (internal_proxy) {
 	# Abort traffic NOT from private ranges or Tailscale.
 	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
@@ -108,8 +110,9 @@
 }
 
 {$VAULTWARDEN_URL} {
-	import external_proxy vaultwarden:80
-	header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+	# Uses the Cloudflare snippet to ensure X-Real-IP is passed correctly.
+	import cloudflare_proxy vaultwarden:80
+	import security_headers
 }
 
 # Internal-only services; accessible with a DNS rewrite.

@@ -40,8 +40,8 @@ networks:
 
 volumes:
   downloads:
-    name: downloads-bind
+    name: downloads-complete-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}"
       o: bind
       type: none

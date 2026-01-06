@@ -4,7 +4,7 @@
 ---
 services:
   chhoto:
-    image: ghcr.io/sintan1729/chhoto-url:6-alpine
+    image: ghcr.io/sintan1729/chhoto-url:6.5-alpine
     container_name: chhoto
     env_file: ../../.env
     hostname: chhoto
@@ -47,6 +47,6 @@ volumes:
   chhoto-data:
     name: chhoto-data-bind
     driver_opts:
-      device: "${CHHOTO_DATA_PATH}"
+      device: "${APPDATA_PATH}/chhoto"
       o: bind
       type: none

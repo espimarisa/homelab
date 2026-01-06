@@ -4,7 +4,7 @@
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.11
+    image: ghcr.io/autobrr/qui:v1.12
     container_name: qui
     env_file: ../../.env
     network_mode: service:gluetun

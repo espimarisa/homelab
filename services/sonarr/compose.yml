@@ -85,10 +85,10 @@ volumes:
   sonarr-db-data:
     name: sonarr-db-data-volume
     external: true
-  downloads:
-    name: downloads-bind
+  downloads-complete:
+    name: downloads-complete-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}"
       o: bind
       type: none
   media-library:

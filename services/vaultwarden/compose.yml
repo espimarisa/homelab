@@ -14,45 +14,40 @@ x-defaults: &defaults
 services:
   vaultwarden:
     <<: *defaults
-    image: ghcr.io/dani-garcia/vaultwarden:1.34.3-alpine
+    image: ghcr.io/dani-garcia/vaultwarden:1.35.1-alpine
     container_name: vaultwarden
     hostname: vaultwarden
     user: "${PUID}:${PGID}"
     environment:
-      ADMIN_RATELIMIT_MAX_BURST: "3" # Sets the admin login ratelimit burst.
-      ADMIN_RATELIMIT_SECONDS: "300" # Sets the admin login.
       ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN} # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-admin-page#using-argon2
       DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres" # Connects to PostgreSQL.
       DOMAIN: "https://${VAULTWARDEN_URL}" # Sets the URL to use.
-      EMAIL_2FA_AUTO_FALLBACK: "true" # Use email for 2FA fallback.
+      EMAIL_2FA_AUTO_FALLBACK: "true" # Use email for 2FA fallback automatically.
       EMAIL_2FA_ENFORCE_ON_VERIFIED_INVITE: "true" # Require email 2FA if no other options are set.
       EMAIL_CHANGE_ALLOWED: "true" # Allow users to change their emails.
       EMERGENCY_ACCESS_ALLOWED: "true" # Enables the emergency access feature.
-      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,export-attachments" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
-      EXTENDED_LOGGING: "true" # Enables extended logging.
-      IP_HEADER: "X-Forwarded-For" # Use X-Forwarded-For for IP identification.
-      LOG_LEVEL: "info" # Sets the log level.
-      LOG_TIMESTAMP_FORMAT: "%Y-%m-%d %H:%M:%S.%3f" # Logging timestamp format.
-      LOGIN_RATELIMIT_MAX_BURST: "10" # Sets the login ratelimit burst.
-      LOGIN_RATELIMIT_SECONDS: "60" # Sets the login ratelimit.
+      ENABLE_WEBSOCKET: "true" # Enables websockets.
+      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "fido2-vault-credentials,inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,pm-25373-windows-biometrics-v2,export-attachments" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
+      ICON_SERVICE: "duckduckgo" # Use DDG for fetching icons. Seems to fix a few issues.
+      IP_HEADER: "CF-Connecting-IP" # Use X-Forwarded-For if not using CF. Requires trusted header.
       PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles push notification support.
-      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}"
+      PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" #
       PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}"
       REQUIRE_DEVICE_EMAIL: "true" # Require new devices to verify by email.
       SENDS_ALLOWED: "true" # Enables send functionality.
-      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles signups.
+      SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles signup support.
       SIGNUPS_VERIFY: "true" # Require new accounts to be verified.
       SMTP_FROM: "${SMTP_SENDER}" # SMTP sender address.
       SMTP_HOST: "${SMTP_HOST}" # SMTP server host.
       SMTP_PASSWORD: "${SMTP_PASSWORD}" # SMTP server password.
       SMTP_PORT: "${SMTP_PORT}" # SMTP server port.
       SMTP_SECURITY: "${SMTP_SECURITY}" # SMTP server security type. starttls, force_tls, or off.
-      SMTP_TIMEOUT: "15s" # SMTP server timeout.
+      YUBICO_CLIENT_ID: "${YUBICO_CLIENT_ID}" # https://upgrade.yubico.com/getapikey/
+      YUBICO_SECRET_KEY: "${YUBICO_SECRET_KEY}" # https://upgrade.yubico.com/getapikey/
+      SMTP_TIMEOUT: "15" # SMTP server timeout.
       SMTP_USERNAME: "${SMTP_USERNAME}" # SMTP server username.
       TRASH_AUTO_DELETE_DAYS: "30" # Wait 30 days before deleting items in the trash.
-      TZ: "${TZ}" # Sets the timezone.
-      WEB_VAULT_ENABLED: "true" # Enables the web vault.
-      WEBSOCKET_ENABLED: "true" # Enables websockets.
+      TZ: "${TZ}"
     expose:
       - 80/tcp
     networks:

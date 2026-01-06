@@ -14,7 +14,7 @@ x-defaults: &defaults
 services:
   autobrr:
     <<: *defaults
-    image: ghcr.io/s0up4200/autobrr-distroless:v1.71.0
+    image: ghcr.io/s0up4200/autobrr-distroless:v1.71
     container_name: autobrr
     network_mode: service:gluetun
     user: "${PUID}:${PGID}"

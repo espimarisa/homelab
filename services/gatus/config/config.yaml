@@ -291,12 +291,3 @@ endpoints:
     group: Services
     url: https://${VAULTWARDEN_URL}/alive
 
-  ###########################################################################
-  # Websites.                                                               #
-  ###########################################################################
-
-  # Website.
-  - name: Main Website - HTTP
-    <<: *defaults-http
-    group: Websites
-    url: https://${DOMAIN}

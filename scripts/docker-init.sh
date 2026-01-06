@@ -2,25 +2,22 @@
 
 # This script prepares (or updates) a system environment for this infrastructure.
 # It parses environment variables and creates required volumes, networks, and paths.
-# It also *should* take ownership of things that require PUID/PGID matches.
-# This is not a great way to do it, but it works fine for my case.
+# It uses the Docker CLI to dynamically find volume paths for permission setting.
 # chmod +x this script and run it with bash.
+# This is stupid, but works fine. - Mari
 
 # Exit immediately if a command exits with a non-zero status.
 set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
-	"CHHOTO_DATA_PATH"
-    "DOCKER_VOLUMES_PATH"
+    "APPDATA_PATH"
+    "DOWNLOADS_COMPLETE_PATH"
     "DOWNLOADS_INCOMPLETE_PATH"
-    "DOWNLOADS_PATH"
     "DOWNLOADS_PERMASEED_PATH"
-    "IMMICH_DATA_PATH"
     "IPV6_ENABLED"
     "IPV6_ULA_BASE"
     "MEDIA_LIBRARY_PATH"
-    "OPENCLOUD_DATA_PATH"
     "PGID"
     "PUID"
     "STORAGE_PATH"
@@ -60,8 +57,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Download directories to create.
-# This will result in the following structure, for example:
-# /storage/downloads/torrents/<bla>arr
+# These are now created inside DOWNLOADS_COMPLETE_PATH.
 readonly DOWNLOADS_DIRECTORIES=(
     "deezer"
     "soulseek"
@@ -75,22 +71,20 @@ readonly DOWNLOADS_DIRECTORIES=(
 )
 
 # Incomplete download directories to create.
-# These are used to store incomplete downloads from qBittorrent/soulseek.
-# It's generally a good idea for DOWNLOADS_INCOMPLETE_PATH to be a feeder SSD.
-# This will result in the following structure, for example, if it's mounted...
-# /downloads-incomplete/torrents/<your-qbittorrent-category-setup>
+# These are created inside DOWNLOADS_INCOMPLETE_PATH.
 readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
     "soulseek"
     "torrents"
 )
 
-# Media library directories to create.
-# These store, well, your media library structure.
-# It's a good idea to keep these on their own zfs pool if you use zfs.
-# Additionally, messing with these probably isn't a great idea.
-# This will result in the following structure, if /storage is the base:
-# /storage/media-library/<anime,tv,etc>
+# Persistent bulk application data directories to create.
+readonly APPDATA_DIRECTORIES=(
+    "chhoto"
+    "immich"
+    "opencloud"
+)
 
+# Media library directories to create.
 readonly MEDIA_LIBRARY_DIRECTORIES=(
     "anime"
     "audiobooks"
@@ -103,11 +97,6 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 )
 
 # Docker volumes to create.
-# I end all named volumes in -volume for clarity.
-# If a volume already exists, it will be skipped.
-# This is the same thing as just running docker volume create example-volume,
-# but it's useful to have as I can  update the list and run it when adding an app.
-
 readonly VOLUMES=(
     "autobrr-volume"
     "autobrr-db-config-volume"
@@ -153,11 +142,6 @@ readonly VOLUMES=(
 )
 
 # Docker volumes to take PUID/PGID ownership of.
-# This is a list of volumes that require explicit ID ownership.
-# Containers that run rootless and do *not* use s6 or drop down may need this.
-# NOTE: Many containers use their own internal IDs, such as Redis.
-# Additionally, 11notes images don't need this as they run as 1000:1000 internally.
-
 readonly CHOWN_VOLUMES=(
     "autobrr-volume"
     "beszel-agent-volume"
@@ -176,18 +160,20 @@ readonly CHOWN_VOLUMES=(
 )
 
 # Files to touch (create empty if they don't exist).
-# This is useful for databases (sqlite) or log files that must exist
-# before the container starts to prevent directory-creation errors.
-
 readonly TOUCH_FILES=(
-    "${CHHOTO_DATA_PATH}/urls.sqlite"
+    "${APPDATA_PATH}/chhoto/urls.sqlite"
 )
 
-# Function to create a directory.
+# Function to create directories.
+# Ensures the base path exists even if no subdirectories are provided.
 create_dirs() {
     local base_path="$1"
     shift
     local -a dirs=("$@")
+
+    echo "Ensuring base directory exists: ${base_path}"
+    $SUDO mkdir -p "${base_path}"
+
     for dir in "${dirs[@]}"; do
         echo "Ensuring directory exists: ${base_path}/${dir}"
         $SUDO mkdir -p "${base_path}/${dir}"
@@ -206,14 +192,13 @@ create_volume() {
 }
 
 # Unified Function to create a Docker network.
-# Usage: create_network <name> <ipv4_gw> <ipv4_sub> <ipv6_gw> <ipv6_sub> [internal]
 create_network() {
     local network_name="$1"
     local ipv4_gateway="$2"
     local ipv4_subnet="$3"
     local ipv6_gateway="$4"
     local ipv6_subnet="$5"
-    local internal_flag="${6:-false}" # Default to false if not provided
+    local internal_flag="${6:-false}"
 
     local network_args=("--gateway=$ipv4_gateway" "--subnet=$ipv4_subnet")
 
@@ -237,17 +222,17 @@ create_network() {
 
 # Creates bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
+create_dirs "$DOWNLOADS_COMPLETE_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
-create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
+create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
 # Creates Docker networks.
+# Will break if you have existing networks, but
+# I don't feel like adding an environment variable.
 echo -e "\nCreating Docker networks..."
 
-# We construct the IPv6 subnets based on the ULA base provided in .env
-# Example Base: fd00:dead:beef
-# Net 1: fd00:dead:beef:1::/64
 create_network "external-network" \
     "172.18.0.1" "172.18.0.0/16" \
     "${IPV6_ULA_BASE}:1::1" "${IPV6_ULA_BASE}:1::/64"
@@ -267,18 +252,10 @@ for volume in "${VOLUMES[@]}"; do
     create_volume "$volume"
 done
 
-# Creates specific application data directories.
-# These are manual overrides for things not covered by standard volume logic.
-
-echo -e "\nCreating specific application paths..."
-$SUDO mkdir -p "${IMMICH_DATA_PATH}"
-$SUDO mkdir -p "${OPENCLOUD_DATA_PATH}"
-
 # Touch specific files that need to exist.
 echo -e "\nTouching required files..."
 for file_path in "${TOUCH_FILES[@]}"; do
     dir_path=$(dirname "$file_path")
-    # Ensure the parent directory exists.
     if [ ! -d "$dir_path" ]; then
         echo "Creating parent directory: $dir_path"
         $SUDO mkdir -p "$dir_path"
@@ -290,43 +267,45 @@ for file_path in "${TOUCH_FILES[@]}"; do
     fi
 done
 
-# Set ownership of volumes by chowning their _data directory on the host.
+# Set ownership of volumes by dynamically inspecting their mount point.
 echo -e "\nSetting volume permissions..."
 for volume in "${CHOWN_VOLUMES[@]}"; do
-    VOLUME_DATA_PATH="${DOCKER_VOLUMES_PATH}/${volume}/_data"
-    if $SUDO [ -d "$VOLUME_DATA_PATH" ]; then
-        echo "Setting ownership for volume: '$volume' to ${PUID}:${PGID}"
-        $SUDO chown -R "${PUID}:${PGID}" "$VOLUME_DATA_PATH"
+    # Dynamically grab the mountpoint from Docker
+    VOLUME_MOUNTPOINT=$(docker volume inspect --format '{{ .Mountpoint }}' "$volume" 2>/dev/null || true)
+
+    if [ -z "$VOLUME_MOUNTPOINT" ]; then
+        echo "Error: Could not determine mountpoint for volume '$volume'. Skipping."
+        continue
+    fi
+
+    # Check if the path exists.
+    # Use sudo test because the docker root dir (usually /var/lib/docker) is restricted.
+    if $SUDO test -d "$VOLUME_MOUNTPOINT"; then
+        echo "Setting ownership for volume: '$volume' at '$VOLUME_MOUNTPOINT' to ${PUID}:${PGID}"
+        $SUDO chown -R "${PUID}:${PGID}" "$VOLUME_MOUNTPOINT"
     else
-        echo "Warning: Could not find data directory for volume '$volume' at $VOLUME_DATA_PATH"
+        echo "Warning: Volume path '$VOLUME_MOUNTPOINT' does not exist or is not accessible."
     fi
 done
 
 # Sets ownership of the main bind mount directories on the host.
-# This may take a while if you're running it on a large, fresh media library.
-# You will want to be careful with this if you have sensitive permissions.
-# This **WILL** use PUID/PGID - note if you use user 1001 for example and not 1000.
-
 echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
+
 $SUDO chown -R "${PUID}:${PGID}" \
-    "${DOWNLOADS_PATH}" \
-    "${DOWNLOADS_PERMASEED_PATH}" \
+    "${APPDATA_PATH}" \
+    "${DOWNLOADS_COMPLETE_PATH}" \
     "${DOWNLOADS_INCOMPLETE_PATH}" \
-    "${IMMICH_DATA_PATH}" \
-    "${MEDIA_LIBRARY_PATH}" \
-    "${OPENCLOUD_DATA_PATH}"
+    "${DOWNLOADS_PERMASEED_PATH}" \
+    "${MEDIA_LIBRARY_PATH}"
 
 # Set permissions of the main bind mount directories on the host.
-# Be careful adding something here as it could break an app expecting lower perms.
-
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
-    "${DOWNLOADS_PATH}" \
+    "${APPDATA_PATH}" \
+    "${DOWNLOADS_COMPLETE_PATH}" \
     "${DOWNLOADS_INCOMPLETE_PATH}" \
-    "${IMMICH_DATA_PATH}" \
-    "${MEDIA_LIBRARY_PATH}" \
-    "${OPENCLOUD_DATA_PATH}"
+    "${DOWNLOADS_PERMASEED_PATH}" \
+    "${MEDIA_LIBRARY_PATH}"
 
 echo -e "\nInitial setup complete!"
-

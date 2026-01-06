@@ -12,21 +12,29 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      SLSKD_API_KEY: "${SLSKD_API_KEY}" # API key to use.
-      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Directory to store downloaded files into.
-      SLSKD_FORCE_SHARE_SCAN: "true" # Automatically scan on startup.
-      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek" # Directory to store incomplete downloads.
-      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # https://jwtsecrets.com/#generator
-      SLSKD_JWT_TTL: "604800000" # Sets the JWT TTL.
-      SLSKD_PASSWORD: "${SLSKD_PASSWORD}" # Web interface password to set.
-      SLSKD_REMOTE_CONFIGURATION: "true" # Allow configuration in the web interface.
-      SLSKD_SHARED_DIR: "/library/music" # Default directory to share.
-      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Soulseek listening port.
-      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}" # Soulseek password to use.
-      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}" # Soulseek username to use.
-      SLSKD_UMASK: "${UMASK}" # Umask to apply to newly created files.
-      SLSKD_USERNAME: "${SLSKD_USERNAME}" # Web interface username to set.
-      TZ: "${TZ}" # Sets the timezone.
+      SLSKD_API_KEY: "${SLSKD_API_KEY}"
+      SLSKD_DOWNLOAD_SPEED_LIMIT: "${SLSKD_DOWNLOAD_SPEED_LIMIT}"
+      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
+      SLSKD_FORCE_SHARE_SCAN: "true"
+      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
+      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
+      SLSKD_JWT_TTL: "604800000"
+      SLSKD_PASSWORD: "${SLSKD_PASSWORD}"
+      SLSKD_REMOTE_CONFIGURATION: "true"
+      SLSKD_REMOTE_FILE_MANAGEMENT: "true"
+      SLSKD_SHARE_CACHE_RETENTION: "1440"
+      SLSKD_SHARE_CACHE_STORAGE_MODE: "memory"
+      SLSKD_SHARE_CACHE_WORKERS: "4"
+      SLSKD_SHARED_DIR: "/library/music"
+      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_USER_DESCRIPTION}"
+      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
+      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
+      SLSKD_SLSK_PICTURE: "${SOULSEEK_USER_PICTURE_URL}"
+      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
+      SLSKD_UMASK: "${UMASK}"
+      SLSKD_UPLOAD_SPEED_LIMIT: "${SLSKD_UPLOAD_SPEED_LIMIT}"
+      SLSKD_USERNAME: "${SLSKD_USERNAME}"
+      TZ: "${TZ}"
     tmpfs:
       - "/.net:uid=${PUID},gid=${PGID},exec"
       - "/tmp:uid=${PUID},gid=${PGID},exec"
@@ -44,8 +52,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 1G
+          cpus: 4
+          memory: 4G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:
@@ -56,9 +64,9 @@ volumes:
     name: slskd-volume
     external: true
   downloads:
-    name: downloads-bind
+    name: downloads-complete-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}"
       o: bind
       type: none
   downloads-incomplete:
