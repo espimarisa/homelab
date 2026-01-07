@@ -13,9 +13,11 @@ services:
       - /dev/net/tun:/dev/net/tun:rw
     environment:
       BLOCK_MALICIOUS: "off" # Disable unbound malware blocking; reduces resource usage.
+      DOT_PROVIDERS: "quad9" # Use Quad9 for DNS over TLS.
       DOT: "on" # Enables DNS over TLS.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}" # List of subnets allowed to access the Gluetun network.
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/firewall.md
+      HEALTH_TARGET_ADDRESSES: "www.quad9.net:443" # Use Quad9 for healthchecks.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
       SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities to connect to.

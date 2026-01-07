@@ -75,7 +75,7 @@
 }
 
 {$IMMICH_URL} {
-	import external_proxy immich-server:2283
+	import external_proxy immich:2283
 	import security_headers
 
 	# Allow large uploads.
