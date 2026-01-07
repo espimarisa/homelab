@@ -28,7 +28,6 @@ services:
       EMERGENCY_ACCESS_ALLOWED: "true" # Enables the emergency access feature.
       ENABLE_WEBSOCKET: "true" # Enables websockets.
       EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "fido2-vault-credentials,inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,pm-25373-windows-biometrics-v2,export-attachments" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
-      ICON_SERVICE: "duckduckgo" # Use DDG for fetching icons. Seems to fix a few issues.
       IP_HEADER: "CF-Connecting-IP" # Use X-Forwarded-For if not using CF. Requires trusted header.
       PUSH_ENABLED: "${VAULTWARDEN_PUSH_ENABLED}" # Toggles push notification support.
       PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" #
