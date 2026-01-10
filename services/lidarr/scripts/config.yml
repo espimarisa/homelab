@@ -60,7 +60,7 @@ lyrics:
   fallback: null # Use no fallback.
   force: no # Do not force.
   print: no # Do not print lyrics to logs. Lmao why is this an option.
-  sources: lrclib # Use lrclib.
+  sources: [lrclib, genius] # Use lrclib and genius as a fallback.
   synced: yes # Use synced lyrics.
 
 # Matching options.
