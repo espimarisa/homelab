@@ -35,7 +35,7 @@ lastgenre:
   canonical: yes # Fixes "Hip Hop" -> "Hip-Hop" and such.
   min_weight: 15 # Ignore obscure tags used by only a few people.
   source: album # Tag the album with the genre, not individual tracks.
-  whitelist: /config/scripts/lastgenres.txt # Prevents garbage tags, see file.
+  whitelist: /scripts/lastgenres.txt # Prevents garbage tags, see file.
 
 # ReplayGain (Volume Normalization) options.
 # Calculates volume levels so players can normalize playback.
