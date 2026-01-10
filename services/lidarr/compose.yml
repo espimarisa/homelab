@@ -23,7 +23,7 @@ services:
       - gluetun
       - internal
     volumes:
-      - scripts:/scripts:rw
+      - ./scripts:/scripts:rw
       - downloads:/downloads:rw
       - lidarr:/config:rw
       - media-library:/library:rw
