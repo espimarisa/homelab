@@ -21,7 +21,6 @@ import:
   move: no # Do not move files; let Lidarr handle it.
   quiet: yes # Run in headless mode.
   resume: yes # Resume interrupted operations.
-  timid: yes # Skip low-confidence releases to avoid screwups.
   write: yes # Write tags to the files.
 
 # Chroma (Audio fingerprinting) options.
