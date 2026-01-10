@@ -10,7 +10,7 @@ library: /config/beets-library.blb
 original_date: yes
 
 # Plugins to enable.
-plugins: chroma embedart fetchart lastgenre lyrics ftintitle musicbrainz replaygain scrub web
+plugins: chroma embedart fetchart lastgenre lyrics ftintitle replaygain scrub web
 
 # Import options.
 import:
