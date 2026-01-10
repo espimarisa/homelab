@@ -1,5 +1,6 @@
 # Lidarr: Music manager, organizer, and PVR.
 # https://lidarr.audio/
+# See https://wiki.servarr.com/lidarr/postgres-setup to use PostgreSQL.
 
 ---
 services:
