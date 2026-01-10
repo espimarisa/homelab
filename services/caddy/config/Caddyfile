@@ -1,27 +1,17 @@
-{
-	# Use ZeroSSL for ACME and SSL certificates.
-	acme_ca https://acme.zerossl.com/v2/DV90
+# This Caddyfile handles all external and internal routes.
+# It's designed to be used with Cloudflare, and requires all
+# Cloudflare and Domain environment variables to be set beforehand.
+# Internal services are accessible with a DNS rewrite.
 
+{
 	# Use Cloudflare for ACME DNS challenges.
 	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
 	email {$ACME_EMAIL}
 
+	# Configures trusted proxies.
 	servers {
-		# Trust Cloudflare IPs.
 		trusted_proxies cloudflare
 		client_ip_headers CF-Connecting-IP X-Forwarded-For X-Real-IP
-	}
-}
-
-# Snippet used to configure logging.
-(logging) {
-	log {
-		# args[0] becomes the filename.
-		output file /data/logs/{args[0]}.log {
-			roll_size 10mb # Roll logs after they reach 10mb.
-			roll_keep 5 # Keep up to 5 log files.
-			roll_keep_for 720h # Keep logs for 30 days.
-		}
 	}
 }
 
@@ -36,12 +26,11 @@
 	}
 }
 
-# Snippet for services proxied through Cloudflare.
+# Snippet for external services proxied through Cloudflare.
 (cloudflare_proxy) {
 	encode zstd gzip
-	import logging external-access
-
 	reverse_proxy {args[0]} {
+		# Pass X-Real-IP for Cloudflare.
 		header_up X-Real-IP {remote_host}
 	}
 }
@@ -49,7 +38,6 @@
 # Snippet for external services.
 (external_proxy) {
 	encode zstd gzip
-	import logging external-access
 	reverse_proxy {args[0]}
 }
 
@@ -59,17 +47,30 @@
 	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	abort @denied
 	encode zstd gzip
-	import logging internal-access
 	reverse_proxy {args[0]}
+}
+
+# Drop all unhandled traffic.
+* {
+	handle {
+		abort
+	}
+}
+
+# Internal healthcheck endpoint.
+:3000 {
+	respond "OK" 200
 }
 
 # Externally accessible services.
 {$CHHOTO_URL} {
+	# NOTE: Be sure Chhoto is proxied through Cloudflare.
 	import cloudflare_proxy chhoto:4567
 	import security_headers
 }
 
 {$GATUS_URL} {
+	# NOTE: Be sure Gatus is proxied through Cloudflare.
 	import cloudflare_proxy gatus:8080
 	import security_headers
 }
@@ -110,12 +111,13 @@
 }
 
 {$VAULTWARDEN_URL} {
-	# Uses the Cloudflare snippet to ensure X-Real-IP is passed correctly.
+	# NOTE: Be sure Vaultwarden is proxied through Cloudflare.
 	import cloudflare_proxy vaultwarden:80
 	import security_headers
 }
 
-# Internal-only services; accessible with a DNS rewrite.
+# Snippet for internal-only services.
+# Accessible with a DNS rewrite (i.e *.domain -> 192.x.x.x).
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474
 }
@@ -158,19 +160,4 @@ slskd.{$INTERNAL_DOMAIN} {
 
 sonarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy sonarr:8989
-}
-
-# Internal healthcheck endpoint.
-:3000 {
-	respond "OK" 200
-}
-
-# Global catch-all for unhandled traffic.
-* {
-	handle {
-		abort
-	}
-
-	# Log unhandled traffic to unhandled-access.log.
-	import logging unhandled-access
 }

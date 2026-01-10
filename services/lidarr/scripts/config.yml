@@ -1,0 +1,66 @@
+# Path configuration.
+# This assumes the script is being ran inside of a Lidarr container.
+directory: /library/music
+library: /config/beets-library.blb
+
+# Forces the original release date.
+# This will fix instances in which re-issues or remasters have updated dates.
+# Example: 30th anniversary release of Mellon Collie And The Infinite Sadness
+# will be updated to have the year 1995 instead of 2025 inside of metadata.
+original_date: yes
+
+# Plugins to enable.
+plugins: chroma embedart fetchart lastgenre lyrics ftintitle musicbrainz replaygain scrub web
+
+# Import options.
+import:
+  copy: no # Do not copy files; let Lidarr handle it.
+  incremental: yes # Run in incremental mode.
+  languages: en jp # English and Japanese.
+  log: /config/beets.log # Log to /config/beets.log.
+  move: no # Do not move files; let Lidarr handle it.
+  quiet: yes # Run in headless mode.
+  resume: yes # Resume interrupted operations.
+  timid: yes # Skip low-confidence releases to avoid screwups.
+  write: yes # Write tags to the files.
+
+# Chroma (Audio fingerprinting) options.
+# Requires chromaprint installed.
+chroma:
+  auto: yes # Automatically use chromaprint.
+
+# Last.fm genres.
+lastgenre:
+  fallback: "" # Do not use fallbacks.
+  auto: yes # Automatically use lastgenre.
+  canonical: yes # Fixes "Hip Hop" -> "Hip-Hop" and such.
+  min_weight: 15 # Ignore obscure tags used by only a few people.
+  source: album # Tag the album with the genre, not individual tracks.
+  whitelist: /config/scripts/lastgenres.txt # Prevents garbage tags, see file.
+
+# ReplayGain (Volume Normalization) options.
+# Calculates volume levels so players can normalize playback.
+replaygain:
+  auto: yes # Automatically enable replaygain.
+  overwrite: yes # Overwrite previous tags.
+  backend: ffmpeg # Use ffmpeg.
+
+# Album art options.
+fetchart:
+  auto: yes # Automatically decide on album art.
+  cautious: yes # Skip low-confidence art to avoid screwups.
+  cover_format: png # Save art as .PNGs.
+  minwidth: 800 # Require art to be >=800x800.
+  sources: coverart fanart filesystem amazon # Album art sources.
+embedart:
+  auto: yes # Embed album art automatically.
+
+# Lyric options.
+lyrics:
+  auto: yes # Automatically get lyrics.
+  dist_thresh: 0.11 # Sets the threshold.
+  fallback: null # Use no fallback.
+  force: no # Do not force.
+  print: no # Do not print lyrics to logs. Lmao why is this an option.
+  sources: lrclib # Use lrclib.
+  synced: yes # Use synced lyrics.
