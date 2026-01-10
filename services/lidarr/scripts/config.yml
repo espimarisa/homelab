@@ -15,7 +15,6 @@ plugins: chroma embedart fetchart lastgenre lyrics ftintitle replaygain scrub we
 # Import options.
 import:
   copy: no # Do not copy files; let Lidarr handle it.
-  incremental: yes # Run in incremental mode.
   languages: en jp # English and Japanese.
   log: /config/beets.log # Log to /config/beets.log.
   move: no # Do not move files; let Lidarr handle it.
@@ -63,3 +62,9 @@ lyrics:
   print: no # Do not print lyrics to logs. Lmao why is this an option.
   sources: lrclib # Use lrclib.
   synced: yes # Use synced lyrics.
+
+# Matching options.
+match:
+  medium_rec_thresh: 0.25 # Default is 0.25.
+  rec_gap_thresh: 0.25 # Default is 0.25.
+  strong_rec_thresh: 0.10 # Default is 0.04; too strict for me.
