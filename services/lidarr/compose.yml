@@ -11,7 +11,8 @@ services:
     restart: unless-stopped
     environment:
       DOCKER_MODS: "linuxserver/mods:universal-package-install" # Allows package installs.
-      INSTALL_PACKAGES: "beets|chromaprint|flac|imagemagick|py3-pylast" # Install extras for beets.
+      INSTALL_PACKAGES: "beets chromaprint imagemagick flac" # Install extras for beets.
+      INSTALL_PIP_PACKAGES: "pyacoustid langdetect flask pylast" # pip packages to install.
       PGID: "${PGID}"
       PUID: "${PUID}"
       TZ: "${TZ}"
