@@ -4,7 +4,7 @@
 ---
 services:
   dozzle:
-    image: ghcr.io/amir20/dozzle:v8
+    image: ghcr.io/amir20/dozzle:v9
     container_name: dozzle
     env_file: ../../.env
     hostname: dozzle

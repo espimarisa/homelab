@@ -4,7 +4,7 @@
 ---
 services:
   slskd:
-    image: ghcr.io/slskd/slskd:0.24.1
+    image: ghcr.io/slskd/slskd:0.24.2
     container_name: slskd
     env_file: ../../.env
     network_mode: service:gluetun

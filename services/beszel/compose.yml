@@ -19,7 +19,7 @@ x-defaults: &defaults
 services:
   beszel:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel:0.17
+    image: ghcr.io/henrygd/beszel/beszel:0.18
     container_name: beszel
     hostname: beszel
     user: "${PUID}:${PGID}"
@@ -41,7 +41,7 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.17 # -intel for our iGPU/ARC
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.18 # -intel for our iGPU/ARC
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host

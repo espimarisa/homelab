@@ -4,7 +4,7 @@
 ---
 services:
   huntarr:
-    image: ghcr.io/plexguide/huntarr:8.2.10
+    image: ghcr.io/plexguide/huntarr:8.2.11
     container_name: huntarr
     env_file: ../../.env
     hostname: huntarr
