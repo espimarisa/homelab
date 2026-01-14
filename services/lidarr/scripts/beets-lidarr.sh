@@ -1,17 +1,41 @@
 #!/bin/bash
+# ------------------------------------------------------------------
+# Lidarr Connect Script for Beets
+# ------------------------------------------------------------------
 
-# 1. Log startup
-echo "[$(date)] Beets Connect Script Triggered" >> /config/beets-connect.log
+LOGFILE="/config/beets-connect.log"
+echo "--- [$(date)] Beets Connect Triggered ---" >> "$LOGFILE"
 
-# 2. Check for path
-if [ -z "$lidarr_album_path" ]; then
-    echo "No album path provided. Exiting." >> /config/beets-connect.log
-    exit 0
+# 1. Debug: Log the event type to understand what Lidarr is doing
+echo "Event: $lidarr_eventtype" >> "$LOGFILE"
+
+# 2. Smart Path Detection
+# Lidarr passes different variables depending on the event.
+# We check 'lidarr_album_path' first, then fall back to constructing it.
+TARGET_PATH=""
+
+if [ -n "$lidarr_album_path" ]; then
+    TARGET_PATH="$lidarr_album_path"
+elif [ -n "$lidarr_artist_path" ] && [ -n "$lidarr_album_title" ]; then
+    TARGET_PATH="$lidarr_artist_path/$lidarr_album_title"
 fi
 
-echo "Processing Album: $lidarr_album_path" >> /config/beets-connect.log
+# 3. Validation
+if [ -z "$TARGET_PATH" ]; then
+    echo "Error: Could not determine album path from Lidarr variables." >> "$LOGFILE"
+    exit 1
+fi
 
-# 3. Run Beets
-/usr/bin/beet -c /scripts/config.yml import "$lidarr_album_path" >> /config/beets-connect.log 2>&1
+if [ ! -d "$TARGET_PATH" ]; then
+    echo "Error: Directory does not exist: $TARGET_PATH" >> "$LOGFILE"
+    exit 1
+fi
 
-echo "Beets processing complete." >> /config/beets-connect.log
+echo "Processing: $TARGET_PATH" >> "$LOGFILE"
+
+# 4. Run Beets
+# -c: Config path
+# -q: Quiet mode (non-interactive)
+/usr/bin/beet -c /config/config.yaml import -q "$TARGET_PATH" >> "$LOGFILE" 2>&1
+
+echo "--- Complete ---" >> "$LOGFILE"
