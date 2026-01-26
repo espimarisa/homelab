@@ -14,7 +14,6 @@ include:
   - ./services/jellyfin/compose.yml
   - ./services/kavita/compose.yml
   - ./services/lidarr/compose.yml
-  - ./services/mam-ip-helper/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
