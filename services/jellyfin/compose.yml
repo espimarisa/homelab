@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri:/dev/dri
+      - /dev/dri:/dev/dri:rw # /dev/dri/renderD128 is usually GPU0
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:
@@ -25,7 +25,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - jellyfin-cache:/cache:rw
       - jellyfin-config:/config:rw
-      - media-library:/library:ro
+      - media-library:/library:rw
     cap_drop:
       - ALL
     deploy:
