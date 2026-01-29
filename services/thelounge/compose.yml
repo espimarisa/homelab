@@ -6,7 +6,6 @@ services:
   thelounge:
     image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
-    env_file: ../../.env
     hostname: thelounge
     read_only: true
     restart: unless-stopped

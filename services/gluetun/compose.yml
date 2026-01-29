@@ -6,7 +6,6 @@ services:
   gluetun:
     image: ghcr.io/qdm12/gluetun:latest
     container_name: gluetun
-    env_file: ../../.env
     hostname: gluetun
     restart: unless-stopped
     devices:

@@ -6,7 +6,6 @@ services:
   unpackerr:
     image: golift/unpackerr:0
     container_name: unpackerr
-    env_file: ../../.env
     hostname: unpackerr
     restart: unless-stopped
     user: "${PUID}:${PGID}"

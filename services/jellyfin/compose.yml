@@ -6,13 +6,12 @@ services:
   jellyfin:
     image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
-    env_file: ../../.env
     hostname: jellyfin
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri:/dev/dri:rw # /dev/dri/renderD128 is usually GPU0
+      - /dev/dri:/dev/dri:rw # /dev/dri/renderD128 is usually GPU0.
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:

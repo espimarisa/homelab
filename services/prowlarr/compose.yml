@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
@@ -18,7 +17,7 @@ services:
     container_name: prowlarr
     network_mode: service:gluetun
     environment:
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     volumes:
       - prowlarr:/prowlarr/etc:rw
     depends_on:
@@ -34,7 +33,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 1G
+          memory: 2G
 
   prowlarr-db:
     <<: *defaults
@@ -43,8 +42,8 @@ services:
     hostname: prowlarr-db
     shm_size: 256MB
     environment:
-      TZ: "${TZ}" # Sets the timezone.
-      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}" # Sets the database password.
+      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${PROWLARR_DB_PASSWORD}"
     networks:
       - gluetun
     tmpfs:

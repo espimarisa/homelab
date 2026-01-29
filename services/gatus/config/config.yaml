@@ -135,13 +135,13 @@ endpoints:
   # Immich.                                                                 #
   ###########################################################################
 
-  # Immich server.
+  # Immich cache.
   - name: Immich Cache
     <<: *defaults-container
     group: Immich
     url: ${SOCKET_PROXY_URL}/immich-cache/json
 
-  # Immich server.
+  # Immich database.
   - name: Immich Database
     <<: *defaults-container
     group: Immich
@@ -290,4 +290,3 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${VAULTWARDEN_URL}/alive
-

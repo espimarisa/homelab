@@ -6,7 +6,6 @@ services:
   chhoto:
     image: ghcr.io/sintan1729/chhoto-url:6.5-alpine
     container_name: chhoto
-    env_file: ../../.env
     hostname: chhoto
     read_only: true
     restart: unless-stopped

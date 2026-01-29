@@ -1,7 +1,5 @@
-###############################################################################
-# Configarr: 'ARR profile synchronization and management service.             #
-# https://configarr.de/docs/configuration/config-file/                        #
-###############################################################################
+# Configarr: 'ARR profile synchronization and management service.
+# https://configarr.de/docs/configuration/config-file/
 
 ---
 services:
@@ -13,7 +11,7 @@ services:
     restart: unless-stopped
     environment:
       CONFIGARR_SCHEDULE: "0 6 * * *" # Synchronize every day at 6:00 AM.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     networks:
       - external
       - internal
@@ -37,7 +35,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
+          cpus: 0.5
           memory: 256M
     security_opt:
       - no-new-privileges:true

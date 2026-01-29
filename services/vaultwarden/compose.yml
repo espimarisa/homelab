@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
@@ -78,7 +77,7 @@ services:
       POSTGRES_BACKUP_RETENTION: "14" # Retain backups for 14 days.
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Database password to set.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:

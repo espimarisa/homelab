@@ -4,9 +4,8 @@
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.12
+    image: ghcr.io/autobrr/qui:v1.13
     container_name: qui
-    env_file: ../../.env
     network_mode: service:gluetun
     read_only: true
     restart: unless-stopped

@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
@@ -14,17 +13,17 @@ x-defaults: &defaults
 services:
   autobrr:
     <<: *defaults
-    image: ghcr.io/s0up4200/autobrr-distroless:v1.71
+    image: ghcr.io/s0up4200/autobrr-distroless:v1.72
     container_name: autobrr
     network_mode: service:gluetun
     user: "${PUID}:${PGID}"
     environment:
-      AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
-      AUTOBRR__POSTGRES_DATABASE: "postgres" # Use the Postgres database.
-      AUTOBRR__POSTGRES_HOST: "autobrr-db" # Connect to the database.
-      AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}" # Database password to authenticate with.
-      AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
-      AUTOBRR__POSTGRES_USER: "postgres" # Use the postgres user.
+      AUTOBRR__DATABASE_TYPE: "postgres"
+      AUTOBRR__POSTGRES_DATABASE: "postgres"
+      AUTOBRR__POSTGRES_HOST: "autobrr-db"
+      AUTOBRR__POSTGRES_PASS: "${AUTOBRR_DB_PASSWORD}"
+      AUTOBRR__POSTGRES_PORT: "5432"
+      AUTOBRR__POSTGRES_USER: "postgres"
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
@@ -49,8 +48,8 @@ services:
     container_name: autobrr-db
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}" # Sets the password.
-      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_PASSWORD: "${AUTOBRR_DB_PASSWORD}"
+      TZ: "${TZ}"
     networks:
       - gluetun
     tmpfs:

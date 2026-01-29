@@ -4,9 +4,8 @@
 ---
 services:
   kavita:
-    image: ghcr.io/kareadita/kavita:0.8.8
+    image: ghcr.io/kareadita/kavita:0.8.9
     container_name: kavita
-    env_file: ../../.env
     hostname: kavita
     restart: unless-stopped
     read_only: true

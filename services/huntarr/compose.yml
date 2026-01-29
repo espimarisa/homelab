@@ -4,9 +4,8 @@
 ---
 services:
   huntarr:
-    image: ghcr.io/plexguide/huntarr:8.2.11
+    image: ghcr.io/plexguide/huntarr:9.0.5
     container_name: huntarr
-    env_file: ../../.env
     hostname: huntarr
     read_only: true
     user: "${PUID}:${PGID}"

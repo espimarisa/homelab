@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   restart: unless-stopped
   read_only: true
   cap_drop:
@@ -14,7 +13,7 @@ x-defaults: &defaults
 services:
   immich:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v2.4.1
+    image: ghcr.io/immich-app/immich-server:v2.5.0
     container_name: immich
     user: "${PUID}:${PGID}"
     environment:
@@ -56,8 +55,8 @@ services:
     image: ghcr.io/11notes/redis:8
     container_name: immich-cache
     environment:
-      REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the Redis password.
-      TZ: "${TZ}" # Sets the timezone.
+      REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}"
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:

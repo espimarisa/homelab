@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
@@ -16,6 +15,7 @@ services:
     <<: *defaults
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
+    env_file: ../../.env
     hostname: gatus
     user: "${PUID}:${PGID}"
     environment:
@@ -23,7 +23,7 @@ services:
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Database password to authenticate with.
       GATUS_URL: "${GATUS_URL}" # External URL to use.
       SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Docker socket proxy base URL.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     expose:
       - 8080/tcp
     networks:
@@ -51,8 +51,8 @@ services:
     hostname: gatus-db
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database password.
-      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}"
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:

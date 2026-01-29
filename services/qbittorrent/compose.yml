@@ -6,12 +6,11 @@ services:
   qbittorrent:
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
-    env_file: ../../.env
     network_mode: service:gluetun
     read_only: true
     restart: unless-stopped
     environment:
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     volumes:
       - downloads-complete:/downloads:rw
       - downloads-incomplete:/downloads-incomplete:rw

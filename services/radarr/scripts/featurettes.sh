@@ -3,13 +3,11 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-#################################################################################
-# This script scans for a "Featurettes" folder alongside a movie file and     #
-# copies it to the movie's final destination folder in the library.           #
-# Configure Radarr to run this script on import.                              #
-#################################################################################
+# This script scans for featurettes.
+# It then imports them in Radarr.
+# Add it as a connect script.
 
-echo "=== Running Radarr Featurettes Importer ==="
+echo "Running featurettes importer..."
 # shellcheck disable=SC2154
 source_folder="$radarr_moviefile_sourcefolder"
 # shellcheck disable=SC2154

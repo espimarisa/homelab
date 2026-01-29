@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   tmpfs:

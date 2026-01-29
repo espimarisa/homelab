@@ -4,11 +4,10 @@
 ---
 services:
   opencloud:
-    image: opencloudeu/opencloud-rolling:4.1
+    image: opencloudeu/opencloud-rolling:5
     command: ["-c", "opencloud init --insecure true || true; opencloud server"]
     container_name: opencloud
     entrypoint: /bin/sh
-    env_file: ../../.env
     hostname: opencloud
     read_only: true
     restart: unless-stopped

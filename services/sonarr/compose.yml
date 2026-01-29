@@ -3,7 +3,6 @@
 
 ---
 x-defaults: &defaults
-  env_file: ../../.env
   read_only: true
   restart: unless-stopped
   cap_drop:
@@ -18,7 +17,7 @@ services:
     container_name: sonarr
     hostname: sonarr
     environment:
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     expose:
       - 8989/tcp
     networks:
@@ -48,8 +47,8 @@ services:
     hostname: sonarr-db
     shm_size: 256MB
     environment:
-      TZ: "${TZ}" # Sets the timezone.
-      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}" # Sets the database password.
+      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${SONARR_DB_PASSWORD}"
     networks:
       - internal
     tmpfs:
