@@ -10,6 +10,7 @@ services:
     hostname: caddy
     restart: unless-stopped
     environment:
+      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom" # Use Caddyfile.
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       TZ: "${TZ}"
     networks:
@@ -21,7 +22,7 @@ services:
       - 443:443/tcp
       - 443:443/udp
     volumes:
-      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro
       - caddy:/data:rw
     cap_add:
       - NET_ADMIN
