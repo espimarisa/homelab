@@ -12,11 +12,9 @@ services:
       - /dev/net/tun:/dev/net/tun:rw
     environment:
       BLOCK_MALICIOUS: "off" # Disable unbound malware blocking; reduces resource usage.
-      DNS_UPSTREAM_RESOLVERS: "quad9" # Use Quad9 for DNS over TLS.
       DNS_UPSTREAM_IPV6: "${IPV6_ENABLED:-false}" # Toggles IPV6 support.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}" # List of subnets allowed to access the Gluetun network.
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/firewall.md
-      HEALTH_TARGET_ADDRESSES: "www.quad9.net:443" # Use Quad9 for healthchecks.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
       SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities to connect to.
@@ -27,8 +25,6 @@ services:
       VPN_TYPE: "wireguard" # Use Wireguard for VPN connections.
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # List of VPN addresses to connect to.
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # VPN endpoint port to connect to.
-      WIREGUARD_MTU: "${WIREGUARD_MTU:-1380}" # Configures the Wireguard MTU; 1420 was the highest safe value I could get.
-      WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "30s" # Keep Wireguard connections alive for 30s before dropping them.
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # Optional depending on provider. PresharedKey from wg0.conf.
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
