@@ -12,6 +12,7 @@ include:
   - ./services/huntarr/compose.yml
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
+  - ./services/samba/compose.yml
   - ./services/kavita/compose.yml
   - ./services/lidarr/compose.yml
   - ./services/opencloud/compose.yml

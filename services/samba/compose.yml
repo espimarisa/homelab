@@ -1,0 +1,43 @@
+# Samba: Implementation of SMB network shares.
+# https://github.com/dockur/samba
+
+---
+services:
+  samba:
+    image: dockurr/samba
+    container_name: samba
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      NAME: "${SAMBA_DISPLAY_NAME:-Samba}"
+      PASS: "${SAMBA_PASSWORD}"
+      GID: "${SAMBA_GID}"
+      RW: "${SAMBA_READWRITE}"
+      UID: "${SAMBA_UID}"
+      USER: "${SAMBA_USERNAME}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - samba-share-bind:/storage:ro
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  samba-share-bind:
+    name: samba-share-bind
+    driver_opts:
+      device: "${SAMBA_SHARE_PATH}"
+      o: bind
+      type: none
