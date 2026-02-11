@@ -31,7 +31,7 @@ services:
       resources:
         limits:
           cpus: 4
-          memory: 4G
+          memory: 8G
     group_add:
       - "${RENDER_PGID}" # Required for video rendering.
     healthcheck:
