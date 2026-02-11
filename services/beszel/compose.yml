@@ -56,7 +56,6 @@ services:
       - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro
       - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro
       - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdh:ro
-
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - beszel-agent:/var/lib/beszel-agent:rw
