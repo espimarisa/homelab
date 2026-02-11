@@ -2,7 +2,6 @@
 # It's designed to be used with Cloudflare, and requires all
 # Cloudflare and Domain environment variables to be set beforehand.
 # Internal services are accessible with a DNS rewrite.
-
 {
 	# Use Cloudflare for ACME DNS challenges.
 	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
@@ -87,11 +86,6 @@
 
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
-	import security_headers
-}
-
-{$KAVITA_URL} {
-	import external_proxy kavita:5000
 	import security_headers
 }
 

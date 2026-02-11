@@ -1,33 +1,37 @@
-# Gluetun: Container VPN client. I'm currently using AirVPN.
+# Gluetun: VPN client. I'm currently using AirVPN.
 # https://github.com/qdm12/gluetun-wiki/tree/main/setup/options
 
 ---
 services:
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3
+    image: ghcr.io/qdm12/gluetun:v3.41.0
     container_name: gluetun
     hostname: gluetun
     restart: unless-stopped
     devices:
       - /dev/net/tun:/dev/net/tun:rw
     environment:
-      BLOCK_MALICIOUS: "off" # Disable unbound malware blocking; reduces resource usage.
-      DNS_UPSTREAM_IPV6: "${IPV6_ENABLED:-false}" # Toggles IPV6 support.
-      FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}" # List of subnets allowed to access the Gluetun network.
-      FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/firewall.md
-      PGID: "${PGID}" # Group ID to run as.
-      PUID: "${PUID}" # User ID to run as.
-      SERVER_CITIES: "${SERVER_CITIES}" # Optional list of server cities to connect to.
-      SERVER_COUNTRIES: "${SERVER_COUNTRIES}" # Optional list of server countries to connect to.
-      TZ: "${TZ}" # Sets the timezone.
-      UPDATER_PERIOD: "24h" # Update server list every 24 hours.
-      VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}" # https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers
-      VPN_TYPE: "wireguard" # Use Wireguard for VPN connections.
-      WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # List of VPN addresses to connect to.
-      WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # VPN endpoint port to connect to.
-      WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # Optional depending on provider. PresharedKey from wg0.conf.
-      WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from wg0.conf.
-      WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from wg0.conf.
+      BLOCK_MALICIOUS: "off"
+      DNS_UPSTREAM_RESOLVERS: "quad9"
+      FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}"
+      FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
+      HEALTH_ICMP_TARGET_IPS: "9.9.9.9,149.112.112.112"
+      HEALTH_TARGET_ADDRESSES: "www.quad9.net:443"
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      SERVER_CITIES: "${SERVER_CITIES}"
+      SERVER_COUNTRIES: "${SERVER_COUNTRIES}"
+      TZ: "${TZ}"
+      UPDATER_PERIOD: "24h"
+      VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}"
+      VPN_TYPE: "wireguard"
+      WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}"
+      WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}"
+      WIREGUARD_MTU: "${WIREGUARD_MTU:-1380}"
+      WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "30s"
+      WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}"
+      WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}"
+      WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}"
     expose:
       - 5030/tcp # slskd web interface.
       - 7474/tcp # Autobrr web interface.

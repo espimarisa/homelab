@@ -267,12 +267,6 @@ endpoints:
     group: Services
     url: https://${JELLYFIN_URL}/health
 
-  # Kavita.
-  - name: Kavita
-    <<: *defaults-http
-    group: Services
-    url: https://${KAVITA_URL}
-
   # OpenCloud.
   - name: OpenCloud
     <<: *defaults-http
