@@ -4,13 +4,14 @@
 ---
 services:
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.41.0
+    image: ghcr.io/qdm12/gluetun:v3.41.1
     container_name: gluetun
     hostname: gluetun
     restart: unless-stopped
     devices:
       - /dev/net/tun:/dev/net/tun:rw
     environment:
+      DNS_UPSTREAM_RESOLVER_TYPE: "doh" # might fix that instability
       BLOCK_MALICIOUS: "off"
       DNS_UPSTREAM_RESOLVERS: "quad9"
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}"
