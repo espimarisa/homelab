@@ -54,8 +54,8 @@ services:
     restart: unless-stopped
     shm_size: 256MB
     environment:
-      POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}" # Sets the password.
-      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_PASSWORD: "${LIDARR_DB_PASSWORD}"
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:

@@ -125,6 +125,7 @@ readonly VOLUMES=(
 	"prowlarr-volume"
 	"qbittorrent-config-volume"
 	"qbittorrent-data-volume"
+	"qbittorrent-themes-volume"
 	"qui-volume"
 	"radarr-db-config-volume"
 	"radarr-db-data-volume"

@@ -14,19 +14,19 @@ services:
       SLSKD_API_KEY: "${SLSKD_API_KEY}"
       SLSKD_DOWNLOAD_SPEED_LIMIT: "${SLSKD_DOWNLOAD_SPEED_LIMIT}"
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
-      SLSKD_FORCE_SHARE_SCAN: "true"
+      SLSKD_FORCE_SHARE_SCAN: "true" # Always scan at startup.
       SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
       SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
       SLSKD_JWT_TTL: "604800000"
       SLSKD_PASSWORD: "${SLSKD_PASSWORD}"
-      SLSKD_REMOTE_CONFIGURATION: "true"
-      SLSKD_REMOTE_FILE_MANAGEMENT: "true"
-      SLSKD_SHARE_CACHE_RETENTION: "1440"
-      SLSKD_SHARE_CACHE_STORAGE_MODE: "memory"
-      SLSKD_SHARE_CACHE_WORKERS: "4"
+      SLSKD_REMOTE_CONFIGURATION: "true" # Allows web configuration.
+      SLSKD_REMOTE_FILE_MANAGEMENT: "true" # Allows web file management.
+      SLSKD_SHARE_CACHE_RETENTION: "1440" # Retain cache for 24 hours.
+      SLSKD_SHARE_CACHE_STORAGE_MODE: "memory" # Cache shares in memory.
+      SLSKD_SHARE_CACHE_WORKERS: "4" # Use 4 threads for caching shares.
       SLSKD_SHARED_DIR: "/library/music"
       SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_USER_DESCRIPTION}"
-      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}"
+      SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Soulseek traffic port to use.
       SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
       SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
       SLSKD_UMASK: "${UMASK}"

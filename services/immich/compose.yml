@@ -1,4 +1,5 @@
-# Immich: Self-hosted photo manager and organizer (no ML enabled here).
+# Immich: Self-hosted photo manager and organizer.
+# No ML is enabled here.
 # https://immich.app/
 
 ---
@@ -18,8 +19,8 @@ services:
     user: "${PUID}:${PGID}"
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
-      DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connects to PostgreSQL.
-      REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache for Redis.
+      DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich"
+      REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache.
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     expose:
@@ -77,11 +78,11 @@ services:
     shm_size: 256MB
     environment:
       DB_STORAGE_TYPE: "${IMMICH_DB_STORAGE_TYPE}" # HDD or SSD; enables optimizations.
-      POSTGRES_DB: "immich" # Use the immich database.
-      POSTGRES_INITDB_ARGS: "--data-checksums" # Start with --data-checksums.
-      POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}" # Sets the password.
-      POSTGRES_USER: "postgres" # Use the Postgres user.
-      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_DB: "immich"
+      POSTGRES_INITDB_ARGS: "--data-checksums" # Enable checksums.
+      POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}"
+      POSTGRES_USER: "postgres"
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:

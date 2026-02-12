@@ -4,27 +4,38 @@
 ---
 services:
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.41.1
+    image: ghcr.io/qdm12/gluetun:latest
     container_name: gluetun
     hostname: gluetun
     restart: unless-stopped
     devices:
       - /dev/net/tun:/dev/net/tun:rw
     environment:
+      BLOCK_ADS: "off"
       BLOCK_MALICIOUS: "off"
+      BLOCK_SURVEILLANCE: "off"
+      DNS_UPDATE_PERIOD: "24h"
+      DNS_UPSTREAM_IPV6: "${IPV6_ENABLED:-false}"
+      DNS_UPSTREAM_RESOLVER_TYPE: "doh"
+      DNS_UPSTREAM_RESOLVERS: "libredns"
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}"
       FIREWALL_VPN_INPUT_PORTS: "${FIREWALL_VPN_INPUT_PORTS}"
+      HEALTH_ICMP_TARGET_IPS: "116.202.176.26,9.9.9.9"
+      HEALTH_TARGET_ADDRESSES: "libredns.gr:443,quad9.net:443"
+      HTTPPROXY: "off"
       PGID: "${PGID}"
       PUID: "${PUID}"
       SERVER_CITIES: "${SERVER_CITIES}"
       SERVER_COUNTRIES: "${SERVER_COUNTRIES}"
+      SHADOWSOCKS: "off"
       TZ: "${TZ}"
       UPDATER_PERIOD: "24h"
       VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}"
       VPN_TYPE: "wireguard"
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}"
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}"
-      WIREGUARD_MTU: "${WIREGUARD_MTU:-1380}"
+      WIREGUARD_MTU: "${WIREGUARD_MTU}"
+      WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "25s"
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}"
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}"
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}"

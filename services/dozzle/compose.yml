@@ -11,9 +11,9 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to the socket proxy.
-      DOZZLE_ENABLE_ACTIONS: "true" # Enables container actions.
-      DOZZLE_ENABLE_SHELL: "true" # Enables entering container shells.
+      DOCKER_HOST: "tcp://socket-proxy:2375"
+      DOZZLE_ENABLE_ACTIONS: "true"
+      DOZZLE_ENABLE_SHELL: "true"
       DOZZLE_NO_ANALYTICS: "true" # Opts out of data analytics.
     expose:
       - 8080/tcp

@@ -19,10 +19,10 @@ services:
     hostname: gatus
     user: "${PUID}:${PGID}"
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
-      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Database password to authenticate with.
+      DOCKER_HOST: "tcp://socket-proxy:2375"
+      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}"
       GATUS_URL: "${GATUS_URL}" # External URL to use.
-      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Docker socket proxy base URL.
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/"
       TZ: "${TZ}"
     expose:
       - 8080/tcp

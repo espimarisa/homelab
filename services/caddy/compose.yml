@@ -10,8 +10,8 @@ services:
     hostname: caddy
     restart: unless-stopped
     environment:
-      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom" # Use Caddyfile.
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom"
+      DOCKER_HOST: "tcp://socket-proxy:2375"
       TZ: "${TZ}"
     networks:
       - external

@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     devices:
-      - /dev/dri:/dev/dri:rw # /dev/dri/renderD128 is usually GPU0.
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:

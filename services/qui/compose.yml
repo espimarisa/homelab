@@ -1,4 +1,5 @@
 # qui: Alternative web interface for qBittorrent.
+# qui also can handle cross-seeding.
 # https://github.com/autobrr/qui
 
 ---

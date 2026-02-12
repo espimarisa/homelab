@@ -40,12 +40,12 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.18 # -intel for our iGPU/ARC
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.18 # -intel for Intel.
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # dGPU path
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw
     environment:
       HUB_URL: http://localhost:8090
       LISTEN: /beszel_socket/beszel.sock
@@ -54,8 +54,9 @@ services:
     volumes:
       # https://beszel.dev/guide/additional-disks, my server's stuff is hardcoded here
       - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro
-      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro
       - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdh:ro
+      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro
+
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - beszel-agent:/var/lib/beszel-agent:rw
