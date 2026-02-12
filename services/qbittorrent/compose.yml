@@ -17,6 +17,7 @@ services:
       - downloads-permaseed:/downloads-permaseed:rw
       - qbittorrent-config:/qbittorrent/etc:rw
       - qbittorrent-data:/qbittorrent/var:rw
+      - qbittorrent-themes:/qbittorrent/themes:rw
     cap_drop:
       - ALL
     depends_on:
@@ -37,6 +38,9 @@ volumes:
     external: true
   qbittorrent-data:
     name: qbittorrent-data-volume
+    external: true
+  qbittorrent-themes:
+    name: qbittorrent-themes-volume
     external: true
   downloads-complete:
     name: downloads-complete-bind
