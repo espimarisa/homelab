@@ -4,7 +4,7 @@
 ---
 services:
   slskd:
-    image: ghcr.io/slskd/slskd:0.24.3
+    image: ghcr.io/slskd/slskd:0.24.4
     container_name: slskd
     network_mode: service:gluetun
     read_only: true
@@ -25,13 +25,16 @@ services:
       SLSKD_SHARE_CACHE_STORAGE_MODE: "memory" # Cache shares in memory.
       SLSKD_SHARE_CACHE_WORKERS: "4" # Use 4 threads for caching shares.
       SLSKD_SHARED_DIR: "/library/music"
-      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_USER_DESCRIPTION}"
+      SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_USER_DESCRIPTION}" # Soulseek user description to set.
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Soulseek traffic port to use.
       SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
       SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
       SLSKD_UMASK: "${UMASK}"
       SLSKD_UPLOAD_SPEED_LIMIT: "${SLSKD_UPLOAD_SPEED_LIMIT}"
       SLSKD_USERNAME: "${SLSKD_USERNAME}"
+      SLSKD_VPN_GLUETUN_API_KEY: "${GLUETUN_API_KEY}"
+      SLSKD_VPN_GLUETUN_URL: "http://127.0.0.1:8000" # Connect to the Gluetun control server.
+      SLSKD_VPN: "true" # Enables Gluetun integration.
       TZ: "${TZ}"
     tmpfs:
       - "/.net:uid=${PUID},gid=${PGID},exec"

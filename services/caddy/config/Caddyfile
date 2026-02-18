@@ -57,6 +57,16 @@
 	respond "OK" 200
 }
 
+# Landing page.
+{$DOMAIN} {
+	root * /etc/caddy/www/home
+	import security_headers
+	encode zstd gzip
+	file_server {
+		hide .git
+	}
+}
+
 # Externally accessible services.
 {$CHHOTO_URL} {
 	# NOTE: Be sure Chhoto is proxied through Cloudflare.

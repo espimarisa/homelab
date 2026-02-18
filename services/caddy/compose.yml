@@ -23,6 +23,7 @@ services:
       - 443:443/udp
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro
+      - ./web:/etc/caddy/www/home:ro
       - caddy:/data:rw
     cap_add:
       - NET_ADMIN

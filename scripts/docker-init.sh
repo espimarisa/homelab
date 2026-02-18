@@ -15,8 +15,6 @@ readonly REQUIRED_VARS=(
 	"DOWNLOADS_COMPLETE_PATH"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
-	"IPV6_ENABLED"
-	"IPV6_ULA_BASE"
 	"MEDIA_LIBRARY_PATH"
 	"PGID"
 	"PUID"
@@ -195,9 +193,7 @@ create_network() {
 	local network_name="$1"
 	local ipv4_gateway="$2"
 	local ipv4_subnet="$3"
-	local ipv6_gateway="$4"
-	local ipv6_subnet="$5"
-	local internal_flag="${6:-false}"
+	local internal_flag="${4:-false}"
 
 	local network_args=("--gateway=$ipv4_gateway" "--subnet=$ipv4_subnet")
 
@@ -206,13 +202,8 @@ create_network() {
 		network_args+=("--internal")
 	fi
 
-	# Handle IPv6
-	if [[ "${IPV6_ENABLED}" == "true" ]]; then
-		network_args+=("--ipv6" "--gateway=$ipv6_gateway" "--subnet=$ipv6_subnet")
-	fi
-
 	if ! docker network inspect "$network_name" &>/dev/null; then
-		echo "Creating Docker network: $network_name (Internal: $internal_flag, IPv6: ${IPV6_ENABLED})"
+		echo "Creating Docker network: $network_name"
 		docker network create "${network_args[@]}" "$network_name"
 	else
 		echo "Docker network '$network_name' already exists."
@@ -228,22 +219,10 @@ create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
 # Creates Docker networks.
-# Will break if you have existing networks, but
-# I don't feel like adding an environment variable.
 echo -e "\nCreating Docker networks..."
-
-create_network "external-network" \
-	"172.18.0.1" "172.18.0.0/16" \
-	"${IPV6_ULA_BASE}:1::1" "${IPV6_ULA_BASE}:1::/64"
-
-create_network "gluetun-network" \
-	"172.19.0.1" "172.19.0.0/16" \
-	"${IPV6_ULA_BASE}:2::1" "${IPV6_ULA_BASE}:2::/64"
-
-create_network "internal-network" \
-	"172.20.0.1" "172.20.0.0/16" \
-	"${IPV6_ULA_BASE}:3::1" "${IPV6_ULA_BASE}:3::/64" \
-	"internal"
+create_network "external-network" "172.18.0.1" "172.18.0.0/16"
+create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16"
+create_network "internal-network" "172.20.0.1" "172.20.0.0/16" "internal"
 
 # Creates Docker volumes.
 echo -e "\nCreating Docker volumes..."

@@ -187,12 +187,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/lidarr/json
 
-  # mam-ip-helper
-  - name: MyAnonaMouse IP Helper
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/mam-ip-helper/json
-
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
