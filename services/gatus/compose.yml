@@ -42,7 +42,7 @@ services:
       resources:
         limits:
           cpus: 1
-          memory: 512M
+          memory: 256M
 
   gatus-db:
     <<: *defaults

@@ -10,7 +10,7 @@ x-defaults-http: &defaults-http
   interval: 5m
   conditions:
     - "[CERTIFICATE_EXPIRATION] > 240h" # Ensures certificates are up-to-date.
-    - "[RESPONSE_TIME] < 10000" # External services shouldn't take more than 10s to resolve.
+    - "[RESPONSE_TIME] < 5000" # External services shouldn't take more than 5s to resolve.
     - "[STATUS] == 200" # 200 will be an OK
 
 # Default container options.
@@ -19,7 +19,7 @@ x-defaults-container: &defaults-container
   interval: 5m
   conditions:
     - "[BODY].State.Health.Status != unhealthy" # Not the most accurate check.
-    - "[RESPONSE_TIME] < 10" # Containers should always be within ~10ms.
+    - "[RESPONSE_TIME] < 5" # Containers should always be within ~5ms.
     - "[STATUS] == 200" # 200 will be an OK
   ui:
     hide-hostname: true # no reason to show container hostnames
@@ -45,41 +45,17 @@ endpoints:
   # Databases.                                                              #
   ###########################################################################
 
-  # Autobrr DB.
-  - name: Autobrr - PostgreSQL
+  # 'ARR DB.
+  - name: "'ARR Apps - PostgreSQL"
     <<: *defaults-container
     group: Databases
-    url: ${SOCKET_PROXY_URL}/autobrr-db/json
+    url: ${SOCKET_PROXY_URL}/arr-db/json
 
   # Gatus DB.
   - name: Gatus - PostgreSQL
     <<: *defaults-container
     group: Databases
     url: ${SOCKET_PROXY_URL}/gatus-db/json
-
-  # Lidarr DB.
-  - name: Lidarr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/lidarr-db/json
-
-  # Prowlarr DB.
-  - name: Prowlarr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/prowlarr-db/json
-
-  # Radarr DB.
-  - name: Radarr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/radarr-db/json
-
-  # Sonarr DB.
-  - name: Sonarr - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/sonarr-db/json
 
   # Vaultwarden DB.
   - name: Vaultwarden - PostgreSQL
@@ -156,12 +132,6 @@ endpoints:
   ###########################################################################
   # Media management.                                                       #
   ###########################################################################
-
-  # Autobrr.
-  - name: Autobrr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/autobrr/json
 
   # Byparr.
   - name: Byparr

@@ -8,7 +8,6 @@ TODO
 
 ## Services
 
-- Autobrr: Download and ratio automation tool
 - Beszel: System monitor and notifier.
 - Byparr: Tool used in combination with Prowlarr to bypass captchas.
 - Caddy: Primary reverse proxy; handles SSL automatically.

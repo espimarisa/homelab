@@ -1,6 +1,5 @@
 # Immich: Self-hosted photo manager and organizer.
-# No ML is enabled here.
-# https://immich.app/
+# https://immich.app
 
 ---
 x-defaults: &defaults

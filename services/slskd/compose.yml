@@ -53,8 +53,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 4G
+          cpus: 2
+          memory: 2G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:

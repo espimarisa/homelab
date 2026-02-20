@@ -1,0 +1,308 @@
+---
+# Default container options.
+x-defaults: &defaults
+  restart: unless-stopped
+  environment:
+    TZ: "${TZ}" # Sets the timezone.
+  cap_drop:
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+  deploy:
+    resources:
+      limits:
+        cpus: 2
+        memory: 4G
+  security_opt:
+    - no-new-privileges:true
+
+# Default read-only container options.
+x-defaults-ro: &defaults-ro
+  <<: *defaults
+  read_only: true
+  cap_drop:
+    - ALL
+  tmpfs:
+    - "/tmp:uid=1000,gid=1000" # Required for read-only containers.
+
+services:
+  # Lidarr: Music manager and organizer.
+  # https://lidarr.audio
+  lidarr:
+    <<: *defaults
+    image: ghcr.io/linuxserver-labs/prarr:lidarr-plugins
+    container_name: lidarr
+    hostname: lidarr
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 8686/tcp
+    networks:
+      - external
+      - gluetun
+      - internal
+    volumes:
+      - downloads:/downloads:rw
+      - lidarr:/config:rw
+      - media-library:/library:rw
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/ping || exit 1"
+
+  # Radarr: Movie manager and organizer.
+  # https://radarr.video
+  radarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/radarr:6
+    container_name: radarr
+    hostname: radarr
+    expose:
+      - 7878/tcp
+    volumes:
+      - ./scripts:/scripts:rw
+      - downloads:/downloads:rw
+      - radarr:/radarr/etc:rw
+      - media-library:/library:rw
+    networks:
+      - external
+      - gluetun
+      - internal
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+
+  # Sonarr: Anime/TV manager and organizer.
+  # https://sonarr.tv
+  sonarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/sonarr:4
+    container_name: sonarr
+    hostname: sonarr
+    expose:
+      - 8989/tcp
+    volumes:
+      - downloads:/downloads:rw
+      - sonarr:/sonarr/etc:rw
+      - media-library:/library:rw
+    networks:
+      - external
+      - gluetun
+      - internal
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+
+  # Prowlarr: Indexer manager for 'ARR apps.
+  # https://prowlarr.com
+  prowlarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/prowlarr:2
+    container_name: prowlarr
+    network_mode: service:gluetun
+    volumes:
+      - prowlarr:/prowlarr/etc:rw
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+      gluetun:
+        condition: service_healthy
+        restart: true
+
+  # arr-db: PostgreSQL container for 'ARR apps.
+  # https://github.com/11notes/docker-p ostgres
+  arr-db:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/postgres:18
+    container_name: arr-db
+    hostname: arr-db
+    shm_size: 512mb
+    environment:
+      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+    networks:
+      - internal
+    tmpfs:
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
+    volumes:
+      - arr-db-config:/postgres/etc:rw
+      - arr-db-data:/postgres/var:rw
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2G
+
+  # Configarr: 'ARR profile synchronization.
+  # https://configarr.de/docs/configuration/config-file/
+  configarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/configarr:1
+    container_name: configarr
+    hostname: configarr
+    environment:
+      CONFIGARR_SCHEDULE: "0 6 * * *" # Synchronize every day at 6:00 AM.
+      TZ: "${TZ}"
+    networks:
+      - external
+      - internal
+    volumes:
+      - ./configarr:/configarr/etc:rw
+      - configarr:/configarr/var:rw
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+      lidarr:
+        condition: service_healthy
+        restart: true
+      radarr:
+        condition: service_healthy
+        restart: true
+      sonarr:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
+
+  # Unpackerr: Automatically extract downloaded archives.
+  # https://unpackerr.zip/docs/introduction
+  unpackerr:
+    <<: *defaults
+    image: golift/unpackerr:0
+    container_name: unpackerr
+    hostname: unpackerr
+    user: "${PUID}:${PGID}"
+    volumes:
+      - downloads:/downloads:rw
+    environment:
+      TZ: "${TZ}"
+      UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}"
+      UN_LIDARR_0_URL: "http://lidarr:8686"
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
+      UN_RADARR_0_URL: "http://radarr:7878"
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}"
+      UN_SONARR_0_URL: "http://sonarr:8989"
+    networks:
+      - internal
+    cap_drop:
+      - ALL
+
+  # Byparr: Captcha solver; used as a Flaresolverr replacement for Prowlarr.
+  # https://github.com/ThePhaseless/Byparr
+  byparr:
+    <<: *defaults
+    image: ghcr.io/thephaseless/byparr:main
+    container_name: byparr
+    network_mode: service:gluetun
+    user: "${PUID}:${PGID}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+
+  # Huntarr: Hunts down missing media for 'ARR apps.
+  # https://github.com/plexguide/Huntarr.io
+  huntarr:
+    <<: *defaults
+    image: ghcr.io/plexguide/huntarr:9.3.7
+    container_name: huntarr
+    hostname: huntarr
+    read_only: true
+    user: "${PUID}:${PGID}"
+    expose:
+      - 9705/tcp
+    networks:
+      - external
+      - gluetun
+      - internal
+    tmpfs:
+      - "/.config:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - huntarr:/config:rw
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
+
+  gluetun:
+    image: penis
+    container_name: gluetun
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  lidarr:
+    name: lidarr-volume
+    external: true
+  radarr:
+    name: radarr-volume
+    external: true
+  sonarr:
+    name: sonarr-volume
+    external: true
+  prowlarr:
+    name: prowlarr-volume
+    external: true
+  arr-db-config:
+    name: arr-db-config-volume
+    external: true
+  arr-db-data:
+    name: arr-db-data-volume
+    external: true
+  configarr:
+    name: configarr-volume
+    external: true
+  huntarr:
+    name: huntarr-volume
+    external: true
+  downloads:
+    name: downloads-complete-bind
+    driver_opts:
+      device: "${DOWNLOADS_COMPLETE_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

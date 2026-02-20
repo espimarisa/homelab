@@ -144,12 +144,12 @@ radarr:
 
       # Strict No Foreign custom format assignment.
       - trash_ids:
-        - radarr-strict-no-foreign # Custom Strict No Foreign.
+          - radarr-strict-no-foreign # Custom Strict No Foreign.
         assign_scores_to:
-        - name: WEB-1080p
-          score: -10000
-        - name: WEB-2160p
-          score: -10000
+          - name: WEB-1080p
+            score: -10000
+          - name: WEB-2160p
+            score: -10000
 
     quality_profiles:
       # Custom YayPonies profile.
@@ -307,7 +307,7 @@ sonarr:
 
       # Strict No Foreign custom format assignment.
       - trash_ids:
-        - sonarr-strict-no-foreign # Custom Strict No Foreign.
+          - sonarr-strict-no-foreign # Custom Strict No Foreign.
         assign_scores_to:
           - name: Remux-2160p
             score: -10000

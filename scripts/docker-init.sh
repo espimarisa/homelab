@@ -60,7 +60,6 @@ readonly DOWNLOADS_DIRECTORIES=(
 	"deezer"
 	"soulseek"
 	"torrents/.torrent-files"
-	"torrents/autobrr"
 	"torrents/lidarr"
 	"torrents/permaseed"
 	"torrents/radarr"
@@ -96,9 +95,8 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-volume"
-	"autobrr-db-config-volume"
-	"autobrr-db-data-volume"
+	"arr-db-config-volume"
+	"arr-db-data-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"beszel-socket-volume"
@@ -114,23 +112,15 @@ readonly VOLUMES=(
 	"immich-db-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
-	"lidarr-db-config-volume"
-	"lidarr-db-data-volume"
 	"lidarr-volume"
 	"opencloud-config-volume"
-	"prowlarr-db-config-volume"
-	"prowlarr-db-data-volume"
 	"prowlarr-volume"
 	"qbittorrent-config-volume"
 	"qbittorrent-data-volume"
 	"qbittorrent-themes-volume"
 	"qui-volume"
-	"radarr-db-config-volume"
-	"radarr-db-data-volume"
 	"radarr-volume"
 	"slskd-volume"
-	"sonarr-db-config-volume"
-	"sonarr-db-data-volume"
 	"sonarr-volume"
 	"thelounge-volume"
 	"vaultwarden-db-backups-volume"
@@ -141,7 +131,6 @@ readonly VOLUMES=(
 
 # Docker volumes to take PUID/PGID ownership of.
 readonly CHOWN_VOLUMES=(
-	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"configarr-volume"
