@@ -291,9 +291,9 @@ volumes:
     name: huntarr-volume
     external: true
   downloads:
-    name: downloads-complete-bind
+    name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_COMPLETE_PATH}"
+      device: "${DOWNLOADS_PATH}"
       o: bind
       type: none
   media-library:

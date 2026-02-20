@@ -23,8 +23,7 @@ services:
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
     volumes:
-      - downloads-complete:/downloads:rw
-      - downloads-incomplete:/downloads-incomplete:rw
+      - downloads:/downloads:rw
       - downloads-permaseed:/downloads-permaseed:rw
       - qbittorrent-config:/qbittorrent/etc:rw
       - qbittorrent-data:/qbittorrent/var:rw
@@ -71,16 +70,10 @@ volumes:
   qui:
     name: qui-volume
     external: true
-  downloads-complete:
-    name: downloads-complete-bind
+  downloads:
+    name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_COMPLETE_PATH}"
-      o: bind
-      type: none
-  downloads-incomplete:
-    name: downloads-incomplete-bind
-    driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}"
+      device: "${DOWNLOADS_PATH}"
       o: bind
       type: none
   downloads-permaseed:

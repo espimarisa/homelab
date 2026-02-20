@@ -125,6 +125,6 @@ volumes:
   immich-data:
     name: immich-data-bind
     driver_opts:
-      device: "${APPDATA_PATH}/immich"
+      device: "${IMMICH_DATA_PATH}"
       o: bind
       type: none

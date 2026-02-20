@@ -11,14 +11,13 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
-	"APPDATA_PATH"
-	"DOWNLOADS_COMPLETE_PATH"
-	"DOWNLOADS_INCOMPLETE_PATH"
+	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
+	"IMMICH_DATA_PATH"
 	"MEDIA_LIBRARY_PATH"
+	"OPENCLOUD_DATA_PATH"
 	"PGID"
 	"PUID"
-	"STORAGE_PATH"
 	"TZ"
 	"UMASK"
 )
@@ -55,9 +54,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Download directories to create.
-# These are now created inside DOWNLOADS_COMPLETE_PATH.
+# These are now created inside DOWNLOADS_PATH.
 readonly DOWNLOADS_DIRECTORIES=(
-	"deezer"
+	"incomplete/soulseek"
+	"incomplete/torrents"
 	"soulseek"
 	"torrents/.torrent-files"
 	"torrents/lidarr"
@@ -65,20 +65,6 @@ readonly DOWNLOADS_DIRECTORIES=(
 	"torrents/radarr"
 	"torrents/sonarr"
 	"torrents/uncategorized"
-)
-
-# Incomplete download directories to create.
-# These are created inside DOWNLOADS_INCOMPLETE_PATH.
-readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
-	"soulseek"
-	"torrents"
-)
-
-# Persistent bulk application data directories to create.
-readonly APPDATA_DIRECTORIES=(
-	"chhoto"
-	"immich"
-	"opencloud"
 )
 
 # Media library directories to create.
@@ -101,6 +87,7 @@ readonly VOLUMES=(
 	"beszel-data-volume"
 	"beszel-socket-volume"
 	"caddy-volume"
+	"chhoto-volume"
 	"configarr-volume"
 	"dozzle-volume"
 	"gatus-db-config-volume"
@@ -134,6 +121,7 @@ readonly CHOWN_VOLUMES=(
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"configarr-volume"
+	"chhoto-volume"
 	"dozzle-volume"
 	"huntarr-volume"
 	"jellyfin-cache-volume"
@@ -143,11 +131,6 @@ readonly CHOWN_VOLUMES=(
 	"slskd-volume"
 	"thelounge-volume"
 	"vaultwarden-volume"
-)
-
-# Files to touch (create empty if they don't exist).
-readonly TOUCH_FILES=(
-	"${APPDATA_PATH}/chhoto/urls.sqlite"
 )
 
 # Function to create directories.
@@ -201,10 +184,8 @@ create_network() {
 
 # Creates bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
-create_dirs "$DOWNLOADS_COMPLETE_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
-create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
-create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
 # Creates Docker networks.
@@ -217,21 +198,6 @@ create_network "internal-network" "172.20.0.1" "172.20.0.0/16" "internal"
 echo -e "\nCreating Docker volumes..."
 for volume in "${VOLUMES[@]}"; do
 	create_volume "$volume"
-done
-
-# Touch specific files that need to exist.
-echo -e "\nTouching required files..."
-for file_path in "${TOUCH_FILES[@]}"; do
-	dir_path=$(dirname "$file_path")
-	if [ ! -d "$dir_path" ]; then
-		echo "Creating parent directory: $dir_path"
-		$SUDO mkdir -p "$dir_path"
-	fi
-
-	if [ ! -f "$file_path" ]; then
-		echo "Creating file: $file_path"
-		$SUDO touch "$file_path"
-	fi
 done
 
 # Set ownership of volumes by dynamically inspecting their mount point.
@@ -260,18 +226,18 @@ echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 
 $SUDO chown -R "${PUID}:${PGID}" \
-	"${APPDATA_PATH}" \
-	"${DOWNLOADS_COMPLETE_PATH}" \
-	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${IMMICH_DATA_PATH}" \
+	"${OPENCLOUD_DATA_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
 # Set permissions of the main bind mount directories on the host.
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
-	"${APPDATA_PATH}" \
-	"${DOWNLOADS_COMPLETE_PATH}" \
-	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${IMMICH_DATA_PATH}" \
+	"${OPENCLOUD_DATA_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 

@@ -24,7 +24,7 @@ services:
     networks:
       - external
     volumes:
-      - chhoto-data:/db:rw
+      - chhoto:/db:rw
     cap_drop:
       - ALL
     deploy:
@@ -43,9 +43,6 @@ networks:
     name: external-network
 
 volumes:
-  chhoto-data:
-    name: chhoto-data-bind
-    driver_opts:
-      device: "${APPDATA_PATH}/chhoto"
-      o: bind
-      type: none
+  chhoto:
+    external: true
+    name: chhoto-volume

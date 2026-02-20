@@ -52,11 +52,6 @@ services:
       KEY: "${BESZEL_KEY}" # Beszel hub key to register with.
       TOKEN: "${BESZEL_TOKEN}" # Beszel hub token to register with.
     volumes:
-      # https://beszel.dev/guide/additional-disks, my server's stuff is hardcoded here
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/sda:ro
-      - ${DOWNLOADS_PERMASEED_PATH}:/extra-filesystems/sdh:ro
-      - ${STORAGE_PATH}:/extra-filesystems/bcache0:ro
-
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - beszel-agent:/var/lib/beszel-agent:rw
