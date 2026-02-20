@@ -254,10 +254,6 @@ services:
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
 
-  gluetun:
-    image: penis
-    container_name: gluetun
-
 networks:
   external:
     external: true
