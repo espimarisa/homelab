@@ -59,14 +59,13 @@
 
 # Externally accessible services.
 {$CHHOTO_URL} {
-	# NOTE: Be sure Chhoto is proxied through Cloudflare.
-	import cloudflare_proxy chhoto:4567
+	import external_proxy chhoto:4567
 	import security_headers
 }
 
 {$GATUS_URL} {
 	# NOTE: Be sure Gatus is proxied through Cloudflare.
-	import cloudflare_proxy gatus:8080
+	import external_proxy gatus:8080
 	import security_headers
 }
 
@@ -102,7 +101,7 @@
 
 {$VAULTWARDEN_URL} {
 	# NOTE: Be sure Vaultwarden is proxied through Cloudflare.
-	import cloudflare_proxy vaultwarden:80
+	import external_proxy vaultwarden:80
 	import security_headers
 }
 
