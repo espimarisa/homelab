@@ -11,13 +11,15 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
-	"DOWNLOADS_PATH"
+	"DOWNLOADS_COMPLETE_PATH"
+	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
 	"IMMICH_DATA_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_DATA_PATH"
 	"PGID"
 	"PUID"
+	"STORAGE_PATH"
 	"TZ"
 	"UMASK"
 )
@@ -54,10 +56,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Download directories to create.
-# These are now created inside DOWNLOADS_PATH.
 readonly DOWNLOADS_DIRECTORIES=(
-	"incomplete/soulseek"
-	"incomplete/torrents"
 	"soulseek"
 	"torrents/.torrent-files"
 	"torrents/lidarr"
@@ -65,6 +64,12 @@ readonly DOWNLOADS_DIRECTORIES=(
 	"torrents/radarr"
 	"torrents/sonarr"
 	"torrents/uncategorized"
+)
+
+# Incomplete download directories to create.
+readonly DOWNLOADS_INCOMPLETE_DIRECTORIES=(
+	"soulseek"
+	"torrents"
 )
 
 # Media library directories to create.
@@ -184,9 +189,15 @@ create_network() {
 
 # Creates bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
-create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_COMPLETE_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
+
+echo "Initializing files needed..."
+CHHOTO_PATH=(docker volume inspect --format '{{ .Mountpoint }}' "chhoto-volume")
+$SUDO touch "${CHHOTO_PATH}/sqlite.db"
+$SUDO chown "${PUID}:{PGID}" "${CHHOTO_PATH}/db.sqlite"
 
 # Creates Docker networks.
 echo -e "\nCreating Docker networks..."
@@ -228,7 +239,8 @@ echo "Setting ownership for host directories..."
 $SUDO chown -R "${PUID}:${PGID}" \
 	"${IMMICH_DATA_PATH}" \
 	"${OPENCLOUD_DATA_PATH}" \
-	"${DOWNLOADS_PATH}" \
+	"${DOWNLOADS_COMPLETE_PATH}" \
+	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
@@ -237,7 +249,8 @@ echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
 	"${IMMICH_DATA_PATH}" \
 	"${OPENCLOUD_DATA_PATH}" \
-	"${DOWNLOADS_PATH}" \
+	"${DOWNLOADS_COMPLETE_PATH}" \
+	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 

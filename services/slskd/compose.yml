@@ -15,7 +15,7 @@ services:
       SLSKD_DOWNLOAD_SPEED_LIMIT: "${SLSKD_DOWNLOAD_SPEED_LIMIT}"
       SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
       SLSKD_FORCE_SHARE_SCAN: "true" # Always scan at startup.
-      SLSKD_INCOMPLETE_DIR: "/downloads/incomplete/soulseek"
+      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
       SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
       SLSKD_JWT_TTL: "604800000"
       SLSKD_PASSWORD: "${SLSKD_PASSWORD}"
@@ -41,6 +41,7 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID},exec"
     volumes:
       - downloads:/downloads:rw
+      - downloads-incomplete:/downloads-incomplete:rw
       - media-library:/library:ro
       - slskd:/app:rw
     cap_drop:
@@ -66,7 +67,13 @@ volumes:
   downloads:
     name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}"
+      o: bind
+      type: none
+  downloads-incomplete:
+    name: downloads-incomplete-bind
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none
   media-library:

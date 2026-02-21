@@ -24,6 +24,7 @@ services:
     container_name: qbittorrent
     volumes:
       - downloads:/downloads:rw
+      - downloads-incomplete:/downloads-incomplete:rw
       - downloads-permaseed:/downloads-permaseed:rw
       - qbittorrent-config:/qbittorrent/etc:rw
       - qbittorrent-data:/qbittorrent/var:rw
@@ -44,6 +45,11 @@ services:
     container_name: qui
     volumes:
       - qui:/config:rw
+      - downloads:/downloads:rw
+      - downloads-incomplete:/downloads-incomplete:rw
+      - downloads-permaseed:/downloads-permaseed:rw
+      - qbittorrent-config:/qbittorrent/etc:rw
+      - qbittorrent-data:/qbittorrent/var:rw
     depends_on:
       gluetun:
         condition: service_healthy
@@ -73,7 +79,13 @@ volumes:
   downloads:
     name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_PATH}"
+      device: "${DOWNLOADS_COMPLETE_PATH}"
+      o: bind
+      type: none
+  downloads-incomplete:
+    name: downloads-incomplete-bind
+    driver_opts:
+      device: "${DOWNLOADS_INCOMPLETE_PATH}"
       o: bind
       type: none
   downloads-permaseed:
