@@ -194,11 +194,6 @@ create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
-echo "Initializing files needed..."
-CHHOTO_PATH=(docker volume inspect --format '{{ .Mountpoint }}' "chhoto-volume")
-$SUDO touch "${CHHOTO_PATH}/sqlite.db"
-$SUDO chown "${PUID}:{PGID}" "${CHHOTO_PATH}/db.sqlite"
-
 # Creates Docker networks.
 echo -e "\nCreating Docker networks..."
 create_network "external-network" "172.18.0.1" "172.18.0.0/16"
