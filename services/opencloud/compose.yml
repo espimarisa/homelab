@@ -38,8 +38,9 @@ services:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - opencloud-config:/etc/opencloud:rw
-      - opencloud-data:/var/lib/opencloud:rw
+      - opencloud-config:/etc/opencloud:rw # Config; in volume.
+      - opencloud-metadata:/var/lib/opencloud:rw # Metadata; in volume.
+      - opencloud-data:/var/lib/opencloud/storage:rw # Uploads; bind mount.
     cap_drop:
       - ALL
     deploy:
@@ -60,6 +61,9 @@ networks:
 volumes:
   opencloud-config:
     name: opencloud-config-volume
+    external: true
+  opencloud-metadata:
+    name: opencloud-metadata-volume
     external: true
   opencloud-data:
     name: opencloud-data-bind
