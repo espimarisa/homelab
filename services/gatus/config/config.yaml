@@ -139,12 +139,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/byparr/json
 
-  # Configarr.
-  - name: Configarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/configarr/json
-
   # Huntarr.
   - name: Huntarr
     <<: *defaults-container
@@ -156,6 +150,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/lidarr/json
+
+  # Profilarr.
+  - name: Profilarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/profilarr/json
 
   # Prowlarr.
   - name: Prowlarr

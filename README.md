@@ -12,7 +12,6 @@ TODO
 - Byparr: Tool used in combination with Prowlarr to bypass captchas.
 - Caddy: Primary reverse proxy; handles SSL automatically.
 - Chhoto: Self-hosted URL shortener/forwarder.
-- Configarr: Automatic profile sync to 'ARR apps.
 - Dozzle: Docker log viewer and filterer.
 - Gatus: Service status monitor and uptime notifier.
 - Gluetun: VPN client and container; I use AirVPN with it.
@@ -20,6 +19,7 @@ TODO
 - Immich: Self-hosted photo cloud storage.
 - Jellyfin: Primary media server.
 - Lidarr: Music manager and organizer.
+- Profilarr: 'ARR profile synchronization.
 - OpenCloud: Self-hosted cloud storage.
 - Prowlarr: Indexer manager for 'ARR apps.
 - qBittorrent: Torrent client.

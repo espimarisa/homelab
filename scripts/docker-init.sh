@@ -93,7 +93,6 @@ readonly VOLUMES=(
 	"beszel-socket-volume"
 	"caddy-volume"
 	"chhoto-volume"
-	"configarr-volume"
 	"dozzle-volume"
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
@@ -105,6 +104,7 @@ readonly VOLUMES=(
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"lidarr-volume"
+	"profilarr-volume"
 	"opencloud-config-volume"
 	"opencloud-metadata-volume"
 	"prowlarr-volume"
@@ -126,7 +126,6 @@ readonly VOLUMES=(
 readonly CHOWN_VOLUMES=(
 	"beszel-agent-volume"
 	"beszel-data-volume"
-	"configarr-volume"
 	"chhoto-volume"
 	"dozzle-volume"
 	"huntarr-volume"

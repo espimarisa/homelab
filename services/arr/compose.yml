@@ -147,41 +147,6 @@ services:
           cpus: 2
           memory: 2G
 
-  # Configarr: 'ARR profile synchronization.
-  # https://configarr.de/docs/configuration/config-file/
-  configarr:
-    <<: *defaults-ro
-    image: ghcr.io/11notes/configarr:1
-    container_name: configarr
-    hostname: configarr
-    environment:
-      CONFIGARR_SCHEDULE: "0 6 * * *" # Synchronize every day at 6:00 AM.
-      TZ: "${TZ}"
-    networks:
-      - external
-      - internal
-    volumes:
-      - ./configarr:/configarr/etc:rw
-      - configarr:/configarr/var:rw
-    depends_on:
-      arr-db:
-        condition: service_healthy
-        restart: true
-      lidarr:
-        condition: service_healthy
-        restart: true
-      radarr:
-        condition: service_healthy
-        restart: true
-      sonarr:
-        condition: service_healthy
-        restart: true
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5
-          memory: 256M
-
   # Unpackerr: Automatically extract downloaded archives.
   # https://unpackerr.zip/docs/introduction
   unpackerr:
@@ -255,6 +220,31 @@ services:
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
 
+  # Profilarr: 'ARR app profile synchronization.
+  # https://github.com/Dictionarry-Hub/profilarr
+  profilarr:
+    <<: *defaults
+    image: santiagosayshey/profilarr:beta
+    container_name: profilarr
+    hostname: profilarr
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 6868/tcp
+    networks:
+      - external
+      - internal
+    volumes:
+      - profilarr:/config:rw
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+
 networks:
   external:
     external: true
@@ -285,11 +275,11 @@ volumes:
   arr-db-data:
     name: arr-db-data-volume
     external: true
-  configarr:
-    name: configarr-volume
-    external: true
   huntarr:
     name: huntarr-volume
+    external: true
+  profilarr:
+    name: profilarr-volume
     external: true
   downloads:
     name: downloads-bind
