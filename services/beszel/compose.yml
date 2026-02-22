@@ -32,10 +32,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - beszel-data:/beszel_data:rw
       - beszel-socket:/beszel_socket:rw
-
-        # https://beszel.dev/guide/additional-disks, my server's stuff is hardcoded here
-      - ${DOWNLOADS_INCOMPLETE_PATH}:/extra-filesystems/dm-8:ro
-      - ${STORAGE_PATH}:/extra-filesystems/dm-4:ro
     cap_drop:
       - ALL
     healthcheck:
