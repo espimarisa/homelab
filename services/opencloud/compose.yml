@@ -40,7 +40,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - opencloud-config:/etc/opencloud:rw # Config; in volume.
       - opencloud-metadata:/var/lib/opencloud:rw # Metadata; in volume.
-      - opencloud-data:/var/lib/opencloud/storage/users:rw # User uploads; bind mount.
+      - opencloud-data:/var/lib/opencloud/storage:rw # User uploads; bind mount.
     cap_drop:
       - ALL
     deploy:
