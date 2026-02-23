@@ -35,14 +35,6 @@
 	# Import common settings and headers.
 	import common_options
 
-	# Log to external.log.
-	log {
-		output file /caddy/logs/external.log {
-			roll_size 10mb
-			roll_keep 5
-		}
-	}
-
 	# Reverse proxy.
 	reverse_proxy {args[0]}
 }
@@ -51,14 +43,6 @@
 (cloudflare_proxy) {
 	# Import common settings and headers.
 	import common_options
-
-	# Log to external.log.
-	log {
-		output file /caddy/logs/external.log {
-			roll_size 10mb
-			roll_keep 5
-		}
-	}
 
 	# Reverse proxy and pass the actual client IP.
 	reverse_proxy {args[0]} {
@@ -72,14 +56,6 @@
 (internal_proxy) {
 	# Import common options and headers.
 	import common_options
-
-	# Log to internal.log.
-	log {
-		output file /caddy/logs/internal.log {
-			roll_size 10mb
-			roll_keep 5
-		}
-	}
 
 	# Abort traffic not from private ranges (plus Tailscale).
 	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
@@ -155,7 +131,19 @@ beszel.{$INTERNAL_DOMAIN} {
 
 # Caddy admmin web interface.
 caddy.{$INTERNAL_DOMAIN} {
-	import internal_proxy 127.0.0.1:2019
+	# Import common options and deny non-internal traffic (and Tailscale).
+	import common_options
+	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	abort @denied
+
+	# Spoof the Host header so the API accepts it.
+	reverse_proxy 127.0.0.1:2019 {
+		header_up Host {upstream_hostport}
+	}
+
+	reverse_proxy 127.0.0.1:2019 {
+		header_up Host {upstream_hostport}
+	}
 }
 
 # Dozzle web interface

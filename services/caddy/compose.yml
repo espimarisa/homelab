@@ -28,6 +28,10 @@ services:
       - caddy:/data:rw
     cap_drop:
       - ALL
+    depends_on:
+      socket-proxy:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
