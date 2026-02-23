@@ -149,11 +149,6 @@ dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
 }
 
-# Huntarr web interface.
-huntarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy huntarr:9705
-}
-
 # Lidarr web interface.
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686

@@ -35,19 +35,6 @@ lidarr:
     media_management:
       downloadPropersAndRepacks: doNotPrefer # Do not prefer propers and repacks.
 
-    # # Configures media naming to include MusicBrainz IDs as well as MediaInfo.
-    # media_naming:
-    #   artistFolderFormat: "{Artist CleanNameThe} {(Artist Disambiguation)} [mbid-{Artist MbId}]"
-    #   multiDiscTrackFormat: "{Album Type}/({Release Year}) {Album CleanTitle:100}{ (Album Disambiguation:100)} [mbid-{Album MbId}]/{medium:00}{track:00} - {Track ArtistCleanNameThe:100} - {Album CleanTitle:100} - {Track CleanTitle:100} [{MediaInfo AudioCodec} {MediaInfo AudioBitsPerSample}] [{MediaInfo AudioSampleRate}] [{MediaInfo AudioBitRate}]"
-    #   standardTrackFormat: "{Album Type}/({Release Year}) {Album CleanTitle:100}{ (Album Disambiguation)} [mbid-{Album MbId}]/{track:00} - {Track ArtistCleanNameThe:100} - {Album CleanTitle:100} - {Track CleanTitle:100} [{MediaInfo AudioCodec} {MediaInfo AudioBitsPerSample}] [{MediaInfo AudioSampleRate}] [{MediaInfo AudioBitRate}]"
-
-    # # Root folders to add.
-    # root_folders:
-    #   - path: /library/music
-    #     metadata_profile: Standard
-    #     name: Music
-    #     quality_profile: Lossless
-
     # Custom Format definitions.
     customFormatDefinitions:
       # 192KHz & 176.4KHz releases.
