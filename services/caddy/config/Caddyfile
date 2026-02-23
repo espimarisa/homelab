@@ -47,8 +47,6 @@
 	# Reverse proxy and pass the actual client IP.
 	reverse_proxy {args[0]} {
 		header_up X-Real-IP {client_ip}
-		header_up Connection {>Connection}
-		header_up Upgrade {>Upgrade}
 	}
 }
 
