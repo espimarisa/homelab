@@ -197,15 +197,13 @@ lidarr:
           enabled: true
         upgrade:
           allowed: true
-          until_quality: FLAC Audio # Targets the grouped quality below so specs break the tie
-          until_score: 1760 # Max possible score: Lossless(1000) + 24b(500) + 192k(200) + WEB/CD(50) + Explicit(10) + Vinyl(0)
+          until_quality: FLAC 24bit
+          until_score: 1760
         min_format_score: 0
         quality_sort: top
         qualities:
-          - name: FLAC Audio
-            qualities:
-              - name: FLAC 24bit
-              - name: FLAC
+          - name: FLAC 24bit
+          - name: FLAC
 
 # Radarr configuration.
 radarr:
