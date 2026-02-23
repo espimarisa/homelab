@@ -1,0 +1,45 @@
+# Unpackerr: Auto-extract compressed downloads.
+# https://unpackerr.zip/docs/introduction
+
+---
+services:
+  unpackerr:
+    image: golift/unpackerr:0
+    container_name: unpackerr
+    hostname: unpackerr
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    networks:
+      - internal
+    volumes:
+      - downloads:/downloads:rw
+    environment:
+      TZ: "${TZ}"
+      UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}"
+      UN_LIDARR_0_URL: "http://lidarr:8686"
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
+      UN_RADARR_0_URL: "http://radarr:7878"
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}"
+      UN_SONARR_0_URL: "http://sonarr:8989"
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  internal:
+    name: internal-network
+    external: true
+
+volumes:
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none

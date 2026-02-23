@@ -1,0 +1,66 @@
+# Sonarr: Series manager, organizer, and PVR.
+# https://sonarr.tv/
+
+---
+services:
+  sonarr:
+    image: ghcr.io/11notes/sonarr:4
+    container_name: sonarr
+    hostname: sonarr
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    expose:
+      - 8989/tcp
+    networks:
+      - external
+      - gluetun
+      - internal
+    tmpfs:
+      - "/tmp:uid=1000,gid=1000"
+    volumes:
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - sonarr:/sonarr/etc:rw
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  sonarr:
+    name: sonarr-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

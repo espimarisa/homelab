@@ -1,0 +1,66 @@
+# Radarr: Movie manager, organizer, and PVR.
+# https://radarr.video/
+
+---
+services:
+  radarr:
+    image: ghcr.io/11notes/radarr:6
+    container_name: radarr
+    hostname: radarr
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    networks:
+      - external
+      - gluetun
+      - internal
+    expose:
+      - 7878/tcp
+    tmpfs:
+      - "/tmp:uid=1000,gid=1000"
+    volumes:
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - radarr:/radarr/etc:rw
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  radarr:
+    name: radarr-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

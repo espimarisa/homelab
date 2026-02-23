@@ -1,0 +1,38 @@
+# qui: Alternative web interface for qBittorrent.
+# qui also can handle cross-seeding.
+# https://github.com/autobrr/qui
+
+---
+services:
+  qui:
+    image: ghcr.io/autobrr/qui:v1.14
+    container_name: qui
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      TZ: "${TZ}"
+    volumes:
+      - qui:/config:rw
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      qbittorrent:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  qui:
+    name: qui-volume
+    external: true

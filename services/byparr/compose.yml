@@ -1,0 +1,26 @@
+# Byparr: Captcha solver and cookie scraper. Alternative to Flaresolverr.
+# https://github.com/ThePhaseless/Byparr
+
+---
+services:
+  byparr:
+    image: ghcr.io/thephaseless/byparr:main
+    container_name: byparr
+    network_mode: service:gluetun
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    cap_drop:
+      - ALL
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+    security_opt:
+      - no-new-privileges:true

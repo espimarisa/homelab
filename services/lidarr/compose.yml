@@ -1,0 +1,63 @@
+# Lidarr: Music manager, organizer, and PVR.
+# https://lidarr.audio/
+
+---
+services:
+  lidarr:
+    image: ghcr.io/linuxserver-labs/prarr:lidarr-plugins
+    container_name: lidarr
+    hostname: lidarr
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 8686/tcp
+    networks:
+      - external
+      - gluetun
+      - internal
+    volumes:
+      - downloads:/downloads:rw
+      - lidarr:/config:rw
+      - media-library:/library:rw
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/ping || exit 1"
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  lidarr:
+    name: lidarr-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

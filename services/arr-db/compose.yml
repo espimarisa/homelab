@@ -1,0 +1,31 @@
+# arr-db: PostgreSQL container used for 'ARR apps.
+#
+
+---
+services:
+  arr-db:
+    image: ghcr.io/11notes/postgres:18
+    container_name: arr-db
+    hostname: arr-db
+    shm_size: 512M
+    environment:
+      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+    networks:
+      - internal
+      - gluetun
+    tmpfs:
+      - "/postgres/log:uid=1000,gid=1000"
+      - "/postgres/run:uid=1000,gid=1000"
+    volumes:
+      - arr-db-config:/postgres/etc:rw
+      - arr-db-data:/postgres/var:rw
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1G
+    security_opt:
+      - no-new-privileges:true

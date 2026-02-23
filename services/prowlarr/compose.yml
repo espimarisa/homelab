@@ -1,0 +1,43 @@
+# Prowlarr: Indexer manager and synchronization for 'ARR apps.
+# https://prowlarr.com/
+
+---
+services:
+  prowlarr:
+    image: ghcr.io/11notes/prowlarr:2
+    container_name: prowlarr
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    environment:
+      TZ: "${TZ}"
+    volumes:
+      - prowlarr:/prowlarr/etc:rw
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      arr-db:
+        condition: service_healthy
+        restart: true
+    tmpfs:
+      - "/tmp:uid=1000,gid=1000"
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2G
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  gluetun:
+    external: true
+    name: gluetun-network
+
+volumes:
+  prowlarr:
+    name: prowlarr-volume
+    external: true
