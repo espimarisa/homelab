@@ -151,12 +151,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/lidarr/json
 
-  # Profilarr.
-  - name: Profilarr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/profilarr/json
-
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
@@ -239,9 +233,9 @@ endpoints:
 
   # The Lounge.
   - name: The Lounge
-    <<: *defaults-http
+    <<: *defaults-container
     group: Services
-    url: https://${THELOUNGE_URL}
+    url: ${SOCKET_PROXY_URL}/thelounge/json
 
   # Vaultwarden.
   - name: Vaultwarden

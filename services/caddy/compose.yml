@@ -1,5 +1,6 @@
 # Caddy: Reverse proxy and web server.
-# https://caddyserver.com/
+# Uses a custom image for extended Cloudflare support.
+# https://github.com/homeall/caddy-reverse-proxy-cloudflare
 
 ---
 services:
@@ -18,29 +19,24 @@ services:
       - gluetun
       - internal
     ports:
-      - 80:80/tcp
-      - 443:443/tcp
-      - 443:443/udp
+      - 80:80/tcp # HTTP.
+      - 443:443/tcp # HTTPS.
+      - 443:443/udp # HTTPS/3.
+      - 127.0.0.1:2019:2019/tcp # Admin web interface.
     volumes:
-      - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro
+      - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
       - caddy:/data:rw
-    cap_add:
-      - NET_ADMIN
-      - NET_BIND_SERVICE
-      - NET_RAW
     cap_drop:
       - ALL
-    depends_on:
-      socket-proxy:
-        condition: service_healthy
-        restart: true
     deploy:
       resources:
         limits:
           cpus: 1
-          memory: 1G
+          memory: 512M
     security_opt:
       - no-new-privileges:true
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=80 # Allows binding to port 80 and above.
 
 networks:
   external:

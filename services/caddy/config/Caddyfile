@@ -1,17 +1,26 @@
 {
 	# Use Cloudflare for ACME DNS challenges.
-	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
+	acme_dns cloudflare {$CLOUDFLARE_TOKEN}
 	email {$ACME_EMAIL}
 
-	# Configures trusted proxies.
+	# Enable the admin API/UI and whitelist the host header.
+	admin 127.0.0.1:2019 {
+		origins caddy.{$INTERNAL_DOMAIN}
+	}
+
+	# Configures trusted proxies for Cloudflare support.
 	servers {
 		trusted_proxies cloudflare
 		client_ip_headers CF-Connecting-IP X-Forwarded-For X-Real-IP
 	}
 }
 
-# Snippet for common global security headers.
-(security_headers) {
+# Snippet for common options and headers.
+(common_options) {
+	# Enable compression.
+	encode zstd gzip
+
+	# Enables HSTS and sets common headers.
 	header {
 		-Server
 		Referrer-Policy "strict-origin-when-cross-origin"
@@ -21,27 +30,62 @@
 	}
 }
 
-# Snippet for external services proxied through Cloudflare.
-(cloudflare_proxy) {
-	encode zstd gzip
-	reverse_proxy {args[0]} {
-		# Pass X-Real-IP for Cloudflare.
-		header_up X-Real-IP {remote_host}
-	}
-}
-
-# Snippet for external services.
+# Snippet for reverse proxying external services.
 (external_proxy) {
-	encode zstd gzip
+	# Import common settings and headers.
+	import common_options
+
+	# Log to external.log.
+	log {
+		output file /caddy/logs/external.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+	}
+
+	# Reverse proxy.
 	reverse_proxy {args[0]}
 }
 
-# Snippet for internal-only services.
+# Snippet for reverse proxying external services (proxied through Cloudflare).
+(cloudflare_proxy) {
+	# Import common settings and headers.
+	import common_options
+
+	# Log to external.log.
+	log {
+		output file /caddy/logs/external.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+	}
+
+	# Reverse proxy and pass the actual client IP.
+	reverse_proxy {args[0]} {
+		header_up X-Real-IP {client_ip}
+		header_up Connection {>Connection}
+		header_up Upgrade {>Upgrade}
+	}
+}
+
+# Snippet for reverse proxying internal services. Accessible with a DNS rewrite.
 (internal_proxy) {
-	# Abort traffic NOT from private ranges or Tailscale.
+	# Import common options and headers.
+	import common_options
+
+	# Log to internal.log.
+	log {
+		output file /caddy/logs/internal.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+	}
+
+	# Abort traffic not from private ranges (plus Tailscale).
 	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
 	abort @denied
-	encode zstd gzip
+
+	# Reverse proxy.
 	reverse_proxy {args[0]}
 }
 
@@ -54,100 +98,112 @@
 
 # Internal healthcheck endpoint.
 :3000 {
+	# Drop all access logs to stop spamming logs.
+	log {
+		output discard
+	}
+
 	respond "OK" 200
 }
 
 # Externally accessible services.
-{$CHHOTO_URL} {
-	import external_proxy chhoto:4567
-	import security_headers
-}
+# These should all have DNS record set in $DOMAIN.
+# If using Cloudflare, do not enable proxying for these.
 
-{$GATUS_URL} {
-	# NOTE: Be sure Gatus is proxied through Cloudflare.
-	import external_proxy gatus:8080
-	import security_headers
-}
-
+# Immich web interface.
 {$IMMICH_URL} {
 	import external_proxy immich:2283
-	import security_headers
-
-	# Allow large uploads.
-	request_body {
-		max_size 0
-	}
 }
 
+# Jellyfin web interface.
 {$JELLYFIN_URL} {
 	import external_proxy jellyfin:8096
-	import security_headers
 }
 
+# OpenCloud web interface.
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
-	import security_headers
-
-	# Allow large uploads.
-	request_body {
-		max_size 0
-	}
 }
 
-{$THELOUNGE_URL} {
-	import external_proxy thelounge:9000
-	import security_headers
+# Externally accessible services (proxied with Cloudflare).
+# These should all have DNS record set in $DOMAIN.
+# If using Cloudflare, enable proxying for these.
+
+# Chhoto URL web interface.
+{$CHHOTO_URL} {
+	import cloudflare_proxy chhoto:4567
 }
 
+# Gatus status page.
+{$GATUS_URL} {
+	import cloudflare_proxy gatus:8080
+}
+
+# Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
-	# NOTE: Be sure Vaultwarden is proxied through Cloudflare.
-	import external_proxy vaultwarden:80
-	import security_headers
+	import cloudflare_proxy vaultwarden:80
 }
 
-# Snippet for internal-only services.
-# Accessible with a DNS rewrite (i.e *.domain -> 192.x.x.x).
+# Internally accessible services.
+# Accessible with a DNS rewrite (i.e *.$INTERNAL_DOMAIN -> 192.x.x.x).
+# Do not have a DNS record set for these, ever!
 
+# Beszel hub web interface.
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
+# Caddy admmin web interface.
+caddy.{$INTERNAL_DOMAIN} {
+	import internal_proxy 127.0.0.1:2019
+}
+
+# Dozzle web interface
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
 }
 
+# Huntarr web interface.
 huntarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy huntarr:9705
 }
 
+# Lidarr web interface.
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
 }
 
-profilarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy profilarr:6868
-}
-
+# Prowlarr web interface. Proxied behind Gluetun, so target it.
 prowlarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:9696
 }
 
+# qBittorrent web interface. Proxied behind Gluetun, so target it.
 qbittorrent.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:8080
 }
 
+# qui web interface. Proxied behind Gluetun, so target it.
 qui.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7476
 }
 
+# Radarr web interface.
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
 }
 
+# slskd web interface. Proxied behind Gluetun, so target it.
 slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
 }
 
+# The Lounge web interface.
+thelounge.{$INTERNAL_DOMAIN} {
+	import internal_proxy thelounge:9000
+}
+
+# Sonarr web interface.
 sonarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy sonarr:8989
 }

@@ -27,7 +27,7 @@ services:
       EMERGENCY_ACCESS_ALLOWED: "true"
       ENABLE_WEBSOCKET: "true"
       EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "fido2-vault-credentials,inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,pm-25373-windows-biometrics-v2,export-attachments" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
-      IP_HEADER: "X-Forwarded-For" # Use X-Forwarded-For if not using CF. Requires trusted header.
+      IP_HEADER: "CF-Connecting-IP" # Use X-Forwarded-For if not using CF. Requires trusted header.
       PUSH_ENABLED: "true"
       PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # https://bitwarden.com/host
       PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # https://bitwarden.com/host

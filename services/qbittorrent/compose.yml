@@ -40,16 +40,11 @@ services:
   # https://github.com/autobrr/qui
   qui:
     <<: *defaults
-    image: ghcr.io/autobrr/qui:v1.13
+    image: ghcr.io/autobrr/qui:v1.14
     user: "${PUID}:${PGID}"
     container_name: qui
     volumes:
       - qui:/config:rw
-      - downloads:/downloads:rw
-      - downloads-incomplete:/downloads-incomplete:rw
-      - downloads-permaseed:/downloads-permaseed:rw
-      - qbittorrent-config:/qbittorrent/etc:rw
-      - qbittorrent-data:/qbittorrent/var:rw
     depends_on:
       gluetun:
         condition: service_healthy
@@ -79,7 +74,7 @@ volumes:
   downloads:
     name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_COMPLETE_PATH}"
+      device: "${DOWNLOADS_PATH}"
       o: bind
       type: none
   downloads-incomplete:

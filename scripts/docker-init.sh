@@ -11,12 +11,12 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
-	"DOWNLOADS_COMPLETE_PATH"
+	"DOWNLOADS_PATH"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
-	"IMMICH_DATA_PATH"
+	"IMMICH_UPLOADS_PATH"
 	"MEDIA_LIBRARY_PATH"
-	"OPENCLOUD_DATA_PATH"
+	"OPENCLOUD_UPLOADS_PATH"
 	"PGID"
 	"PUID"
 	"STORAGE_PATH"
@@ -104,7 +104,6 @@ readonly VOLUMES=(
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"lidarr-volume"
-	"profilarr-volume"
 	"opencloud-config-volume"
 	"opencloud-metadata-volume"
 	"prowlarr-volume"
@@ -190,7 +189,7 @@ create_network() {
 
 # Creates bind mount directories on the host.
 echo -e "\nCreating bind mount directories..."
-create_dirs "$DOWNLOADS_COMPLETE_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
+create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
@@ -233,9 +232,9 @@ echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 
 $SUDO chown -R "${PUID}:${PGID}" \
-	"${IMMICH_DATA_PATH}" \
-	"${OPENCLOUD_DATA_PATH}" \
-	"${DOWNLOADS_COMPLETE_PATH}" \
+	"${IMMICH_UPLOADS_PATH}" \
+	"${OPENCLOUD_UPLOADS_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
@@ -243,9 +242,9 @@ $SUDO chown -R "${PUID}:${PGID}" \
 # Set permissions of the main bind mount directories on the host.
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
-	"${IMMICH_DATA_PATH}" \
-	"${OPENCLOUD_DATA_PATH}" \
-	"${DOWNLOADS_COMPLETE_PATH}" \
+	"${IMMICH_UPLOADS_PATH}" \
+	"${OPENCLOUD_UPLOADS_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"

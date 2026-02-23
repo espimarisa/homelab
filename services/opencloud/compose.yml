@@ -68,6 +68,6 @@ volumes:
   opencloud-data:
     name: opencloud-data-bind
     driver_opts:
-      device: "${OPENCLOUD_DATA_PATH}"
+      device: "${OPENCLOUD_UPLOADS_PATH}"
       o: bind
       type: none

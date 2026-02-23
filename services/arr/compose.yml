@@ -69,7 +69,6 @@ services:
     expose:
       - 7878/tcp
     volumes:
-      - ./scripts:/scripts:rw
       - downloads:/downloads:rw
       - radarr:/radarr/etc:rw
       - media-library:/library:rw
@@ -220,31 +219,6 @@ services:
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:9705 || exit 1"
 
-  # Profilarr: 'ARR app profile synchronization.
-  # https://github.com/Dictionarry-Hub/profilarr
-  profilarr:
-    <<: *defaults
-    image: santiagosayshey/profilarr:beta
-    container_name: profilarr
-    hostname: profilarr
-    environment:
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      TZ: "${TZ}"
-      UMASK: "${UMASK}"
-    expose:
-      - 6868/tcp
-    networks:
-      - external
-      - internal
-    volumes:
-      - profilarr:/config:rw
-    deploy:
-      resources:
-        limits:
-          cpus: 1
-          memory: 1G
-
 networks:
   external:
     external: true
@@ -278,13 +252,10 @@ volumes:
   huntarr:
     name: huntarr-volume
     external: true
-  profilarr:
-    name: profilarr-volume
-    external: true
   downloads:
     name: downloads-bind
     driver_opts:
-      device: "${DOWNLOADS_COMPLETE_PATH}"
+      device: "${DOWNLOADS_PATH}"
       o: bind
       type: none
   media-library:
