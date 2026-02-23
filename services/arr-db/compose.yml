@@ -29,3 +29,19 @@ services:
           memory: 1G
     security_opt:
       - no-new-privileges:true
+
+networks:
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  arr-db-config:
+    name: arr-db-config-volume
+    external: true
+  arr-db-data:
+    name: arr-db-data-volume
+    external: true
