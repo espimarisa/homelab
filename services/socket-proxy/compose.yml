@@ -4,10 +4,10 @@
 ---
 services:
   socket-proxy:
-    image: lscr.io/linuxserver/socket-proxy:latest
+    image: lscr.io/linuxserver/socket-proxy:3.2.13
     container_name: socket-proxy
     hostname: socket-proxy
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
       ALLOW_RESTARTS: "1" # Allows restarting containers.
@@ -20,26 +20,26 @@ services:
       NETWORKS: "1" # Allows access to the networks endpoint.
       PING: "1" # Allows access to the ping endpoint.
       SERVICES: "1" # Allows access to the services endpoint.
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket mount.
     tmpfs:
-      - /run
+      - /run # Required for read-only image.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 64M
+          cpus: 0.5 # Allow using up to 0.5 CPU cores.
+          memory: 64M # Allow using up to 64MB of RAM.
     healthcheck:
       interval: 10s
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:2375/_ping || exit 1"
       timeout: 5s
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   internal:

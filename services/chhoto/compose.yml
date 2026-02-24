@@ -7,35 +7,35 @@ services:
     image: ghcr.io/sintan1729/chhoto-url:6.5-alpine
     container_name: chhoto
     hostname: chhoto
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      api_key: "${CHHOTO_API_KEY}" # openssl rand -hex 32
-      db_url: "/db/urls.sqlite"
+      api_key: "${CHHOTO_API_KEY}" # Sets the API key. $ openssl rand -hex 32
+      db_url: "/db/urls.sqlite" # SQLite database file to use.
       ensure_acid: "True" # Ensures ACID compliance.
-      password: "${CHHOTO_PASSWORD}"
-      site_url: "https://${CHHOTO_URL}"
+      password: "${CHHOTO_PASSWORD}" # Sets the password.
+      site_url: "https://${CHHOTO_URL}" # Sets the URL to use for forwarding.
       slug_style: "Pair" # Use paired slug styling.
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
       use_wal_mode: "True" # Use WAL mode for SQLite.
     expose:
-      - 4567/tcp
+      - 4567/tcp # Web interface; reverse proxied at ${CHHOTO_URL}.
     networks:
       - external
     volumes:
-      - chhoto:/db:rw
+      - chhoto:/db:rw # Chhoto database storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 256M
-    security_opt:
-      - no-new-privileges:true
+          cpus: 0.5 # Allow using up to 0.5 CPU cores.
+          memory: 128M # Allow using up to 128MB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4567/api/whoami || exit 1"
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

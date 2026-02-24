@@ -6,31 +6,31 @@ services:
   prowlarr:
     image: ghcr.io/11notes/prowlarr:2
     container_name: prowlarr
-    network_mode: service:gluetun
-    read_only: true
+    network_mode: service:gluetun # Route all traffic through gluetun.
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
-      TZ: "${TZ}"
-    volumes:
-      - prowlarr:/prowlarr/etc:rw
-    depends_on:
-      gluetun:
-        condition: service_healthy
-        restart: true
-      arr-db:
-        condition: service_healthy
-        restart: true
+      TZ: "${TZ}" # Sets the timezone.
     tmpfs:
-      - "/tmp:uid=1000,gid=1000"
+      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
+    volumes:
+      - prowlarr:/prowlarr/etc:rw # Prowlarr configuration storage.
+    depends_on:
+      arr-db:
+        condition: service_healthy # Require arr-db to be healthy before starting.
+        restart: true # Restart when arr-db restarts.
+      gluetun:
+        condition: service_healthy # Require Gluetun to be healthy before starting.
+        restart: true # Restart when Gluetun restarts.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 2G
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 1G # Allow using up to 1GB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   gluetun:

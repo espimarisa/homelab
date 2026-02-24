@@ -7,13 +7,13 @@ services:
   caddy:
     image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:latest
     container_name: caddy
-    env_file: ../../.env
+    env_file: ../../.env # Required for Caddyfile to read environment variables.
     hostname: caddy
     restart: unless-stopped
     environment:
-      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom"
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      TZ: "${TZ}"
+      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom" # Use the mounted custom Caddyfile.
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
       - gluetun
@@ -25,20 +25,20 @@ services:
       - 127.0.0.1:2019:2019/tcp # Admin web interface.
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
-      - caddy:/data:rw
+      - caddy:/data:rw # Caddy data and certificate storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       socket-proxy:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require socket-proxy to be healthy before starting.
+        restart: true # Restart when socket-proxy is restarted.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 512M # Allow using up to 512MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=80 # Allows binding to port 80 and above.
 

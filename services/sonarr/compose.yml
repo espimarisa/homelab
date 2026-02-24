@@ -7,35 +7,35 @@ services:
     image: ghcr.io/11notes/sonarr:4
     container_name: sonarr
     hostname: sonarr
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 8989/tcp
+      - 8989/tcp # Web interface; reverse proxied at sonarr.${INTERNAL_DOMAIN}.
     networks:
       - external
       - gluetun
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000"
+      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
     volumes:
-      - downloads:/downloads:rw
-      - media-library:/library:rw
-      - sonarr:/sonarr/etc:rw
+      - downloads:/downloads:rw # Completed downloads mount.
+      - media-library:/library:rw # Media library mount.
+      - sonarr:/sonarr/etc:rw # Sonarr configuration storage.
+    cap_drop:
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       arr-db:
-        condition: service_healthy
-        restart: true
-    cap_drop:
-      - ALL
+        condition: service_healthy # Require arr-db to be healthy before starting.
+        restart: true # Restart when arr-db restarts.
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 4G
+          cpus: 2 # Allow using up to 2 CPU cores.
+          memory: 4G # Allow using up to 4GB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

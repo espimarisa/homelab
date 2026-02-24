@@ -1,4 +1,5 @@
 # qBittorrent: BitTorrent client.
+# VueTorrent is included at /qbittorrent/themes/vuetorrent.
 # https://github.com/qbittorrent/qBittorrent/wiki
 
 ---
@@ -6,31 +7,31 @@ services:
   qbittorrent:
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
-    network_mode: service:gluetun
-    read_only: true
+    network_mode: service:gluetun # Route all traffic through Gluetun.
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - downloads:/downloads:rw
-      - downloads-incomplete:/downloads-incomplete:rw
-      - downloads-permaseed:/downloads-permaseed:rw
-      - qbittorrent-config:/qbittorrent/etc:rw
-      - qbittorrent-data:/qbittorrent/var:rw
-      - qbittorrent-themes:/qbittorrent/themes:rw
+      - downloads:/downloads:rw # Completed downloads mount.
+      - downloads-incomplete:/downloads-incomplete:rw # Incomplete downloads mount.
+      - downloads-permaseed:/downloads-permaseed:rw # Permaseed downloads mount.
+      - qbittorrent-config:/qbittorrent/etc:rw # qBittorrent configuration storage.
+      - qbittorrent-data:/qbittorrent/var:rw # qBittorrent data and database storage.
+      - qbittorrent-themes:/qbittorrent/themes:rw # qBittorrent themes (Vuetorrent is built in) storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       gluetun:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require Gluetun to be healthy before starting.
+        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 4GB
+          cpus: 4 # Allow using up to 4 CPU cores.
+          memory: 4GB # Allow using up to 4GB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 volumes:
   qbittorrent-config:

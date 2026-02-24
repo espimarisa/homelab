@@ -2,51 +2,52 @@
 # https://immich.app
 
 ---
+# Default container options.
 x-defaults: &defaults
   restart: unless-stopped
-  read_only: true
+  read_only: true # Prevent writing directly to the image.
   cap_drop:
-    - ALL
+    - ALL # Drop all unnecessary privileges.
   security_opt:
-    - no-new-privileges:true
+    - no-new-privileges:true # Prevent privilege escalation.
 
 services:
   immich:
     <<: *defaults
     image: ghcr.io/immich-app/immich-server:v2.5.6
     container_name: immich
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
-      DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich"
+      DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connect to PostgreSQL.
       REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache.
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for transcoding; renderD128 is usually GPU0.
     expose:
-      - 2283/tcp
+      - 2283/tcp # Web interface; reverse proxied at ${IMMICH_URL}.
     networks:
       - external
       - internal
     tmpfs:
-      - "/run:uid=${PUID},gid=${PGID}"
-      - "/tmp:uid=${PUID},gid=${PGID}"
-      - "/usr/src/app/.npm:uid=${PUID},gid=${PGID}"
-      - "/usr/src/app/.config:uid=${PUID},gid=${PGID}"
+      - "/run:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/usr/src/app/.npm:uid=${PUID},gid=${PGID}" # Required for read-only image; installation.
+      - "/usr/src/app/.config:uid=${PUID},gid=${PGID}" # Required for read-only image; cache.
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - immich-data:/data
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - immich-data:/data:rw # Immich storage mount.
     depends_on:
       immich-cache:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require immich-cache to be healthy before starting.
+        restart: true # Restart when immich-cache is restarted.
       immich-db:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require immich-db to be healthy before starting.
+        restart: true # Restart when immich-db is restarted.
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 8G
+          cpus: 4 # Allow using up to 4 CPU cores.
+          memory: 4G # Allow using up to 4GB of RAM.
     group_add:
       - "${RENDER_PGID}" # Required for video transcoding.
 
@@ -55,42 +56,42 @@ services:
     image: ghcr.io/11notes/redis:8
     container_name: immich-cache
     environment:
-      REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}"
-      TZ: "${TZ}"
+      REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the redis password.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000"
+      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
     volumes:
-      - immich-cache-config:/redis/etc:rw
-      - immich-cache-data:/redis/var:rw
+      - immich-cache-config:/redis/etc:rw # Redis cache config storage.
+      - immich-cache-data:/redis/var:rw # Redis cache storage.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 2G
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 1G # Allow using up to 1GB of RAM.
 
   immich-db:
     <<: *defaults
     image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3
     container_name: immich-db
-    shm_size: 256MB
+    shm_size: 512MB # Increases the shared memory size.
     environment:
       DB_STORAGE_TYPE: "${IMMICH_DB_STORAGE_TYPE}" # HDD or SSD; enables optimizations.
-      POSTGRES_DB: "immich"
+      POSTGRES_DB: "immich" # Use the immich database.
       POSTGRES_INITDB_ARGS: "--data-checksums" # Enable checksums.
-      POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}"
-      POSTGRES_USER: "postgres"
-      TZ: "${TZ}"
+      POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}" # Sets the PostgreSQL password.
+      POSTGRES_USER: "postgres" # Use the immich user.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     tmpfs:
-      - "/etc/postgresql:exec"
-      - "/run"
-      - "/tmp"
+      - "/etc/postgresql:exec" # Required for read-only image; psql.
+      - "/run" # Required for read-only image.
+      - "/tmp" # Required for read-only image.
     volumes:
-      - immich-db:/var/lib/postgresql:rw
-    cap_drop:
+      - immich-db:/var/lib/postgresql:rw # PostgreSQL database storage.
+    cap_drop: # Drop all unnecessary privileges.
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -101,8 +102,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 2G
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 2G # Allow using up to 2GB of RAM.
 
 networks:
   external:

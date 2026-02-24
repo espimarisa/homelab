@@ -8,28 +8,28 @@ services:
     container_name: unpackerr
     hostname: unpackerr
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     networks:
       - internal
     volumes:
-      - downloads:/downloads:rw
+      - downloads:/downloads:rw # Completed downloads mount.
     environment:
-      TZ: "${TZ}"
-      UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}"
-      UN_LIDARR_0_URL: "http://lidarr:8686"
-      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
-      UN_RADARR_0_URL: "http://radarr:7878"
-      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}"
-      UN_SONARR_0_URL: "http://sonarr:8989"
+      TZ: "${TZ}" # Sets the timezone.
+      UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}" # Lidarr API key to use.
+      UN_LIDARR_0_URL: "http://lidarr:8686" # Connects to Lidarr.
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}" # Radarr API key to use.
+      UN_RADARR_0_URL: "http://radarr:7878" # Connects to Radarr.
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}" # Sonarr API key to use.
+      UN_SONARR_0_URL: "http://sonarr:8989" # Connects to Sonarr.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 2G
+          cpus: 2 # Allow using up to 2 CPU cores.
+          memory: 2G # Allow using up to 2GB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   internal:

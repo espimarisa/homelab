@@ -7,37 +7,37 @@ services:
     image: ghcr.io/amir20/dozzle:v10
     container_name: dozzle
     hostname: dozzle
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      DOZZLE_ENABLE_ACTIONS: "true"
-      DOZZLE_ENABLE_SHELL: "true"
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      DOZZLE_ENABLE_ACTIONS: "true" # Enable container actions.
+      DOZZLE_ENABLE_SHELL: "true" # Enable container shells.
       DOZZLE_NO_ANALYTICS: "true" # Opts out of data analytics.
     expose:
-      - 8080/tcp
+      - 8080/tcp # Web interface; reverse proxied at dozzle.${INTERNAL_DOMAIN}.
     networks:
       - external
       - internal
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - dozzle:/data:rw
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - dozzle:/data:rw # Configuration and cache storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       socket-proxy:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require socket-proxy to be healthy before starting.
+        restart: true # Restart when socket-proxy restarts.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 512M # Allow using up to 512MB of RAM.
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

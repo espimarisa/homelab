@@ -1,5 +1,4 @@
 # qui: Alternative web interface for qBittorrent.
-# qui also can handle cross-seeding.
 # https://github.com/autobrr/qui
 
 ---
@@ -7,30 +6,42 @@ services:
   qui:
     image: ghcr.io/autobrr/qui:v1.14
     container_name: qui
-    network_mode: service:gluetun
-    read_only: true
+    hostname: qui
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - external
+      - gluetun
+      - internal
     volumes:
-      - qui:/config:rw
+      - qui:/config:rw # qui configuration storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
-      gluetun:
-        condition: service_healthy
-        restart: true
       qbittorrent:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require qBittorrent to be healthy before starting.
+        restart: true # Restart when qBittorrent restarts.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 512M
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 512M # Allow using up to 512MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    name: external-network
+    external: true
+  gluetun:
+    name: gluetun-network
+    external: true
+  internal:
+    name: internal-network
+    external: true
 
 volumes:
   qui:

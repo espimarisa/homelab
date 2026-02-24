@@ -6,59 +6,59 @@ services:
   slskd:
     image: ghcr.io/slskd/slskd:0.24.4
     container_name: slskd
-    network_mode: service:gluetun
-    read_only: true
+    network_mode: service:gluetun # Route all traffic through Gluetun.
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      SLSKD_API_KEY: "${SLSKD_API_KEY}"
-      SLSKD_DOWNLOAD_SPEED_LIMIT: "${SLSKD_DOWNLOAD_SPEED_LIMIT}"
-      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek"
+      SLSKD_API_KEY: "${SLSKD_API_KEY}" # Sets the API key.
+      SLSKD_DOWNLOAD_SPEED_LIMIT: "${SLSKD_DOWNLOAD_SPEED_LIMIT}" # Download speed limit, in kibibytes.
+      SLSKD_DOWNLOADS_DIR: "/downloads/soulseek" # Directory to store downloads.
       SLSKD_FORCE_SHARE_SCAN: "true" # Always scan at startup.
-      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek"
-      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}"
-      SLSKD_JWT_TTL: "604800000"
-      SLSKD_PASSWORD: "${SLSKD_PASSWORD}"
+      SLSKD_INCOMPLETE_DIR: "/downloads-incomplete/soulseek" # Directory to store incomplete downloads.
+      SLSKD_JWT_KEY: "${SLSKD_JWT_KEY}" # Sets the JWT token used to sign API keys.
+      SLSKD_JWT_TTL: "604800000" # Sets the JWT time to live.
+      SLSKD_PASSWORD: "${SLSKD_PASSWORD}" # slskd web interface password to set.
       SLSKD_REMOTE_CONFIGURATION: "true" # Allows web configuration.
       SLSKD_REMOTE_FILE_MANAGEMENT: "true" # Allows web file management.
       SLSKD_SHARE_CACHE_RETENTION: "1440" # Retain cache for 24 hours.
       SLSKD_SHARE_CACHE_STORAGE_MODE: "memory" # Cache shares in memory.
       SLSKD_SHARE_CACHE_WORKERS: "4" # Use 4 threads for caching shares.
-      SLSKD_SHARED_DIR: "/library/music"
+      SLSKD_SHARED_DIR: "/library/music" # Share the entire music library.
       SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_USER_DESCRIPTION}" # Soulseek user description to set.
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Soulseek traffic port to use.
-      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}"
-      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}"
-      SLSKD_UMASK: "${UMASK}"
-      SLSKD_UPLOAD_SPEED_LIMIT: "${SLSKD_UPLOAD_SPEED_LIMIT}"
-      SLSKD_USERNAME: "${SLSKD_USERNAME}"
-      SLSKD_VPN_GLUETUN_API_KEY: "${GLUETUN_API_KEY}"
+      SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}" # Soulseek user password to login with.
+      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}" # Soulseek user password to login with.
+      SLSKD_UMASK: "${UMASK}" # Umask to apply.
+      SLSKD_UPLOAD_SPEED_LIMIT: "${SLSKD_UPLOAD_SPEED_LIMIT}" # Upload speed limit, in kibibytes.
+      SLSKD_USERNAME: "${SLSKD_USERNAME}" # slskd web interface username to set.
+      SLSKD_VPN_GLUETUN_API_KEY: "${GLUETUN_API_KEY}" # Reads the Gluetun API key.
       SLSKD_VPN_GLUETUN_URL: "http://127.0.0.1:8000" # Connect to the Gluetun control server.
       SLSKD_VPN: "true" # Enables Gluetun integration.
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     tmpfs:
-      - "/.net:uid=${PUID},gid=${PGID},exec"
-      - "/tmp:uid=${PUID},gid=${PGID},exec"
+      - "/.net:uid=${PUID},gid=${PGID},exec" # Required for read-only image; update extraction.
+      - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read-only image.
     volumes:
-      - downloads:/downloads:rw
-      - downloads-incomplete:/downloads-incomplete:rw
-      - media-library:/library:ro
-      - slskd:/app:rw
+      - downloads:/downloads:rw # Completed downloads mount.
+      - downloads-incomplete:/downloads-incomplete:rw # Incomplete downloads mount.
+      - media-library:/library:ro # Media library mount.
+      - slskd:/app:rw # slskd configuration and data storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       gluetun:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require gluetun to be healthy before connecting.
+        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 2G
+          cpus: 2 # Allow using up to 2 CPU cores.
+          memory: 2G # Allow using up to 2GB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5030/health || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 volumes:
   slskd:

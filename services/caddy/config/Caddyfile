@@ -68,6 +68,11 @@
 	handle {
 		abort
 	}
+
+	# Drop all access logs to stop spamming logs.
+	log {
+		output discard
+	}
 }
 
 # Internal healthcheck endpoint.
@@ -138,10 +143,6 @@ caddy.{$INTERNAL_DOMAIN} {
 	reverse_proxy 127.0.0.1:2019 {
 		header_up Host {upstream_hostport}
 	}
-
-	reverse_proxy 127.0.0.1:2019 {
-		header_up Host {upstream_hostport}
-	}
 }
 
 # Dozzle web interface
@@ -154,17 +155,17 @@ lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
 }
 
-# Prowlarr web interface. Proxied behind Gluetun, so target it.
+# Prowlarr web interface.
 prowlarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:9696
 }
 
-# qBittorrent web interface. Proxied behind Gluetun, so target it.
+# qBittorrent web interface.
 qbittorrent.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:8080
 }
 
-# qui web interface. Proxied behind Gluetun, so target it.
+# qui web interface.
 qui.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7476
 }
@@ -174,7 +175,7 @@ radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
 }
 
-# slskd web interface. Proxied behind Gluetun, so target it.
+# slskd web interface.
 slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
 }

@@ -6,39 +6,39 @@ services:
   configarr:
     image: ghcr.io/11notes/configarr:1
     container_name: configarr
-    env_file: ../../.env
-    read_only: true
+    env_file: ../../.env # Required for config parsing environment variables.
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
       CONFIGARR_SCHEDULE: "0 6 * * *" # Synchronize every day at 6:00 AM.
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000"
+      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
     volumes:
-      - ./config:/configarr/etc:rw
-      - configarr:/configarr/var:rw
+      - ./config:/configarr/etc:rw # Local configuration mount.
+      - configarr:/configarr/var:rw # Git clone and cache storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       lidarr:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require Lidarr to be healthy before running.
+        restart: true # Restart when Lidarr restarts.
       radarr:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require Radarr to be healthy before running.
+        restart: true # Restart when Radarr restarts.
       sonarr:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require Sonarr to be healthy before running.
+        restart: true # Restart when Sonarr restarts.
     deploy:
       resources:
         limits:
-          cpus: 0.5
-          memory: 256M
+          cpus: 0.5 # Allow using up to 0.5 CPU cores.
+          memory: 256M # Allow using up to 256MB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

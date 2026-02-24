@@ -4,26 +4,26 @@
 ---
 services:
   lidarr:
-    image: ghcr.io/linuxserver-labs/prarr:lidarr-plugins
+    image: ghcr.io/linuxserver-labs/prarr:lidarr-plugins # LSIO plugins branch.
     container_name: lidarr
     hostname: lidarr
     restart: unless-stopped
     environment:
-      PGID: "${PGID}"
-      PUID: "${PUID}"
-      TZ: "${TZ}"
-      UMASK: "${UMASK}"
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      TZ: "${TZ}" # Sets the timezone.
+      UMASK: "${UMASK}" # Umask to use.
     expose:
-      - 8686/tcp
+      - 8686/tcp # Web interface; reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     networks:
       - external
       - gluetun
       - internal
     volumes:
-      - downloads:/downloads:rw
-      - lidarr:/config:rw
-      - media-library:/library:rw
-    cap_drop:
+      - downloads:/downloads:rw # Completed downloads mount.
+      - lidarr:/config:rw # Lidarr configuration storage.
+      - media-library:/library:rw # Media library mount.
+    cap_drop: # Drop all unnecessary privileges.
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -33,17 +33,18 @@ services:
       - SYS_PTRACE
     depends_on:
       arr-db:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require arr-db to be healthy before starting.
+        restart: true # Restart when arr-db is restarted.
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 4G
+          cpus: 2 # Allow using up to 2 CPU cores.
+          memory: 4G # Allow using up to 4GB of RAM.
     healthcheck:
+      interval: 30s
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/ping || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 volumes:
   lidarr:

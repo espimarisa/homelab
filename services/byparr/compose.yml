@@ -6,21 +6,21 @@ services:
   byparr:
     image: ghcr.io/thephaseless/byparr:main
     container_name: byparr
-    network_mode: service:gluetun
+    network_mode: service:gluetun # Route all traffic through Gluetun.
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     depends_on:
       gluetun:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Require Gluetun to be healthy to run.
+        restart: true # Restart when Gluetun restarts.
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 1G
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 1G # Allow using up to 1GB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.

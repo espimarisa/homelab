@@ -7,37 +7,37 @@ services:
     image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
     hostname: jellyfin
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for transcoding; renderD128 is usually GPU0.
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:
-      - 8096/tcp
+      - 8096/tcp # Web interface; reverse proxied at ${JELLYFIN_URL}.
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - jellyfin-cache:/cache:rw
-      - jellyfin-config:/config:rw
-      - media-library:/library:rw
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - jellyfin-cache:/cache:rw # Jellyfin cache storage.
+      - jellyfin-config:/config:rw # Jellyfin configuration storage.
+      - media-library:/library:rw # Media library mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 4
-          memory: 8G
+          cpus: 4 # Allow using up to 4GB of RAM.
+          memory: 4G # Allow using up to 4GB of RAM.
     group_add:
       - "${RENDER_PGID}" # Required for video rendering.
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8096/health || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

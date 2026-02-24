@@ -1,5 +1,5 @@
 # arr-db: PostgreSQL container used for 'ARR apps.
-#
+# Each 'ARR app will have to be configured to use this, see docs.
 
 ---
 services:
@@ -7,28 +7,32 @@ services:
     image: ghcr.io/11notes/postgres:18
     container_name: arr-db
     hostname: arr-db
-    shm_size: 512M
+    read_only: true # Prevent writing directly to the image.
+    shm_size: 512M # Raises shared memory allocation.
     environment:
-      TZ: "${TZ}"
-      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+      POSTGRES_BACKUP_RETENTION: "7" # Retain backups for 7 days.
+      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Sets the PostgreSQL password.
+      TZ: "${TZ}" # Timezone to use.
     networks:
       - internal
       - gluetun
     tmpfs:
-      - "/postgres/log:uid=1000,gid=1000"
-      - "/postgres/run:uid=1000,gid=1000"
+      - "/postgres/log:uid=1000,gid=1000" # Required for read-only image.
+      - "/postgres/run:uid=1000,gid=1000" # Required for read-only image.
     volumes:
-      - arr-db-config:/postgres/etc:rw
-      - arr-db-data:/postgres/var:rw
+      - arr-db-backups:/postgres/backup:rw # PostgreSQL backup storage.
+      - arr-db-config:/postgres/etc:rw # PostgreSQL configuration storage.
+      - arr-db-data:/postgres/var:rw # PostgreSQL database storage.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 2
-          memory: 1G
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 1G # Allow using up to 1GB of RAM.
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   gluetun:
@@ -39,6 +43,9 @@ networks:
     name: internal-network
 
 volumes:
+  arr-db-backups:
+    name: arr-db-backups-volume
+    external: true
   arr-db-config:
     name: arr-db-config-volume
     external: true
