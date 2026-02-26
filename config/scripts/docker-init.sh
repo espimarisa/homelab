@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# This script prepares (or updates) a system environment for this infrastructure.
-# It parses environment variables and creates required volumes, networks, and paths.
-# It uses the Docker CLI to dynamically find volume paths for permission setting.
-# chmod +x this script and run it with bash.
-# This is stupid, but works fine. - Mari
-
 # Exit immediately if a command exits with a non-zero status.
 set -euo pipefail
 
@@ -26,7 +20,7 @@ readonly REQUIRED_VARS=(
 
 # Sources environment variables from .env.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="${SCRIPT_DIR}/../.env"
+ENV_FILE="${SCRIPT_DIR}/../../.env"
 SUDO=""
 
 # Reads the environment variable file.
@@ -86,6 +80,7 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
+	"arr-db-backups-volume"
 	"arr-db-config-volume"
 	"arr-db-data-volume"
 	"beszel-agent-volume"

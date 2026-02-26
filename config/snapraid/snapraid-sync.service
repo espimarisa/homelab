@@ -1,0 +1,13 @@
+[Unit]
+Description=SnapRAID Sync and Scrub
+After=mnt-storage01.mount mnt-storage02.mount mnt-storage03.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/snapraid sync
+ExecStart=/usr/bin/snapraid scrub -p 5 -o 20
+User=root
+
+[Install]
+WantedBy=multi-user.target
+	

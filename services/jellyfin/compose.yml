@@ -30,7 +30,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow using up to 4GB of RAM.
+          cpus: 4 # Allow using up to 4 CPU cores.
           memory: 4G # Allow using up to 4GB of RAM.
     group_add:
       - "${RENDER_PGID}" # Required for video rendering.
