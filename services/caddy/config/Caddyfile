@@ -167,7 +167,7 @@ qbittorrent.{$INTERNAL_DOMAIN} {
 
 # qui web interface.
 qui.{$INTERNAL_DOMAIN} {
-	import internal_proxy gluetun:7476
+	import internal_proxy qui:7476
 }
 
 # Radarr web interface.
