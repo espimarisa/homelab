@@ -24,7 +24,7 @@ services:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - jellyfin-cache:/cache:rw # Jellyfin cache storage.
       - jellyfin-config:/config:rw # Jellyfin configuration storage.
-      - media-library:/library:rw # Media library mount.
+      - media-library:/library:ro # Media library mount. Read-only.
     cap_drop:
       - ALL # Drop all unnecessary privileges.
     deploy:
@@ -33,7 +33,7 @@ services:
           cpus: 4 # Allow using up to 4 CPU cores.
           memory: 4G # Allow using up to 4GB of RAM.
     group_add:
-      - "${RENDER_PGID}" # Required for video rendering.
+      - "${RENDER_PGID}" # Required for transcoding.
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8096/health || exit 1"
     security_opt:

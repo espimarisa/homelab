@@ -1,0 +1,88 @@
+# marinet beets configuration
+# This beets configuration is intended for writing in-place.
+# I use it in combination with Lidarr and a connect script.
+# You will need to install specific plugins to use this. See compose.yml.
+
+---
+# General configuration.
+plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
+library: /config/musiclibrary.blb # Save the beets database.
+threaded: yes # Enable multithreading.
+
+# Import configuration.
+import:
+  copy: no # Don't copy files when complete.
+  hardlink: no # Don't create hardlinks when complete.
+  incremental: no # Don't run incrementally. Allows re-writes.
+  log: /config/beet.log # Save log files inside of the container.
+  move: no # Don't move files when complete.
+  quiet_fallback: skip # Skip fallbacks when running in quiet mode.
+  resume: no # Don't resume upon crashing.
+  timid: no # Don't use timid mode.
+  write: yes # Write the changes in place.
+
+# Matching configuration.
+match:
+  preferred:
+    countries: ["US", "XW", "GB"] # Penalize non-US, worldwide, or GB.
+    media: ["CD", "Digital Media", "Vinyl"] # Penalize non-CD, Digital, or Vinyl.
+  strong_rec_thresh: 0.20 # Require an 80% or higher match to automatically continue.
+
+# Album art configuration.
+art_filename: cover # Save album art as cover.jpeg.
+embedart:
+  auto: yes # Automatically embed album art.
+  maxwidth: 1500 # Only embed images up to 1500x1500.
+  remove_art_file: no # Leaves the cover.jpg in the folder.
+fetchart:
+  auto: yes # Automatically download album art.
+  enforce_ratio: no # Do not enforce the ratio.
+  minwidth: 500 # Require decent sized art.
+  lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
+  sources: [coverart, lastfm, itunes, wikipedia, albumart] # Sources to use.
+
+# Discogs configuration.
+discogs:
+  index_tracks: yes # Index tracks.
+  user_token: "${DISCOGS_API_KEY}" # Connect script will inject the real token here.
+
+# Adds featured artists to the title instead of the tags.
+ftintitle:
+  auto: yes # Automatically move feat. to the title.
+  drop: no # Do not remove it entirely.
+
+# Last.fm genre configuration.
+lastgenre:
+  auto: yes # Automatically fetch the genre from Last.fm.
+  canonical: yes # Uses a built-in tree to fix weird capitalization/spelling.
+  count: 5 # Grabs up to 5 genres.
+  force: yes # Overwrite existing genres.
+  min_weight: 5 # Dropping this from the default 10 allows catching more niche genres.
+  prefer_specific: yes # Prefer specific genres over generic ones.
+  separator: "; " # Semicolons are the standard for genre seperation.
+  source: album # Use the album as the source for genres.
+
+# Lyrics configuration.
+lyrics:
+  auto: yes # Automatically download lyrics.
+  fallback: "" # Do not include fallback lyrics.
+  genius_api_key: "${GENIUS_API_KEY}" # Connect script will inject the real token here.
+  sources: [lrclib, musixmatch, tekstowo, genius] # Sources to use.
+  synced: no # Disable synced lyrics. It's just way too finicky.
+
+# Metadata configuration.
+original_date: yes # Use the original date, not the release date (i.e 1993 i)
+per_disc_numbering: yes # Enable per-disc numbering.
+
+# ReplayGain configuration.
+replaygain:
+  backend: ffmpeg # Use ffmpeg for replaygain.
+  overwrite: yes # Overwrites any remaining bad volume data.
+  targetlevel: 89 # The industry standard target volume in dB.
+
+# Scrubbing configuration. Also enables Zero for scrubbing misc. tags.
+scrub:
+  auto: yes # Scrub existing standardized tags.
+zero:
+  fields: comments encoder rg_album_gain rg_album_peak rg_track_gain rg_track_peak # Scrub comments, encoder, and previous replaygain data.
+  update_database: true # Update the database when complete.
