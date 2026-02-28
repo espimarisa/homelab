@@ -33,11 +33,11 @@ art_filename: cover # Save album art as cover.jpeg.
 embedart:
   auto: yes # Automatically embed album art.
   maxwidth: 1500 # Only embed images up to 1500x1500.
-  remove_art_file: no # Leaves the cover.jpg in the folder.
+  remove_art_file: yes # Do not save cover.jpeg, cleans up trash.
 fetchart:
   auto: yes # Automatically download album art.
   enforce_ratio: no # Do not enforce the ratio.
-  minwidth: 500 # Require decent sized art.
+  minwidth: 300 # Require 300x300 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
   sources: [coverart, lastfm, itunes, wikipedia, albumart] # Sources to use.
 

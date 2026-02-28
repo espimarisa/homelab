@@ -46,7 +46,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using up to 2 CPU cores.
+          cpus: 4 # Allow using up to 4 CPU cores.
           memory: 4G # Allow using up to 4GB of RAM.
     healthcheck:
       interval: 30s
