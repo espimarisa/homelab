@@ -84,5 +84,5 @@ replaygain:
 scrub:
   auto: yes # Scrub existing standardized tags.
 zero:
-  fields: comments encoder rg_album_gain rg_album_peak rg_track_gain rg_track_peak # Scrub comments, encoder, and previous replaygain data.
+  fields: comments encoder # Scrub comments and encoder.
   update_database: true # Update the database when complete.
