@@ -7,7 +7,6 @@ services:
     image: ghcr.io/navidrome/navidrome:0.60.3
     container_name: navidrome
     hostname: navidrome
-    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
