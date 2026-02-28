@@ -100,7 +100,7 @@
 }
 
 # Navidrome web interface.
-{$NAVIDROME_UR} {
+{$NAVIDROME_URL} {
 	import external_proxy navidrome:4533
 }
 
