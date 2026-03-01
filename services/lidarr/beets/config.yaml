@@ -21,13 +21,6 @@ import:
   timid: no # Don't use timid mode.
   write: yes # Write the changes in place.
 
-# Matching configuration.
-match:
-  preferred:
-    countries: ["US", "XW", "GB"] # Penalize non-US, worldwide, or GB.
-    media: ["CD", "Digital Media", "Vinyl"] # Penalize non-CD, Digital, or Vinyl.
-  strong_rec_thresh: 0.20 # Require an 80% or higher match to automatically continue.
-
 # Album art configuration.
 art_filename: cover # Save album art as cover.jpeg.
 embedart:
@@ -37,9 +30,9 @@ embedart:
 fetchart:
   auto: yes # Automatically download album art.
   enforce_ratio: no # Do not enforce the ratio.
-  minwidth: 300 # Require 300x300 art at the minimum.
+  minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [itunes, coverart, wikipedia, albumart] # Sources to use.
+  sources: [coverart, itunes] # Sources to use.
 
 # Discogs configuration.
 discogs:
