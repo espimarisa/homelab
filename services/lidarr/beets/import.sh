@@ -11,19 +11,14 @@ mkdir -p /config/beets
 
 # Use envsubst to inject environment variables into the template.
 envsubst </beets/config.yaml >/config/beets/config.yaml
+echo "[$(date)] Beets Connect Script Triggered" >>/config/beets-connect.log
 
-# Run Beets and dump to the debug log.
+if [ -z "$lidarr_album_path" ]; then
+	echo "No album path provided by Lidarr. Exiting." >>/config/beets-connect.log
+	exit 0
+fi
 
-echo "$lidarr_addedtrackpaths"
-lidarr_first_track=$(echo "$lidarr_addedtrackpaths" | cut -d '|' -f1)
-lidarr_album_path=$(dirname "$lidarr_first_track")
-echo "Path: $lidarr_album_path"
-# shellcheck disable=SC2154
-beet -vv import -q "$lidarr_album_path --search-id $lidarr_albumrelease_mbid" >/config/beet-debug.log 2>&1
+echo "Processing Album: $lidarr_album_path" >>/config/beets-connect.log
+/usr/bin/beet -vv -c /beets/config.yml import --noquiet "$lidarr_album_path" >>/config/beets-connect.log 2>&1
 
-# Tell Lidarr to refresh, and send the JSON response to the void.
-# $lidarr_artist_id is provided from Lidarr.
-#curl -s -X POST "http://localhost:8686/api/v1/command" \
-#	-H "X-Api-Key: ${LIDARR_API_KEY}" \
-#	-H "Content-Type: application/json" \
-#	-d '{"name": "RefreshArtist", "artistId": '"$lidarr_artist_id"'}' >/dev/null
+echo "Beets processing complete." >>/config/beets-connect.log
