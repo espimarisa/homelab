@@ -19,6 +19,6 @@ if [ -z "$lidarr_album_path" ]; then
 fi
 
 echo "Processing Album: $lidarr_album_path" >>/config/beets-connect.log
-/usr/bin/beet -vv -c /beets/config.yml import --noquiet "$lidarr_album_path" >>/config/beets-connect.log 2>&1
+beet -vv import --noquiet "$lidarr_album_path" >>/config/beets-connect.log 2>&1
 
 echo "Beets processing complete." >>/config/beets-connect.log
