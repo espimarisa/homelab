@@ -13,14 +13,13 @@ mkdir -p /config/beets
 envsubst </beets/config.yaml >/config/beets/config.yaml
 
 # Run Beets and dump to the debug log.
-# $lidarr_artist_path is from Lidarr.
+# $lidarr_album_path is from Lidarr.
 # shellcheck disable=SC2154
-beet -vv import -q "$lidarr_artist_path" >/config/beet-debug.log 2>&1
+beet -vv import -q "$lidarr_album_path" >/config/beet-debug.log 2>&1
 
 # Tell Lidarr to refresh, and send the JSON response to the void.
 # $lidarr_artist_id is provided from Lidarr.
-# shellcheck disable=SC2154
-curl -s -X POST "http://localhost:8686/api/v1/command" \
-	-H "X-Api-Key: ${LIDARR_API_KEY}" \
-	-H "Content-Type: application/json" \
-	-d '{"name": "RefreshArtist", "artistId": '"$lidarr_artist_id"'}' >/dev/null
+#curl -s -X POST "http://localhost:8686/api/v1/command" \
+#	-H "X-Api-Key: ${LIDARR_API_KEY}" \
+#	-H "Content-Type: application/json" \
+#	-d '{"name": "RefreshArtist", "artistId": '"$lidarr_artist_id"'}' >/dev/null
