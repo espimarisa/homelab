@@ -39,7 +39,7 @@ fetchart:
   enforce_ratio: no # Do not enforce the ratio.
   minwidth: 300 # Require 300x300 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [coverart, lastfm, itunes, wikipedia, albumart] # Sources to use.
+  sources: [itunes, coverart, wikipedia, albumart] # Sources to use.
 
 # Discogs configuration.
 discogs:
@@ -55,11 +55,11 @@ ftintitle:
 lastgenre:
   auto: yes # Automatically fetch the genre from Last.fm.
   canonical: yes # Uses a built-in tree to fix weird capitalization/spelling.
-  count: 5 # Grabs up to 5 genres.
+  count: 3 # Grabs up to 3 genres.
   force: yes # Overwrite existing genres.
   min_weight: 5 # Dropping this from the default 10 allows catching more niche genres.
   prefer_specific: yes # Prefer specific genres over generic ones.
-  separator: "; " # Semicolons are the standard for genre seperation.
+  separator: ";" # Semicolons are the standard for genre seperation.
   source: album # Use the album as the source for genres.
 
 # Lyrics configuration.
