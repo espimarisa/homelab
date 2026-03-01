@@ -13,9 +13,13 @@ mkdir -p /config/beets
 envsubst </beets/config.yaml >/config/beets/config.yaml
 
 # Run Beets and dump to the debug log.
-# $lidarr_album_path is from Lidarr.
+
+echo "$lidarr_addedtrackpaths"
+lidarr_first_track=$(echo "$lidarr_addedtrackpaths" | cut -d '|' -f1)
+lidarr_album_path=$(dirname "$lidarr_first_track")
+echo "Path: $lidarr_album_path"
 # shellcheck disable=SC2154
-beet -vv import -q "$lidarr_album_path" >/config/beet-debug.log 2>&1
+beet -vv import -q "$lidarr_album_path --search-id $lidarr_albumrelease_mbid" >/config/beet-debug.log 2>&1
 
 # Tell Lidarr to refresh, and send the JSON response to the void.
 # $lidarr_artist_id is provided from Lidarr.
