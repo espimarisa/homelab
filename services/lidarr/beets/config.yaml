@@ -68,7 +68,7 @@ lyrics:
   fallback: "" # Do not include fallback lyrics.
   genius_api_key: "${GENIUS_API_KEY}" # Connect script will inject the real token here.
   sources: [lrclib, musixmatch, tekstowo, genius] # Sources to use.
-  synced: no # Disable synced lyrics. It's just way too finicky.
+  synced: yes # Enable synced lyrics.
 
 # Metadata configuration.
 original_date: yes # Use the original date, not the release date (i.e 1993 i)
