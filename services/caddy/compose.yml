@@ -26,6 +26,8 @@ services:
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
       - caddy:/data:rw # Caddy data and certificate storage.
+    cap_add:
+      - NET_BIND_SERVICE # Required for binding to ports.
     cap_drop:
       - ALL # Drop all unnecessary privileges.
     depends_on:
@@ -39,8 +41,6 @@ services:
           memory: 512M # Allow using up to 512MB of RAM.
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
-    sysctls:
-      - net.ipv4.ip_unprivileged_port_start=80 # Allows binding to port 80 and above.
 
 networks:
   external:
