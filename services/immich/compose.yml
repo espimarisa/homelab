@@ -21,6 +21,7 @@ services:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
       DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connect to PostgreSQL.
       REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache.
+      MACHINE_LEARNING_HOST: "immich-ml" # Connect to immich-ml.
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for transcoding; renderD128 is usually GPU0.
     expose:
@@ -43,6 +44,9 @@ services:
       immich-db:
         condition: service_healthy # Require immich-db to be healthy before starting.
         restart: true # Restart when immich-db is restarted.
+      immich-ml:
+        condition: service_healthy # Require immich-ml to be healthy before starting.
+        restart: true # Restart when immich-ml is restarted.
     deploy:
       resources:
         limits:
@@ -105,6 +109,37 @@ services:
           cpus: 1 # Allow using up to 1 CPU core.
           memory: 2G # Allow using up to 2GB of RAM.
 
+  immich-ml:
+    <<: *defaults
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.6-openvino
+    container_name: immich-machine-learning
+    hostname: immich-ml
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for ML.
+    environment:
+      MACHINE_LEARNING_WORKERS: 2 # Use 2 workers.
+      MACHINE_LEARNING_WORKER_TIMEOUT: 300 # Timeout after 300s.
+      MACHINE_LEARNING_MAX_BATCH_SIZE__FACIAL_RECOGNITION: 1 # Use FR #1.
+    expose:
+      - 3003/tcp # Internal API port for the Immich server.
+    networks:
+      - internal
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/run:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/usr/src/app/.config:uid=${PUID},gid=${PGID}" # Required for read-only image; cache.
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - immich-model-cache:/cache:rw # Persistent storage for downloaded ML models.
+    group_add:
+      - "${RENDER_PGID}" # Grants permission to use the GPU via the render group.
+    deploy:
+      resources:
+        limits:
+          cpus: 4 # Allow using up to 4 CPU cores.
+          memory: 8G # Allow using up to 8GB of RAM.
+
 networks:
   external:
     external: true
@@ -119,6 +154,9 @@ volumes:
     external: true
   immich-cache-data:
     name: immich-cache-data-volume
+    external: true
+  immich-model-cache:
+    name: immich-model-cache-volume
     external: true
   immich-db:
     name: immich-db-volume
