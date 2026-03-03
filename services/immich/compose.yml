@@ -112,7 +112,7 @@ services:
   immich-ml:
     <<: *defaults
     image: ghcr.io/immich-app/immich-machine-learning:v2.5.6-openvino
-    container_name: immich-machine-learning
+    container_name: immich-ml
     hostname: immich-ml
     user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
