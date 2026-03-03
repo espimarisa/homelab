@@ -124,7 +124,6 @@ readonly CHOWN_VOLUMES=(
 	"beszel-data-volume"
 	"chhoto-volume"
 	"dozzle-volume"
-	"immich-model-cache-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"navidrome-cache-volume"
