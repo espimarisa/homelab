@@ -121,7 +121,8 @@ services:
     environment:
       MACHINE_LEARNING_MAX_BATCH_SIZE__FACIAL_RECOGNITION: 1 # Use FR #1.
       MACHINE_LEARNING_WORKER_TIMEOUT: 300 # Timeout after 300s.
-      MACHINE_LEARNING_WORKERS: 2 # Use 2 workers.
+      MACHINE_LEARNING_WORKERS: 2 # Use 2 workers
+      MPLCONFIGDIR: /cache/matplotlib # Tells Matplotlib to use cache.
     expose:
       - 3003/tcp # Internal API port for the Immich server.
     networks:
