@@ -9,9 +9,19 @@
 export BEETSDIR="/config/beets"
 mkdir -p /config/beets
 
+
 # Use envsubst to inject environment variables into the template.
 envsubst </beets/config.yaml >/config/beets/config.yaml
 echo "[$(date)] Beets Connect Script Triggered" >>/config/beets-connect.log
+
+# Gets the album path.
+echo "$lidarr_addedtrackpaths"
+lidarr_first_track=$(echo "$lidarr_addedtrackpaths" | cut -d '|' -f1)
+lidarr_album_path=$(dirname "$lidarr_first_track")
+echo "Path: $lidarr_album_path"
+echo "Album MBID: $lidarr_album_mbid"
+echo "Release MBID: $lidarr_albumrelease_mbid"
+echo "Running beet import"
 
 if [ -z "$lidarr_album_path" ]; then
 	echo "No album path provided by Lidarr. Exiting." >>/config/beets-connect.log
