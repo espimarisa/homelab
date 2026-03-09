@@ -50,8 +50,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow using up to 4 CPU cores.
-          memory: 4G # Allow using up to 4GB of RAM.
+          cpus: 6 # Allow using up to 6 CPU cores.
+          memory: 4G # Allow using up to 8GB of RAM.
     group_add:
       - "${RENDER_PGID}" # Required for video transcoding.
 
@@ -118,7 +118,7 @@ services:
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for ML.
     environment:
-      MACHINE_LEARNING_MAX_BATCH_SIZE__FACIAL_RECOGNITION: 1 # Use FR #1.
+      MACHINE_LEARNING_MAX_BATCH_SIZE__FACIAL_RECOGNITION: 1 # Max num of faces.
       MACHINE_LEARNING_WORKER_TIMEOUT: 300 # Timeout after 300s.
       MACHINE_LEARNING_WORKERS: 2 # Use 2 workers
     expose:
