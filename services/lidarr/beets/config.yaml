@@ -1,11 +1,18 @@
-# marinet beets configuration
-# This beets configuration is intended for writing in-place.
-# I use it in combination with Lidarr and a connect script.
-# You will need to install specific plugins to use this. See compose.yml.
-
 ---
-# General configuration.
+# Plugins to enable.
+# chroma: Audio fingerprinting for automatic matches.
+# discogs: Discogs API support for releases not on MusicBrainz.
+# embedart: Embedded art support.
+# fetchart: Fetch remote album art.
+# ftintitle: Move featured artists to track titles instead of the artist tag.
+# lastgenre: Import genres from Last.fm.
+# lyrics: Fetch and embed remote lyrics.
+# replaygain: Dynamically sets replaygain tags for media players.
+# scrub: Tag scrubber for removing old/useless tags.
+# zero: Further tag scrubbing for tags not supported by scrub.
 plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
+
+# Beets configuration.
 library: /config/musiclibrary.blb # Save the beets database.
 threaded: yes # Enable multithreading.
 
