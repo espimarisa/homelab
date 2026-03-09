@@ -35,5 +35,5 @@ echo "Processing Album: $lidarr_album_path" >>/config/beets-connect.log
 
 # Imports the album path using beets.
 # Run in double verbose mode, and any non-auto matches will be skipped due to config.yaml.
-beet -vv import "$lidarr_album_path" >>/config/beets-connect.log 2>&1
+beet -vv import -q "$lidarr_album_path" >>/config/beets-connect.log 2>&1
 echo "[$(date)] Beets connect script complete." >>/config/beets-connect.log
