@@ -384,7 +384,6 @@ sonarr:
           - 0d7824bb924701997f874e7ff7d4844a # TrueHD ATMOS
           - 1808e4b9cee74e064dfae3f1db99dbfe # TrueHD
           - 44e7c4de10ae50265753082e5dc76047 # Repack v3
-          - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
           - 505d871304820ba7106b693be6fe4a9e # HDR
           - 69aa1e159f97d860440b04cd6d590c4f # Language: Not English
           - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
@@ -410,6 +409,21 @@ sonarr:
           - name: Remux-2160p
           - name: WEB-1080p
           - name: WEB-2160p
+
+      # Allow x265 (HD), but do not prefer it.
+      - trash_ids:
+          - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+        assign_scores_to:
+          - name: Remux-1080p - Anime
+            score: 0
+          - name: Remux-2160p
+            score: 0
+          - name: WEB-1080p
+            score: 0
+          - name: WEB-2160p
+            score: 0
+          - name: YayPonies-1080p
+            score: 0
 
       # Uncensored boost.
       - trash_ids:
