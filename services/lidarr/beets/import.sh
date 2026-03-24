@@ -31,9 +31,19 @@ fi
 echo "Album MBID: $lidarr_album_mbid"
 # shellcheck disable=SC2154
 echo "Release MBID: $lidarr_albumrelease_mbid"
-echo "Processing Album: $lidarr_album_path" >>/config/beets-connect.log
-
 # Imports the album path using beets.
 # Run in double verbose mode, and any non-auto matches will be skipped due to config.yaml.
-beet -vv import -q "$lidarr_album_path" >>/config/beets-connect.log 2>&1
+echo "Processing Album: $lidarr_album_path" >>/config/beets-connect.log
+
+# Capture the output of the Beets run
+BEET_OUTPUT=$(beet -vv import -q "$lidarr_album_path" 2>&1)
+
+# Dump the full output to the main connection log
+echo "$BEET_OUTPUT" >>/config/beets-connect.log
+
+# Check if Beets decided to skip the album, and if so, log it to the "unprocessed" file
+if echo "$BEET_OUTPUT" | grep -qiE "skipping|no matching release"; then
+	echo "[$(date)] FAILED/SKIPPED: $lidarr_album_path" >>/config/beets-unprocessed.log
+fi
+
 echo "[$(date)] Beets connect script complete." >>/config/beets-connect.log

@@ -36,7 +36,7 @@ embedart:
   remove_art_file: yes # Do not save cover.jpeg, cleans up trash.
 fetchart:
   auto: yes # Automatically download album art.
-  enforce_ratio: no # Do not enforce the ratio.
+  enforce_ratio: yes # Enforce the ratio.
   minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
   sources: [coverart, itunes] # Sources to use.
@@ -50,6 +50,7 @@ discogs:
 ftintitle:
   auto: yes # Automatically move feat. to the title.
   drop: no # Do not remove it entirely.
+  format: (feat. {0}) # (feat. Meowing On The Internet)
 
 # Last.fm genre configuration.
 lastgenre:
@@ -84,5 +85,5 @@ replaygain:
 scrub:
   auto: yes # Scrub existing standardized tags.
 zero:
-  fields: comments encoder # Scrub comments and encoder.
+  fields: comments encoder images # Scrub useless tags.
   update_database: true # Update the database when complete.
