@@ -53,6 +53,17 @@ else
 	echo "[$(date)] Status: SUCCESS (Verbose log saved to $RUN_LOG)" >>"$MAIN_LOG"
 fi
 
+# Trigger Lidarr to rescan the album so it sees the new tags and embedded art Beets just wrote
+if [ -n "$LIDARR_API_KEY" ] && [ -n "$lidarr_album_id" ]; then
+	echo "[$(date)] Triggering Lidarr API refresh for Album ID: $lidarr_album_id" >>"$MAIN_LOG"
+	curl -s -X POST "http://127.0.0.1:8686/api/v1/command" \
+		-H "X-Api-Key: $LIDARR_API_KEY" \
+		-H "Content-Type: application/json" \
+		-d "{\"name\": \"RefreshAlbum\", \"albumId\": $lidarr_album_id}" >/dev/null
+else
+	echo "[$(date)] WARNING: Missing Lidarr API Key or Album ID. Skipping API refresh." >>"$MAIN_LOG"
+fi
+
 # Log cleanup: Find and delete isolated run logs older than 7 days
 find "$LOG_DIR" -type f -name "*.log" -mtime +7 -exec rm {} \;
 echo "[$(date)] Beets connect script complete." >>"$MAIN_LOG"
