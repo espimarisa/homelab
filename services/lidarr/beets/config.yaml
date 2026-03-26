@@ -1,6 +1,11 @@
+# marinet beets config
+# this configuration file is to be used with lidarr
+# and a custom lidarr connect script (see ./import.sh)
+# the script will replace environment variables here with their real values.
+# for some reason, beets does not support reading environment variables natively!
+
 ---
 # Plugins to enable.
-# chroma: Audio fingerprinting for automatic matches.
 # discogs: Discogs API support for releases not on MusicBrainz.
 # embedart: Embedded art support.
 # fetchart: Fetch remote album art.
@@ -9,10 +14,11 @@
 # lyrics: Fetch and embed remote lyrics.
 # scrub: Tag scrubber for removing old/useless tags.
 # zero: Further tag scrubbing for tags not supported by scrub.
-plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics scrub zero
+# NOTE: Not using Chroma as we get decently-organized stuff from Lidarr.
+plugins: discogs embedart fetchart ftintitle lastgenre lyrics scrub zero
 
 # Beets configuration.
-library: /config/musiclibrary.blb # Save the beets database.
+library: /config/musiclibrary.blb # Save the beets database to the Lidarr volume.
 threaded: yes # Enable multithreading.
 
 # Import configuration.
@@ -24,42 +30,41 @@ import:
   move: no # Don't move files when complete.
   quiet_fallback: skip # Skip fallbacks when running in quiet mode.
   resume: no # Don't resume upon crashing.
-  timid: no # Don't use timid mode.
-  write: yes # Write the changes in place.
+  timid: no # Don't use timid mode, we ball!
+  write: yes # Write the changes in place. Lidarr handles all moving.
 
 # Album art configuration.
 art_filename: cover # Save album art as cover.jpeg.
 embedart:
   auto: yes # Automatically embed album art.
-  maxwidth: 1500 # Only embed images up to 1500x1500.
-  remove_art_file: no # Do not remove cover.jpeg.
+  maxwidth: 1500 # Only embed images up to 1500x1500. Any larger can bloat things.
+  remove_art_file: no # Do not remove cover.jpeg when finished.
 fetchart:
   auto: yes # Automatically download album art.
-  enforce_ratio: yes # Enforce the ratio.
+  enforce_ratio: yes # Require a 1:1 square for album art.
   minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [coverart, itunes, amazon] # Sources to use.
+  sources: [filesystem, coverart, itunes] # Sources to use. Local FS > Coverart > iTunes.
 
 # Discogs configuration.
 discogs:
-  index_tracks: yes # Index tracks.
+  index_tracks: yes # Index tracks through Discogs.
   user_token: "${DISCOGS_API_KEY}" # Connect script will inject the real token here.
 
 # Adds featured artists to the title instead of the tags.
 ftintitle:
   auto: yes # Automatically move feat. to the title.
-  drop: no # Do not remove it entirely.
-  format: "(feat. {0})" # (feat. Meowing On The Internet)
+  drop: no # Do not remove featured artists entirely.
+  format: "(feat. {0})" # Meow Meow (feat. Meowing On The Internet)
 
 # Last.fm genre configuration.
 lastgenre:
   auto: yes # Automatically fetch the genre from Last.fm.
   canonical: yes # Uses a built-in tree to fix weird capitalization/spelling.
-  count: 3 # Grabs up to 3 genres.
+  count: 5 # Grabs the top 5 genres from Last.fm.
   force: yes # Overwrite existing genres.
-  min_weight: 5 # Dropping this from the default 10 allows catching more niche genres.
+  keep_existing: no # Do not keep existing genres.
   prefer_specific: yes # Prefer specific genres over generic ones.
-  separator: "; " # Semicolons are the standard for genre seperation.
   source: album # Use the album as the source for genres.
 
 # Lyrics configuration.
@@ -67,22 +72,22 @@ lyrics:
   auto: yes # Automatically download lyrics.
   fallback: "" # Do not include fallback lyrics.
   genius_api_key: "${GENIUS_API_KEY}" # Connect script will inject the real token here.
-  sources: [lrclib, musixmatch, tekstowo, genius] # Sources to use.
+  sources: [lrclib, genius, musixmatch] # Sources to use.
   synced: yes # Enable synced lyrics.
 
 # Match configuration.
 match:
   preferred:
-    countries: ["US", "GB", "XW"] # XW is MusicBrainz code for Worldwide
-    media: ["Digital Media", "CD", "Vinyl"]
+    countries: ["US", "GB", "XW"] # Prefer US, GB, and worldwide releases.
+    original_year: yes # Prefer original year matches.
 
 # Metadata configuration.
-original_date: yes # Use the original date, not the release date (i.e 1993 i)
+original_date: yes # Use the original date, not the release date. I.e for a 30th anniv. use 1996 and not 2026.
 per_disc_numbering: yes # Enable per-disc numbering.
 
-# Scrubbing configuration. Also enables Zero for scrubbing misc. tags.
+# Scrubbing configuration.
 scrub:
-  auto: yes # Scrub existing standardized tags.
+  auto: yes # Scrub existing tags.
 zero:
-  fields: comments encoder images # Scrub useless tags.
+  fields: comments encoder images rg_track_gain rg_track_peak rg_album_gain rg_album_peak # Scrub old tags.
   update_database: true # Update the database when complete.

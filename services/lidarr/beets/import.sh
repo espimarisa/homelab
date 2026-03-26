@@ -1,49 +1,58 @@
 #!/bin/sh
 
-# Use the writeable configuration directory inside of the Lidarr container.
+# Setup directories and log paths.
 export BEETSDIR="/config/beets"
+LOG_DIR="/config/beets-logs"
+MAIN_LOG="/config/beets-connect.log"
+UNPROCESSED_LOG="/config/beets-unprocessed.log"
 
-# Use envsubst to inject environment variables into the template since beets does not support this.
+# Create the dedicated log directory if it doesn't exist.
+mkdir -p "$LOG_DIR"
+
+# Use envsubst to inject environment variables into the template.
 envsubst </beets/config.yaml >/config/beets/config.yaml
-echo "[$(date)] Beets Connect script triggered" >>/config/beets-connect.log
+echo "[$(date)] Triggered Beets Connect Script" >>"$MAIN_LOG"
 
-# Do not run if $lidarr_addedtrackpaths is not provided.
+# Exit if no track paths are provided.
 if [ -z "$lidarr_addedtrackpaths" ]; then
-	echo "No track paths path provided. Exiting." >>/config/beets-connect.log
+	echo "[$(date)] ERROR: No track paths provided. Exiting." >>"$MAIN_LOG"
 	exit 0
 fi
 
-# Gets the added track paths and album path.
-# $lidarr_addedtrackpaths and $lidarr_first_track are provided by Lidarr.
-# shellcheck disable=SC2154
-echo "$lidarr_addedtrackpaths"
+# Get the added track paths and album path.
 lidarr_first_track=$(echo "$lidarr_addedtrackpaths" | cut -d '|' -f1)
 lidarr_album_path=$(dirname "$lidarr_first_track")
 
-# Do not run if $lidarr_album_path is not provided.
+# Exit if no album path is provided.
 if [ -z "$lidarr_album_path" ]; then
-	echo "No album path provided. Exiting." >>/config/beets-connect.log
+	echo "[$(date)] ERROR: No album path provided. Exiting." >>"$MAIN_LOG"
 	exit 0
 fi
 
-# Prints debug output.
+# Create a dedicated log file just for this specific import
+# Format: import-[MBID]-[UNIX-TIMESTAMP].log
 # shellcheck disable=SC2154
-echo "Album MBID: $lidarr_album_mbid"
+RUN_LOG="$LOG_DIR/import-${lidarr_albumrelease_mbid}-$(date +%s).log"
+
+# Log the high-level details to the main summary log
+# shellcheck disable=SC2129
 # shellcheck disable=SC2154
-echo "Release MBID: $lidarr_albumrelease_mbid"
-# Imports the album path using beets.
-# Run in double verbose mode, and any non-auto matches will be skipped due to config.yaml.
-echo "Processing Album: $lidarr_album_path" >>/config/beets-connect.log
+echo "[$(date)] Album MBID: $lidarr_album_mbid" >>"$MAIN_LOG"
+echo "[$(date)] Release MBID: $lidarr_albumrelease_mbid" >>"$MAIN_LOG"
+echo "[$(date)] Processing: $lidarr_album_path" >>"$MAIN_LOG"
 
-# Capture the output of the Beets run
-BEET_OUTPUT=$(beet -vv import -q "$lidarr_album_path" 2>&1)
+# Capture the output of the Beets run and dump it into the isolated log file.
+BEET_OUTPUT=$(beet -vv import -q --search-id "$lidarr_albumrelease_mbid" "$lidarr_album_path" 2>&1)
+echo "$BEET_OUTPUT" >"$RUN_LOG"
 
-# Dump the full output to the main connection log
-echo "$BEET_OUTPUT" >>/config/beets-connect.log
-
-# Check if Beets decided to skip the album, and if so, log it to the "unprocessed" file
+# Check if Beets decided to skip the album.
 if echo "$BEET_OUTPUT" | grep -qiE "skipping|no matching release"; then
-	echo "[$(date)] FAILED/SKIPPED: $lidarr_album_path" >>/config/beets-unprocessed.log
+	echo "[$(date)] FAILED/SKIPPED: $lidarr_album_path (See $RUN_LOG)" >>"$UNPROCESSED_LOG"
+	echo "[$(date)] Status: FAILED" >>"$MAIN_LOG"
+else
+	echo "[$(date)] Status: SUCCESS (Verbose log saved to $RUN_LOG)" >>"$MAIN_LOG"
 fi
 
-echo "[$(date)] Beets connect script complete." >>/config/beets-connect.log
+# Log cleanup: Find and delete isolated run logs older than 7 days
+find "$LOG_DIR" -type f -name "*.log" -mtime +7 -exec rm {} \;
+echo "[$(date)] Beets connect script complete." >>"$MAIN_LOG"
