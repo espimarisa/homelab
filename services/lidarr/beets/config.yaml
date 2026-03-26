@@ -38,7 +38,7 @@ fetchart:
   enforce_ratio: yes # Enforce the ratio.
   minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [filesystem, coverart, itunes, amazon] # Sources to use.
+  sources: [coverart, itunes, amazon] # Sources to use.
 
 # Discogs configuration.
 discogs:
