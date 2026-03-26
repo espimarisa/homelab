@@ -7,10 +7,9 @@
 # ftintitle: Move featured artists to track titles instead of the artist tag.
 # lastgenre: Import genres from Last.fm.
 # lyrics: Fetch and embed remote lyrics.
-# replaygain: Dynamically sets replaygain tags for media players.
 # scrub: Tag scrubber for removing old/useless tags.
 # zero: Further tag scrubbing for tags not supported by scrub.
-plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
+plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics scrub zero
 
 # Beets configuration.
 library: /config/musiclibrary.blb # Save the beets database.
@@ -32,8 +31,8 @@ import:
 art_filename: cover # Save album art as cover.jpeg.
 embedart:
   auto: yes # Automatically embed album art.
-  maxwidth: 3000 # Only embed images up to 3000x3000.
-  remove_art_file: yes # Do not save cover.jpeg, cleans up trash.
+  maxwidth: 1500 # Only embed images up to 1500x1500.
+  remove_art_file: no # Do not remove cover.jpeg.
 fetchart:
   auto: yes # Automatically download album art.
   enforce_ratio: yes # Enforce the ratio.
@@ -50,7 +49,7 @@ discogs:
 ftintitle:
   auto: yes # Automatically move feat. to the title.
   drop: no # Do not remove it entirely.
-  format: (feat. {0}) # (feat. Meowing On The Internet)
+  format: "(feat. {0})" # (feat. Meowing On The Internet)
 
 # Last.fm genre configuration.
 lastgenre:
@@ -71,15 +70,15 @@ lyrics:
   sources: [lrclib, musixmatch, tekstowo, genius] # Sources to use.
   synced: yes # Enable synced lyrics.
 
+# Match configuration.
+match:
+  preferred:
+    countries: ["US", "GB", "XW"] # XW is MusicBrainz code for Worldwide
+    media: ["Digital Media", "CD", "Vinyl"]
+
 # Metadata configuration.
 original_date: yes # Use the original date, not the release date (i.e 1993 i)
 per_disc_numbering: yes # Enable per-disc numbering.
-
-# ReplayGain configuration.
-replaygain:
-  backend: ffmpeg # Use ffmpeg for replaygain.
-  overwrite: yes # Overwrites any remaining bad volume data.
-  targetlevel: 89 # The industry standard target volume in dB.
 
 # Scrubbing configuration. Also enables Zero for scrubbing misc. tags.
 scrub:

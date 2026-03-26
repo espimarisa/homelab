@@ -133,6 +133,21 @@ lidarr:
             fields:
               value: '(?i)\bCD\b'
 
+      # Prefer Deluxe / Extended releases.
+      - trash_id: lidarr-deluxe
+        trash_scores:
+          default: 200 # Positive score to prefer it over standard releases.
+        trash_description: Deluxe / Extended
+        name: Deluxe / Extended
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: Deluxe
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\b(deluxe|extended|bonus|special ?edition)\b'
+
       # Vinyl releases.
       - trash_id: lidarr-vinyl
         trash_scores:
@@ -163,21 +178,6 @@ lidarr:
             fields:
               value: '(?i)\b(WEB|WEB(DL)?|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
 
-      # Prefer Deluxe / Extended releases.
-      - trash_id: lidarr-deluxe
-        trash_scores:
-          default: 200 # Positive score to prefer it over standard releases
-        trash_description: Deluxe / Extended
-        name: Deluxe / Extended
-        includeCustomFormatWhenRenaming: false
-        specifications:
-          - name: Deluxe
-            implementation: ReleaseTitleSpecification
-            negate: false
-            required: false
-            fields:
-              value: '(?i)\b(deluxe|extended|bonus|special ?edition)\b'
-
     # Custom formats to import.
     custom_formats:
       - trash_ids:
@@ -201,7 +201,7 @@ lidarr:
         upgrade:
           allowed: true
           until_quality: FLAC 24bit
-          until_score: 1760
+          until_score: 1700
         min_format_score: 0
         quality_sort: top
         qualities:

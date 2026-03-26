@@ -225,12 +225,6 @@ endpoints:
     group: Services
     url: https://${JELLYFIN_URL}/health
 
-  # Navidrome.
-  - name: Navidrome
-    <<: *defaults-http
-    group: Services
-    url: https://${NAVIDROME_URL}
-
   # OpenCloud.
   - name: OpenCloud
     <<: *defaults-http

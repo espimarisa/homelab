@@ -12,7 +12,6 @@ include:
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/lidarr/compose.yml
-  - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
