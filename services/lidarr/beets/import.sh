@@ -42,7 +42,7 @@ echo "[$(date)] Release MBID: $lidarr_albumrelease_mbid" >>"$MAIN_LOG"
 echo "[$(date)] Processing: $lidarr_album_path" >>"$MAIN_LOG"
 
 # Capture the output of the Beets run and dump it into the isolated log file.
-BEET_OUTPUT=$(beet -vv import -q --search-id "$lidarr_albumrelease_mbid" "$lidarr_album_path" 2>&1)
+BEET_OUTPUT=$(beet -vv import -q "$lidarr_album_path" 2>&1)
 echo "$BEET_OUTPUT" >"$RUN_LOG"
 
 # Check if Beets decided to skip the album.
