@@ -59,7 +59,7 @@ lastgenre:
   force: yes # Overwrite existing genres.
   min_weight: 5 # Dropping this from the default 10 allows catching more niche genres.
   prefer_specific: yes # Prefer specific genres over generic ones.
-  separator: ";" # Semicolons are the standard for genre seperation.
+  separator: "; " # Semicolons are the standard for genre seperation.
   source: album # Use the album as the source for genres.
 
 # Lyrics configuration.
