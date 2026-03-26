@@ -36,7 +36,7 @@ embedart:
 fetchart:
   auto: yes # Automatically download album art.
   enforce_ratio: yes # Enforce the ratio.
-  minwidth: 1000 # Require 1000x1000 art at the minimum.
+  minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
   sources: [filesystem, coverart, itunes, amazon] # Sources to use.
 
