@@ -32,14 +32,14 @@ import:
 art_filename: cover # Save album art as cover.jpeg.
 embedart:
   auto: yes # Automatically embed album art.
-  maxwidth: 1500 # Only embed images up to 1500x1500.
+  maxwidth: 3000 # Only embed images up to 3000x3000.
   remove_art_file: yes # Do not save cover.jpeg, cleans up trash.
 fetchart:
   auto: yes # Automatically download album art.
   enforce_ratio: yes # Enforce the ratio.
-  minwidth: 500 # Require 500x500 art at the minimum.
+  minwidth: 1000 # Require 1000x1000 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [coverart, itunes] # Sources to use.
+  sources: [filesystem, coverart, itunes, amazon] # Sources to use.
 
 # Discogs configuration.
 discogs:

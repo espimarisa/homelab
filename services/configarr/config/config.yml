@@ -163,9 +163,25 @@ lidarr:
             fields:
               value: '(?i)\b(WEB|WEB(DL)?|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
 
+      # Prefer Deluxe / Extended releases.
+      - trash_id: lidarr-deluxe
+        trash_scores:
+          default: 200 # Positive score to prefer it over standard releases
+        trash_description: Deluxe / Extended
+        name: Deluxe / Extended
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: Deluxe
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\b(deluxe|extended|bonus|special ?edition)\b'
+
     # Custom formats to import.
     custom_formats:
       - trash_ids:
+          - lidarr-deluxe
           - lidarr-192khz
           - lidarr-96khz
           - lidarr-24bit
