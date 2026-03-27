@@ -72,7 +72,7 @@ lyrics:
   auto: yes # Automatically download lyrics.
   fallback: "" # Do not include fallback lyrics.
   genius_api_key: "${GENIUS_API_KEY}" # Connect script will inject the real token here.
-  sources: [lrclib, genius, musixmatch] # Sources to use.
+  sources: [lrclib, genius] # Sources to use.
   synced: yes # Enable synced lyrics.
 
 # Match configuration.
