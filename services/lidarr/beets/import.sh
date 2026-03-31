@@ -51,19 +51,19 @@ if echo "$BEET_OUTPUT" | grep -qiE "skipping|no matching release"; then
     echo "[$(date)] Status: FAILED" >>"$MAIN_LOG"
 
     # Discord Webhook: FAILED
-    if [ -n "$BEETS_DISCORD_WEBHOOK" ]; then
+    if [ -n "$BEETS_DISCORD_WEBHOOK_URL" ]; then
         curl -s -X POST -H "Content-Type: application/json" \
             -d "{\"embeds\": [{\"title\": \"❌ Beets Import Failed\", \"description\": \"Failed to match or skipped:\\n**$ALBUM_FOLDER_NAME**\\n\\nCheck log: \`$RUN_LOG\`\", \"color\": 15158332}]}" \
-            "$BEETS_DISCORD_WEBHOOK" >/dev/null
+            "$BEETS_DISCORD_WEBHOOK_URL" >/dev/null
     fi
 else
     echo "[$(date)] Status: SUCCESS (Verbose log saved to $RUN_LOG)" >>"$MAIN_LOG"
 
     # Discord Webhook: SUCCESS
-    if [ -n "$BEETS_DISCORD_WEBHOOK" ]; then
+    if [ -n "$BEETS_DISCORD_WEBHOOK_URL" ]; then
         curl -s -X POST -H "Content-Type: application/json" \
             -d "{\"embeds\": [{\"title\": \"✅ Beets Import Success\", \"description\": \"Successfully tagged, normalized, and imported:\\n**$ALBUM_FOLDER_NAME**\", \"color\": 3066993}]}" \
-            "$BEETS_DISCORD_WEBHOOK" >/dev/null
+            "$BEETS_DISCORD_WEBHOOK_URL" >/dev/null
     fi
 
     # Trigger Lidarr to rescan the album so it sees the new tags and embedded art Beets just wrote
