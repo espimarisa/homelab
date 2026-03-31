@@ -44,7 +44,7 @@ fetchart:
   enforce_ratio: yes # Require a 1:1 square for album art.
   minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [filesystem, coverart, itunes] # Sources to use. Local FS > Coverart > iTunes.
+  sources: [coverart, itunes, filesystem] # Sources to use. Coverart > iTunes > FS.
 
 # Discogs configuration.
 discogs:
@@ -82,7 +82,7 @@ match:
     original_year: yes # Prefer original year matches.
 
 # Metadata configuration.
-original_date: yes # Use the original date, not the release date. I.e for a 30th anniv. use 1996 and not 2026.
+original_date: yes # Use the original date, not the release date.
 per_disc_numbering: yes # Enable per-disc numbering.
 
 # Scrubbing configuration.
