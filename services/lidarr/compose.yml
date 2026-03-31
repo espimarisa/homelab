@@ -10,6 +10,7 @@ services:
     hostname: lidarr
     restart: unless-stopped
     environment:
+      BEETS_DISCORD_WEBHOOK: "${BEETS_DISCORD_WEBHOOK}" # Discord webhook URL for Beets.
       DISCOGS_API_KEY: "${DISCOGS_API_KEY}" # Passes the Discogs API key for scripts.
       DOCKER_MODS: "linuxserver/mods:universal-package-install" # Add universal-package-install support.
       GENIUS_API_KEY: "${GENIUS_API_KEY}" # Passes the Genius API key for scripts.

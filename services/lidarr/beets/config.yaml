@@ -12,10 +12,11 @@
 # ftintitle: Move featured artists to track titles instead of the artist tag.
 # lastgenre: Import genres from Last.fm.
 # lyrics: Fetch and embed remote lyrics.
+# replaygain: Replay gain analysis for tags.
 # scrub: Tag scrubber for removing old/useless tags.
 # zero: Further tag scrubbing for tags not supported by scrub.
 # NOTE: Not using Chroma as we get decently-organized stuff from Lidarr.
-plugins: discogs embedart fetchart ftintitle lastgenre lyrics scrub zero
+plugins: discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
 
 # Beets configuration.
 library: /config/musiclibrary.blb # Save the beets database to the Lidarr volume.
@@ -85,9 +86,15 @@ match:
 original_date: yes # Use the original date, not the release date.
 per_disc_numbering: yes # Enable per-disc numbering.
 
+# ReplayGain configuration
+replaygain:
+  auto: yes
+  backend: ffmpeg
+  overwrite: yes # Overwrite existing tags.
+
 # Scrubbing configuration.
 scrub:
   auto: yes # Scrub existing tags.
 zero:
-  fields: comments encoder images rg_track_gain rg_track_peak rg_album_gain rg_album_peak # Scrub old tags.
+  fields: comments encoder images # Scrub old tags.
   update_database: true # Update the database when complete.
