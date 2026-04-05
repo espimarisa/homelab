@@ -1,0 +1,69 @@
+# Bazarr: Subtitle manager and synchronization for 'ARR apps.
+# https://www.bazarr.media
+
+---
+services:
+  bazarr:
+    image: ghcr.io/hotio/bazarr:release
+    container_name: bazarr
+    hostname: bazarr
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      POSTGRES_DATABASE: "postgres"
+      POSTGRES_ENABLED: "true"
+      POSTGRES_HOST: "bazarr-db"
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: "postgres"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
+    expose:
+      - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
+    networks:
+      - external
+      - internal
+    volumes:
+      - media-library:/library:rw # Root media library directory.
+      - bazarr:/config:rw # Configuration and data.
+    depends_on:
+      arr-db:
+        condition: service_healthy # Require arr-db to be healthy before starting.
+        restart: true # Restart when arr-db restarts.
+    cap_drop: # Drop all unnecessary privileges.
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow using up to 2 CPU cores.
+          memory: 1G # Allow using up to 2GB of RAM.
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:6767/ || exit 1"
+
+networks:
+  external:
+    external: true
+    name: external-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  bazarr:
+    name: bazarr-volume
+    external: true
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

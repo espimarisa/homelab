@@ -133,6 +133,12 @@ endpoints:
   # Media management.                                                         #
   #############################################################################
 
+  # Bazarr.
+  - name: Bazarr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/bazarr/json
+
   # Byparr.
   - name: Byparr
     <<: *defaults-container

@@ -132,6 +132,11 @@
 # Accessible with a DNS rewrite (i.e *.$INTERNAL_DOMAIN -> 192.x.x.x).
 # Do not have a DNS record set for these, ever!
 
+# Bazarr web interface
+bazarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy bazarr:6767
+}
+
 # Beszel hub web interface.
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
