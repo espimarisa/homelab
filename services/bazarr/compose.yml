@@ -9,16 +9,16 @@ services:
     hostname: bazarr
     restart: unless-stopped
     environment:
-      PGID: "${PGID}"
-      POSTGRES_DATABASE: "postgres"
-      POSTGRES_ENABLED: "true"
-      POSTGRES_HOST: "arr-db"
-      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
-      POSTGRES_PORT: "5432"
-      POSTGRES_USERNAME: "postgres"
-      PUID: "${PUID}"
-      TZ: "${TZ}"
-      UMASK: "${UMASK}"
+      PGID: "${PGID}" # Group ID to run as.
+      POSTGRES_DATABASE: "postgres" # PostgreSQL database.
+      POSTGRES_ENABLED: "true" # Enable PostgreSQL.
+      POSTGRES_HOST: "arr-db" # PostgreSQL hostname.
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # PostgreSQL password.
+      POSTGRES_PORT: "5432" # PostgreSQL port.
+      POSTGRES_USERNAME: "postgres" # PostgreSQL username.
+      PUID: "${PUID}" # User ID to run as.
+      TZ: "${TZ}" # Sets the timezone.
+      UMASK: "${UMASK}" # Default umask to apply.
     expose:
       - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
     networks:
@@ -42,8 +42,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 2 CPU cores.
-          memory: 1G # Allow using up to 2GB of RAM.
+          cpus: 2 # Allow using up to 2 CPU cores.
+          memory: 2G # Allow using up to 2GB of RAM.
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
     healthcheck:

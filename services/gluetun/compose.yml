@@ -13,9 +13,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun:rw # Wireguard TUN/TAP device.
     environment:
-      BLOCK_ADS: "off" # Disable unbound; lowers resource usage heavily.
       BLOCK_MALICIOUS: "off" # Disable unbound; lowers resource usage heavily.
-      BLOCK_SURVEILLANCE: "off" # Disable unbound; lowers resource usage heavily.
       DNS_UPDATE_PERIOD: "24h" # Update DNS every 24 hours.
       DNS_UPSTREAM_RESOLVER_TYPE: "doh" # Use DNS over HTTPS until DOT is more stable.
       DNS_UPSTREAM_RESOLVERS: "libredns,quad9" # Use LibreDNS and Quad9 as DNS resolvers.
@@ -25,19 +23,16 @@ services:
       HEALTH_ICMP_TARGET_IPS: "116.202.176.26,9.9.9.9" # Target LibreDNS and Quad9 for healthchecks.
       HEALTH_TARGET_ADDRESSES: "libredns.gr:443,quad9.net:443" # Target LibreDNS and Quad9 for healthchecks.
       HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE: '{"auth":"apikey","apikey":"${GLUETUN_API_KEY}"}' # Configures auth for the control server.
-      HTTPPROXY: "off" # Disables the built-in HTTP proxy.
       PGID: "${PGID}" # Group ID to run as.
       PORT_FORWARD_ONLY: "${PROTONVPN_PORT_FORWARDING:-false}" # Only enable if using ProtonVPN. Enables port forwarding.
       PUID: "${PUID}" # User ID to run as.
       SERVER_CITIES: "${SERVER_CITIES}" # List of server cities to connect to.
       SERVER_COUNTRIES: "${SERVER_COUNTRIES}" # List of server countries to connect to.
       SERVER_REGIONS: "${SERVER_REGIONS}" # List of server regions to connect to.
-      SHADOWSOCKS: "off" # Disables the built-in Shadowsocks server.
       TZ: "${TZ}" # Timezone to use.
       UPDATER_PERIOD: "24h" # Update server data every 24 hours.
       UPDATER_PROTONVPN_EMAIL: "${UPDATER_PROTONVPN_EMAIL}" # If using ProtonVPN, email to authenticate with.
       UPDATER_PROTONVPN_PASSWORD: "${UPDATER_PROTONVPN_PASSWORD}" # If using ProtonVPN, password to authenticate with.
-      VERSION_INFORMATION: "off" # Do not flood startup console with version information.
       VPN_PORT_FORWARDING: "${PROTONVPN_PORT_FORWARDING:-false}" # Only enable if using ProtonVPN.
       VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers
       VPN_TYPE: "wireguard" # Use Wireguard instead of OpenVPN.

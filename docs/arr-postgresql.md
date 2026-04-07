@@ -1,6 +1,6 @@
 # 'ARR Apps
 
-The following documentation applies to the primary 'ARR apps (Lidarr, Prowlarr, Radarr, and Sonarr).
+The following documentation applies to the primary 'ARR apps (Bazarr, Lidarr, Prowlarr, Radarr, and Sonarr).
 
 ## PostgreSQL Setup
 

@@ -45,7 +45,7 @@ fetchart:
   enforce_ratio: yes # Require a 1:1 square for album art.
   minwidth: 500 # Require 500x500 art at the minimum.
   lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [coverart, itunes, filesystem] # Sources to use. Coverart > iTunes > FS.
+  sources: [itunes, coverart, filesystem] # Sources to use. iTunes > Coverart > FS.
 
 # Discogs configuration.
 discogs:
@@ -78,6 +78,10 @@ lyrics:
 
 # Match configuration.
 match:
+  distance_weights:
+    album: 4.0 # Heavily penalize matches where the album name differs (e.g., "A Tribute to...")
+    albumtype: 2.0 # Penalize matching to compilations/live albums if a studio album exists
+    artist: 4.0 # Heavily penalize matches where the artist name differs (e.g., "Various Artists" or cover bands)
   preferred:
     countries: ["US", "GB", "XW"] # Prefer US, GB, and worldwide releases.
     original_year: yes # Prefer original year matches.

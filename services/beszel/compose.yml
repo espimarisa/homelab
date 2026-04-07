@@ -33,7 +33,7 @@ services:
     hostname: beszel
     user: "${PUID}:${PGID}" # Run as non-root user.
     ports:
-      - 127.0.0.1:8090:8090/tcp
+      - 127.0.0.1:8090:8090/tcp # Expose the hub locally.
     networks:
       - external
       - internal

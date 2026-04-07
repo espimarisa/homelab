@@ -133,7 +133,7 @@ lidarr:
             fields:
               value: '(?i)\bCD\b'
 
-      # Prefer Deluxe / Extended releases.
+      # Deluxe / Extended releases.
       - trash_id: lidarr-deluxe
         trash_scores:
           default: 200 # Positive score to prefer it over standard releases.
@@ -181,11 +181,11 @@ lidarr:
     # Custom formats to import.
     custom_formats:
       - trash_ids:
-          - lidarr-deluxe
           - lidarr-192khz
-          - lidarr-96khz
           - lidarr-24bit
+          - lidarr-96khz
           - lidarr-cd
+          - lidarr-deluxe
           - lidarr-explicit
           - lidarr-lossless
           - lidarr-vinyl
