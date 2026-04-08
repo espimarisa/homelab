@@ -13,6 +13,7 @@ services:
       DOCKER_PORTS: "2375" # Connect to the socket-proxy port.
       PGID: "${PGID}" # Group ID to run as.
       PUID: "${PUID}" # User ID to run as.
+      SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}" # Sets the encryption key.
       TZ: "${TZ}" # Sets the timezone.
     expose:
       - 7575/tcp # Homarr web interface accessible at ${HOMARR_URL}
