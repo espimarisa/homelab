@@ -215,6 +215,12 @@ endpoints:
     group: Monitoring
     url: ${SOCKET_PROXY_URL}/gatus/json
 
+  # Homarr.
+  - name: Homarr
+    <<: *defaults-container
+    group: Monitoring
+    url: ${SOCKET_PROXY_URL}/homarr/json
+
   ###########################################################################
   # Services.                                                               #
   ###########################################################################

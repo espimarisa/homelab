@@ -97,6 +97,7 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"
+	"homarr-volume"
 	"immich-cache-config-volume"
 	"immich-cache-data-volume"
 	"immich-db-volume"

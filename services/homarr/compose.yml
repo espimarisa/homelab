@@ -1,0 +1,61 @@
+# Homarr: Dashboard and homepage.
+# https://homarr.dev/docs/getting-started/installation/docker
+
+---
+services:
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:v1.58.1
+    container_name: homarr
+    restart: unless-stopped
+    hostname: homarr
+    environment:
+      DOCKER_HOSTNAMES: "socket-proxy" # Connect to the socket-proxy host.
+      DOCKER_PORTS: "2375" # Connect to the socket-proxy port.
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      TZ: "${TZ}" # Sets the timezone.
+    expose:
+      - 7575/tcp # Homarr web interface accessible at ${HOMARR_URL}
+    networks:
+      - external
+      - gluetun
+      - internal
+    volumes:
+      - homarr:/appdata:rw # Homarr data.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    depends_on:
+      socket-proxy:
+        condition: service_healthy # Require socket-proxy to be healthy before connecting.
+        restart: true # Restart when socket-proxy restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow using 1 CPU core.
+          memory: 2G # Allow using up to 2GB of RAM.
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
+    security_opt:
+      - no-new-privileges:true # Prevent privelege escalation.
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  homarr:
+    name: homarr-volume
+    external: true

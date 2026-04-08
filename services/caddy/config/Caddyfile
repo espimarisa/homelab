@@ -123,6 +123,11 @@
 	import cloudflare_proxy gatus:8080
 }
 
+# Homarr.
+{$HOMARR_URL} {
+	import cloudflare_proxy homarr:2375
+}
+
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
 	import cloudflare_proxy vaultwarden:80
