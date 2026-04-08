@@ -125,7 +125,7 @@
 
 # Homarr.
 {$HOMARR_URL} {
-	import cloudflare_proxy homarr:2375
+	import cloudflare_proxy homarr:7575
 }
 
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
