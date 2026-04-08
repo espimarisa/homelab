@@ -22,7 +22,7 @@ services:
       - gluetun
       - internal
     volumes:
-      - homarr:/appdata:rw # Homarr data.
+      - homarr-data:/appdata:rw # Homarr data.
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -57,6 +57,9 @@ networks:
     name: internal-network
 
 volumes:
-  homarr:
-    name: homarr-volume
-    external: true
+  homarr-data:
+    name: homarr-data-bind
+    driver_opts:
+      device: "${HOMARR_DATA_PATH}"
+      o: bind
+      type: none
