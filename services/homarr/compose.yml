@@ -9,6 +9,9 @@ services:
     restart: unless-stopped
     hostname: homarr
     environment:
+      DB_DIALECT: "postgresql" # Use PostgreSQL.
+      DB_DRIVER: "node-postgres" # Use PostgreSQL database driver.
+      DB_URL: "postgres://postgres:${ARR_DB_PASSWORD}@arr-db:5432/homarr-main" # Connect to PostgreSQL at arr-db.
       DOCKER_HOSTNAMES: "socket-proxy" # Connect to the socket-proxy host.
       DOCKER_PORTS: "2375" # Connect to the socket-proxy port.
       PGID: "${PGID}" # Group ID to run as.
@@ -32,6 +35,9 @@ services:
       - SYS_CHROOT
       - SYS_PTRACE
     depends_on:
+      arr-db:
+        condition: service_healthy # Require arr-db to be healthy before connecting.
+        restart: true # Restart when arr-db restarts.
       socket-proxy:
         condition: service_healthy # Require socket-proxy to be healthy before connecting.
         restart: true # Restart when socket-proxy restarts.
