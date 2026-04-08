@@ -1,0 +1,89 @@
+# Backrest: Web UI and orchestrator for Restic backups.
+# https://garethgeorge.github.io/backrest/introduction/getting-started
+
+---
+services:
+  backrest:
+    image: garethgeorge/backrest:v1.12-scratch
+    container_name: backrest
+    hostname: backrest
+    read_only: true
+    restart: unless-stopped
+    environment:
+      BACKREST_CONFIG: "/config/config.json" # Sets the config file path.
+      BACKREST_DATA: "/data" # Sets the config data path.
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket-proxy.
+      DOCKER_PATH: "${DOCKER_PATH}" # Path to Docker data.
+      TMPDIR: "/tmp" # Use /tmp for temporary files.
+      TZ: "${TZ}" # Sets the timezone.
+      XDG_CACHE_HOME: "/cache" # Use /cache for cached files.
+    expose:
+      - 9898/tcp # Web interface proxied internally at backrest.${INTERNAL_DOMAIN}.
+    networks:
+      - external
+      - internal
+    volumes:
+      - backrest-cache:/cache:rw # Backrest cache.
+      - backrest-config:/config:rw # Backrest configuration.
+      - backrest-data:/data:rw # Backrest data.
+      - backrest-tmp:/tmp:rw # Backrest tmp files.
+      - backups:/mnt/backups:rw # Mounted local backups HDD.
+      - docker:/mnt/docker:ro # Mounted local Docker data path.
+      - storage:/mnt/storage:ro # Root storage directory.
+    cap_drop: # Drop all unneccesary priveleges.
+      - AUDIT_WRITE
+      - MKNOD
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    depends_on:
+      socket-proxy:
+        condition: service_healthy # Require socket-proxy to be healthy before conncting.
+        restart: true # Restart when socket-proxy restarts.
+    deploy:
+      resources:
+        limits:
+          cpus: 4 # Allow using up to 4 CPU cores.
+          memory: 8G # Allow using up to 8GB of RAM.
+    security_opt:
+      - no-new-privileges:true # Prevents privelege escalation.
+
+networks:
+  external:
+    external: true
+    name: external-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  backrest-data:
+    name: backrest-data-volume
+    external: true
+  backrest-cache:
+    name: backrest-cache-volume
+    external: true
+  backrest-config:
+    name: backrest-config-volume
+    external: true
+  backrest-tmp:
+    name: backrest-tmp-volume
+    external: true
+  backups:
+    name: backups-hdd-bind
+    driver_opts:
+      device: "${BACKUPS_PATH}"
+      o: bind
+      type: none
+  docker:
+    name: docker-bind
+    driver_opts:
+      device: "${DOCKER_PATH}"
+      o: bind
+      type: none
+  storage:
+    name: storage-bind
+    driver_opts:
+      device: "${STORAGE_PATH}"
+      o: bind
+      type: none

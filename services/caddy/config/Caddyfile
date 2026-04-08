@@ -132,7 +132,12 @@
 # Accessible with a DNS rewrite (i.e *.$INTERNAL_DOMAIN -> 192.x.x.x).
 # Do not have a DNS record set for these, ever!
 
-# Bazarr web interface
+# Backrest web interface.
+backrest.{$INTERNAL_DOMAIN} {
+	import internal_proxy backrest:9898
+}
+
+# Bazarr web interface.
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767
 }
