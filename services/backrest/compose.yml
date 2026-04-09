@@ -12,7 +12,6 @@ services:
     environment:
       BACKREST_CONFIG: "/config/config.json" # Sets the config file path.
       BACKREST_DATA: "/data" # Sets the config data path.
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to socket-proxy.
       DOCKER_PATH: "${DOCKER_PATH}" # Path to Docker data.
       TMPDIR: "/tmp" # Use /tmp for temporary files.
       TZ: "${TZ}" # Sets the timezone.
