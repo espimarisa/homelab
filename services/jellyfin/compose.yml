@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for transcoding; renderD128 is usually GPU0.
+      - /dev/dri:/dev/dri:rw # Required for transcoding; renderD128 is usually GPU0.
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:

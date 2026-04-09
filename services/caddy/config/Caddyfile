@@ -165,6 +165,11 @@ caddy.{$INTERNAL_DOMAIN} {
 	}
 }
 
+# Dispatcharr web interface
+dispatcharr.{$INTERNAL_DOMAIN} {
+	import internal_proxy dispatcharr:9191
+}
+
 # Dozzle web interface
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080

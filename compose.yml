@@ -17,6 +17,7 @@ include:
   - ./services/lidarr/compose.yml
   - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
+  - ./services/dispatcharr/compose.yml
   - ./services/prowlarr/compose.yml
   - ./services/qbittorrent/compose.yml
   - ./services/qui/compose.yml

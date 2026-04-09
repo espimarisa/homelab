@@ -94,6 +94,7 @@ readonly VOLUMES=(
 	"beszel-socket-volume"
 	"caddy-volume"
 	"chhoto-volume"
+	"dispatcharr-volume"
 	"dozzle-volume"
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"

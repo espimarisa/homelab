@@ -157,6 +157,12 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/configarr/json
 
+  # Dispatcharr.
+  - name: Dispatcharr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/dispatcharr/json
+
   # Lidarr.
   - name: Lidarr
     <<: *defaults-container
