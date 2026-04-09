@@ -1,30 +1,30 @@
 #!/bin/bash
 
-all_containers=$(
-	docker ps --quiet |
-		sort
-)
+# Get all containers
+all_containers=$(docker ps --quiet | sort)
 
-# Containers to ignore.
+# Containers to ignore (Notice the added '|' before sort)
 ignore_containers=$(
 	docker ps --quiet \
 		--filter "name=backrest" \
 		--filter "name=beszel" \
 		--filter "name=caddy" \
 		--filter "name=configarr" \
+		--filter "name=gluetun" \
 		--filter "name=dozzle" \
 		--filter "name=socket-proxy" \
-		--filter "name=unpackerr"
-
-	sort
+		--filter "name=unpackerr" |
+		sort
 )
 
 pending_containers=$(comm -23 <(echo "$all_containers") <(echo "$ignore_containers"))
 
-# echo -e "\nall_containers:\n$(tput setaf 2)$all_containers\n$(tput sgr 0)"
-# echo -e "\nignore_containers:\n$(tput setaf 2)$ignore_containers\n$(tput sgr 0)"
-# echo -e "\npending_containers:\n$(tput setaf 4)$pending_containers\n$(tput sgr 0)"
-
 echo "Stopping docker containers..."
 
-docker stop "$pending_containers"
+# Only run if pending_containers is not empty.
+if [[ -n "$pending_containers" ]]; then
+	# shellcheck disable=2086
+	docker stop $pending_containers
+else
+	echo "No containers to stop."
+fi

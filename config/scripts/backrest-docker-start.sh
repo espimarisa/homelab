@@ -8,6 +8,10 @@ stopped_containers=$(
 
 echo "Starting docker containers..."
 
-# shellcheck disable=2086
-[[ -z $stopped_containers ]] ||
+# Only run if stopped_containers is not empty.
+if [[ -n "$stopped_containers" ]]; then
+	# shellcheck disable=2086
 	docker start $stopped_containers
+else
+	echo "No containers to start."
+fi
