@@ -4,7 +4,7 @@
 ---
 services:
   backrest:
-    image: garethgeorge/backrest:v1.12-scratch
+    image: garethgeorge/backrest:v1.12-alpine
     container_name: backrest
     hostname: backrest
     read_only: true
