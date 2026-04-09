@@ -30,16 +30,13 @@ services:
       - backups:/mnt/backups:rw # Mounted local backups HDD.
       - docker:/mnt/docker:ro # Mounted local Docker data path.
       - storage:/mnt/storage:ro # Root storage directory.
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket mount.
     cap_drop: # Drop all unneccesary priveleges.
       - AUDIT_WRITE
       - MKNOD
       - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE
-    depends_on:
-      socket-proxy:
-        condition: service_healthy # Require socket-proxy to be healthy before conncting.
-        restart: true # Restart when socket-proxy restarts.
     deploy:
       resources:
         limits:
