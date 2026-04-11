@@ -36,7 +36,7 @@ services:
     security_opt: # Prevent privelege escalation.
       - no-new-privileges:true
     depends_on:
-      seerr-db:
+      arr-db:
         condition: service_healthy
         restart: true
     deploy:
@@ -46,3 +46,19 @@ services:
           memory: 1G # Allow using up to 1GB of RAM.
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5055 || exit 1"
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  seerr:
+    name: seerr-volume
+    external: true
