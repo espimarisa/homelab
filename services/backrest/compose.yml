@@ -4,7 +4,7 @@
 ---
 services:
   backrest:
-    image: garethgeorge/backrest:v1.12
+    image: ghcr.io/garethgeorge/backrest:v1.12
     container_name: backrest
     hostname: backrest
     read_only: true
@@ -22,6 +22,7 @@ services:
       - external
       - internal
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket mount.
       - backrest-cache:/cache:rw # Backrest cache.
       - backrest-config:/config:rw # Backrest configuration.
       - backrest-data:/data:rw # Backrest data.
@@ -29,7 +30,6 @@ services:
       - backups:/mnt/backups:rw # Mounted local backups HDD.
       - docker:/mnt/docker:ro # Mounted local Docker data path.
       - storage:/mnt/storage:ro # Root storage directory.
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket mount.
     cap_drop: # Drop all unneccesary priveleges.
       - AUDIT_WRITE
       - MKNOD

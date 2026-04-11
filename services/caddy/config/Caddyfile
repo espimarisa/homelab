@@ -3,11 +3,6 @@
 	acme_dns cloudflare {$CLOUDFLARE_TOKEN}
 	email {$ACME_EMAIL}
 
-	# Enable the admin API/UI and whitelist the host header.
-	admin 127.0.0.1:2019 {
-		origins caddy.{$INTERNAL_DOMAIN}
-	}
-
 	# Configures trusted proxies for Cloudflare support.
 	servers {
 		trusted_proxies cloudflare
@@ -128,6 +123,11 @@
 	import cloudflare_proxy homarr:7575
 }
 
+# Seerr.
+{$SEERR_URL} {
+	import cloudflare_proxy seerr:5055
+}
+
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
 	import cloudflare_proxy vaultwarden:80
@@ -150,19 +150,6 @@ bazarr.{$INTERNAL_DOMAIN} {
 # Beszel hub web interface.
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
-}
-
-# Caddy admmin web interface.
-caddy.{$INTERNAL_DOMAIN} {
-	# Import common options and deny non-internal traffic (and Tailscale).
-	import common_options
-	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
-	abort @denied
-
-	# Spoof the Host header so the API accepts it.
-	reverse_proxy 127.0.0.1:2019 {
-		header_up Host {upstream_hostport}
-	}
 }
 
 # Dispatcharr web interface

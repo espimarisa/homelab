@@ -261,6 +261,12 @@ endpoints:
     group: Services
     url: https://${OPENCLOUD_URL}
 
+  # Seerr.
+  - name: Seerr
+    <<: *defaults-http
+    group: Services
+    url: https://${SEERR_URL}
+
   # The Lounge.
   - name: The Lounge
     <<: *defaults-container

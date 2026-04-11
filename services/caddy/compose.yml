@@ -22,7 +22,6 @@ services:
       - 80:80/tcp # HTTP.
       - 443:443/tcp # HTTPS.
       - 443:443/udp # HTTPS/3.
-      - 127.0.0.1:2019:2019/tcp # Admin API.
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
       - caddy:/data:rw # Caddy data and certificate storage.

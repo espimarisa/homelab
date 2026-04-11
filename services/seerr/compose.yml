@@ -1,0 +1,48 @@
+# Seerr: Media request manager and discovery tool.
+# https://seerr.dev/
+
+---
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:3.1.0
+    container_name: seerr
+    hostname: seerr
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      DB_HOST: "arr-db" # Connect to arr-db.
+      DB_LOG_QUERIES: "true" # Log database queries.
+      DB_NAME: "seerr-main" # Use the seerr-main database.
+      DB_PASS: "${ARR_DB_PASSWORD}" # Sets the password.
+      DB_PORT: "5432" # Connect to port 5432.
+      DB_TYPE: "postgres" # Use PostgreSQL.
+      DB_USE_SSL: "false" # Do not use SSL.
+      DB_USER: "postgres" # Use the PostgreSQL user.
+      TZ: "${TZ}" # Sets the timezone.
+    expose:
+      - 5055/tcp # Seerr web interface, reverse proxied at seerr.${DOMAIN}.
+    networks:
+      - external
+      - gluetun
+      - internal
+    tmpfs:
+      - "/home/node/.local:uid=${PUID},gid=${PGID},exec"
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - seerr:/app/config:rw # Seerr configuration and data.
+    cap_drop:
+      - ALL # Drop all unneeded permissions.
+    security_opt: # Prevent privelege escalation.
+      - no-new-privileges:true
+    depends_on:
+      seerr-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 1G # Allow using up to 1GB of RAM.
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:5055 || exit 1"

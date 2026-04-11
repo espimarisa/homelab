@@ -42,8 +42,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using up to 2 CPU cores.
-          memory: 2G # Allow using up to 2GB of RAM.
+          cpus: 1 # Allow using up to 1 CPU core.
+          memory: 1G # Allow using up to 1GB of RAM.
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
     healthcheck:

@@ -43,8 +43,6 @@ services:
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # PresharedKey from Wireguard config file.
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from Wireguard config file.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from Wireguard config file.
-    expose:
-      - 8080/tcp # qBittorrent.
     networks:
       - gluetun
     volumes:

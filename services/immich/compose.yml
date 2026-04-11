@@ -14,7 +14,7 @@ x-defaults: &defaults
 services:
   immich:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v2.7.2
+    image: ghcr.io/immich-app/immich-server:v2.7.4
     container_name: immich
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
@@ -111,12 +111,12 @@ services:
 
   immich-ml:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v2.7.2-openvino
+    image: ghcr.io/immich-app/immich-machine-learning:v2.7.4-openvino # Use OpenVino for Intel Arc.
     container_name: immich-ml
     hostname: immich-ml
     read_only: false
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for ML.
+      - /dev/dri:/dev/dri:rw # Required for ML.
     environment:
       MACHINE_LEARNING_MAX_BATCH_SIZE__TEXT_RECOGNITION: 1 # Max num of OCR batches.
       MACHINE_LEARNING_MAX_BATCH_SIZE__FACIAL_RECOGNITION: 1 # Max num of faces.
