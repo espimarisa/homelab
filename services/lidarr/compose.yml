@@ -14,6 +14,7 @@ services:
       DISCOGS_API_KEY: "${DISCOGS_API_KEY}" # Passes the Discogs API key for scripts.
       DOCKER_MODS: "linuxserver/mods:universal-package-install" # Add universal-package-install support.
       GENIUS_API_KEY: "${GENIUS_API_KEY}" # Passes the Genius API key for scripts.
+      INSTALL_PIP_PACKAGES: "librosa" # needed for something idk
       INSTALL_PACKAGES: "beets chromaprint ffmpeg gettext-envsubst imagemagick py3-beautifulsoup4 py3-discogs-client py3-flask py3-langdetect py3-pyacoustid py3-pylast py3-requests" # Installs required alpine packages for beets.
       LASTFM_API_KEY: "${LASTFM_API_KEY}" # Passes the Last.fm API key for scripts.
       LIDARR_API_KEY: "${LIDARR_API_KEY}" # Passes the API key for scripts.

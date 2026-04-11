@@ -1,104 +1,86 @@
-# marinet beets config
-# this configuration file is to be used with lidarr
-# and a custom lidarr connect script (see ./import.sh)
-# the script will replace environment variables here with their real values.
-# for some reason, beets does not support reading environment variables natively!
-
 ---
-# Plugins to enable.
-# discogs: Discogs API support for releases not on MusicBrainz.
-# embedart: Embedded art support.
-# fetchart: Fetch remote album art.
-# ftintitle: Move featured artists to track titles instead of the artist tag.
-# lastgenre: Import genres from Last.fm.
-# lyrics: Fetch and embed remote lyrics.
-# replaygain: Replay gain analysis for tags.
-# scrub: Tag scrubber for removing old/useless tags.
-# zero: Further tag scrubbing for tags not supported by scrub.
-# NOTE: Not using Chroma as we get decently-organized stuff from Lidarr.
-plugins: discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
-
-# Beets configuration.
-library: /config/musiclibrary.blb # Save the beets database to the Lidarr volume.
+plugins: autobpm discogs embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero
+library: /config/musiclibrary.blb # Save the beets library.
 threaded: yes # Enable multithreading.
+
+# Matching/metadata options.
+match:
+  preferred:
+    original_year: yes # Match releases to their original year instead of reissue.
+original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
+per_disc_numbering: yes # Enable per-disk numbering.
 
 # Import configuration.
 import:
-  copy: no # Don't copy files when complete.
-  hardlink: no # Don't create hardlinks when complete.
-  incremental: no # Don't run incrementally. Allows re-writes.
-  log: /config/beet.log # Save log files inside of the container.
-  move: no # Don't move files when complete.
-  quiet_fallback: skip # Skip fallbacks when running in quiet mode.
-  resume: no # Don't resume upon crashing.
-  timid: no # Don't use timid mode, we ball!
-  write: yes # Write the changes in place. Lidarr handles all moving.
+  copy: no # Do not copy files.
+  hardlink: no # Do not hardlink files.
+  incremental: no # Allow re-running later.
+  log: /config/beet.log # Save log files.
+  move: no # Do not move files.
+  quiet_fallback: skip # Skip files that cannot automatically be matched.
+  resume: no # Do not resume if exited.
+  timid: no # Do not run timidly; automatically tag matching releases.
+  write: yes # Write changes to the files.
 
 # Album art configuration.
-art_filename: cover # Save album art as cover.jpeg.
+art_filename: cover
 embedart:
   auto: yes # Automatically embed album art.
-  maxwidth: 1500 # Only embed images up to 1500x1500. Any larger can bloat things.
-  remove_art_file: no # Do not remove cover.jpeg when finished.
+  maxwidth: 1200 # Save album art up to 1200x1200.
+  remove_art_file: no # Do not remove the album art file.
 fetchart:
-  auto: yes # Automatically download album art.
-  enforce_ratio: yes # Require a 1:1 square for album art.
-  minwidth: 500 # Require 500x500 art at the minimum.
-  lastfm_key: "${LASTFM_API_KEY}" # Connect script will inject the real token here.
-  sources: [itunes, coverart, filesystem] # Sources to use. iTunes > Coverart > FS.
+  auto: yes # Automatically fetch album art.
+  enforce_ratio: yes # Require album art to be a 1:1 ratio.
+  lastfm_key: "${LASTFM_API_KEY}"
+  maxwidth: 1200 # Only fetch album art at 1200x1200. Allows coverart to return a 1:1 match; speeds up downloads.
+  minwidth: 500 # Require album art to be 500x500 or larger.
+  sources: [coverart, itunes, lastfm, filesystem] # Sources to enable.
+
+# AutoBPM configuration.
+autobpm:
+  auto: yes # Automatically analyze tracks for BPM information.
 
 # Discogs configuration.
 discogs:
-  index_tracks: yes # Index tracks through Discogs.
-  user_token: "${DISCOGS_API_KEY}" # Connect script will inject the real token here.
+  index_tracks: yes # Fetch track data from Discogs as a backup.
+  user_token: "${DISCOGS_API_KEY}"
 
-# Adds featured artists to the title instead of the tags.
+# Featured artists configuration.
 ftintitle:
-  auto: yes # Automatically move feat. to the title.
-  drop: no # Do not remove featured artists entirely.
-  format: "(feat. {0})" # Meow Meow (feat. Meowing On The Internet)
+  auto: yes # Automatically adjust featured artist data.
+  drop: no # Do not remove featured artist data entirely.
+  format: "(feat. {0})" # Move featured artists to the title, i.e Example (feat. Example2)
 
 # Last.fm genre configuration.
 lastgenre:
-  auto: yes # Automatically fetch the genre from Last.fm.
-  canonical: yes # Uses a built-in tree to fix weird capitalization/spelling.
-  count: 5 # Grabs the top 5 genres from Last.fm.
-  force: yes # Overwrite existing genres.
-  keep_existing: no # Do not keep existing genres.
-  prefer_specific: yes # Prefer specific genres over generic ones.
-  source: album # Use the album as the source for genres.
+  auto: yes # Automatically fetch genre data from Last.fm.
+  canonical: yes # Use a canonical whitelisted map.
+  count: 3 # Fetch the top 3 most popular genres.
+  force: yes # Force setting the genre tags.
+  keep_existing: no # Do not keep pre-existing genre tags.
+  prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
+  source: album # Source the genre from the album.
 
 # Lyrics configuration.
 lyrics:
-  auto: yes # Automatically download lyrics.
-  fallback: "" # Do not include fallback lyrics.
-  genius_api_key: "${GENIUS_API_KEY}" # Connect script will inject the real token here.
-  sources: [lrclib, genius] # Sources to use.
-  synced: yes # Enable synced lyrics.
+  auto: yes # Automatically fetch lyrics.
+  fallback: "" # Wipe existing lyrics if none are found.
+  genius_api_key: "${GENIUS_API_KEY}"
+  sources: [lrclib, genius] # Sources to enable.
+  synced: yes # Prefer synced lyrics.
 
-# Match configuration.
-match:
-  distance_weights:
-    album: 4.0 # Heavily penalize matches where the album name differs (e.g., "A Tribute to...")
-    albumtype: 2.0 # Penalize matching to compilations/live albums if a studio album exists
-    artist: 4.0 # Heavily penalize matches where the artist name differs (e.g., "Various Artists" or cover bands)
-  preferred:
-    countries: ["US", "GB", "XW"] # Prefer US, GB, and worldwide releases.
-    original_year: yes # Prefer original year matches.
+# MusicBrainz configuration.
+musicbrainz: # Enables MusicBrainz support.
 
-# Metadata configuration.
-original_date: yes # Use the original date, not the release date.
-per_disc_numbering: yes # Enable per-disc numbering.
-
-# ReplayGain configuration
+# ReplayGain configuration.
 replaygain:
-  auto: yes
-  backend: ffmpeg
-  overwrite: yes # Overwrite existing tags.
+  auto: yes # Automatically determine ReplayGain data.
+  backend: ffmpeg # Use ffmpeg as the backend.
+  overwrite: yes # Overwrite existing ReplayGain data.
 
-# Scrubbing configuration.
+# Tag scrubbing configuration.
 scrub:
-  auto: yes # Scrub existing tags.
+  auto: yes # Automatically scrub existing tags.
 zero:
-  fields: comments encoder images # Scrub old tags.
-  update_database: true # Update the database when complete.
+  fields: comments encoder # Tags to remove.
+  update_database: true # Update the database when finished.
