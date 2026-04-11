@@ -4,7 +4,7 @@
 ---
 services:
   seerr:
-    image: ghcr.io/seerr-team/seerr:3.1.0
+    image: ghcr.io/seerr-team/seerr:v3.1.0
     container_name: seerr
     hostname: seerr
     read_only: true
