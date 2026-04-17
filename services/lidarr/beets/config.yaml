@@ -1,5 +1,4 @@
----
-plugins: autobpm discogs embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero
+plugins: autobpm discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
 library: /config/musiclibrary.blb # Save the beets library.
 threaded: yes # Enable multithreading.
 
@@ -15,7 +14,7 @@ import:
   copy: no # Do not copy files.
   hardlink: no # Do not hardlink files.
   incremental: no # Allow re-running later.
-  log: /config/beet.log # Save log files.
+  log: /config/beets-logs/beet.log # Save log files.
   move: no # Do not move files.
   quiet_fallback: skip # Skip files that cannot automatically be matched.
   resume: no # Do not resume if exited.
@@ -68,9 +67,6 @@ lyrics:
   genius_api_key: "${GENIUS_API_KEY}"
   sources: [lrclib, genius] # Sources to enable.
   synced: yes # Prefer synced lyrics.
-
-# MusicBrainz configuration.
-musicbrainz: # Enables MusicBrainz support.
 
 # ReplayGain configuration.
 replaygain:

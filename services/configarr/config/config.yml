@@ -121,7 +121,7 @@ lidarr:
       # CD releases.
       - trash_id: lidarr-cd
         trash_scores:
-          default: 50
+          default: 100
         includeCustomFormatWhenRenaming: false
         name: CD
         trash_description: CD
@@ -151,7 +151,7 @@ lidarr:
       # Vinyl releases.
       - trash_id: lidarr-vinyl
         trash_scores:
-          default: 0 # Neutral score. Lets the 24-bit/192kHz specs work
+          default: -10000 # Nukes vinyl rips from orbit
         includeCustomFormatWhenRenaming: false
         name: Vinyl
         trash_description: Vinyl
@@ -161,12 +161,12 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '(?i)\bVinyl(?! ?(Rip|dub))\b'
+              value: '(?i)\b(Vinyl|LP|Rip|dub)\b'
 
       # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
-          default: 50
+          default: 100
         includeCustomFormatWhenRenaming: false
         name: WEB
         trash_description: WEB
