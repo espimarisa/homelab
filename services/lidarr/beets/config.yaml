@@ -1,5 +1,5 @@
-plugins: autobpm discogs fetchart lastgenre lyrics scrub zero
-library: /config/musiclibrary.blb # Save the beets library.
+plugins: discogs embedart fetchart lastgenre lyrics scrub zero
+library: /config/musiclibrary.blb # Save the beets library to the volume.
 threaded: yes # Enable multithreading.
 
 # Matching/metadata options.
@@ -23,17 +23,18 @@ import:
 
 # Album art configuration.
 art_filename: cover
+embedart:
+  auto: yes # Automatically embed album art.
+  maxwidth: 1200 # Save album art up to 1200x1200.
+  remove_art_file: no # Do not remove the album art file.
 fetchart:
+  cover_names: cover front back art album # Names to store files as.
   auto: yes # Automatically fetch album art.
   enforce_ratio: yes # Require album art to be a 1:1 ratio.
   lastfm_key: "${LASTFM_API_KEY}"
   high_resolution: yes # Fetch high res.
   minwidth: 500 # Require album art to be 500x500 or larger.
   sources: [coverart, itunes, lastfm, filesystem] # Sources to enable.
-
-# AutoBPM configuration.
-autobpm:
-  auto: yes # Automatically analyze tracks for BPM information.
 
 # Discogs configuration.
 discogs:
@@ -61,6 +62,3 @@ lyrics:
 # Tag scrubbing configuration.
 scrub:
   auto: yes # Automatically scrub existing tags.
-zero:
-  fields: comments encoder # Tags to remove.
-  update_database: true # Update the database when finished.
