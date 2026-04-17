@@ -21,7 +21,7 @@ readonly REQUIRED_VARS=(
 
 # Sources environment variables from .env.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ENV_FILE="${SCRIPT_DIR}/../../.env"
+ENV_FILE="${SCRIPT_DIR}/../.env"
 SUDO=""
 
 # Reads the environment variable file.
