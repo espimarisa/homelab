@@ -66,11 +66,11 @@ else
 	# Discord Webhook: SUCCESS
 	if [ -n "$BEETS_DISCORD_WEBHOOK_URL" ]; then
 		curl -s -X POST -H "Content-Type: application/json" \
-			-d "{\"embeds\": [{\"title\": \"✅ Beets Import Success\", \"description\": \"Successfully tagged, normalized, and imported:\\n**$ALBUM_FOLDER_NAME**\", \"color\": 3066993}]}" \
+			-d "{\"embeds\": [{\"title\": \"✅ Beets Import Success\", \"description\": \"Successfully tagged and imported:\\n**$ALBUM_FOLDER_NAME**\", \"color\": 3066993}]}" \
 			"$BEETS_DISCORD_WEBHOOK_URL" >/dev/null
 	fi
 
-	# Trigger Lidarr to rescan the album so it sees the new tags and embedded art Beets just wrote
+	# Trigger Lidarr to rescan the album so it sees the new tags and downloaded art Beets just wrote
 	if [ -n "$LIDARR_API_KEY" ] && [ -n "$lidarr_album_id" ]; then
 		echo "[$(date)] Triggering Lidarr API refresh for Album ID: $lidarr_album_id" >>"$MAIN_LOG"
 		curl -s -X POST "http://127.0.0.1:8686/api/v1/command" \

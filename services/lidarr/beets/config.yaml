@@ -1,4 +1,4 @@
-plugins: autobpm discogs embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero
+plugins: autobpm discogs fetchart lastgenre lyrics scrub zero
 library: /config/musiclibrary.blb # Save the beets library.
 threaded: yes # Enable multithreading.
 
@@ -23,15 +23,11 @@ import:
 
 # Album art configuration.
 art_filename: cover
-embedart:
-  auto: yes # Automatically embed album art.
-  maxwidth: 1200 # Save album art up to 1200x1200.
-  remove_art_file: no # Do not remove the album art file.
 fetchart:
   auto: yes # Automatically fetch album art.
   enforce_ratio: yes # Require album art to be a 1:1 ratio.
   lastfm_key: "${LASTFM_API_KEY}"
-  maxwidth: 1200 # Only fetch album art at 1200x1200. Allows coverart to return a 1:1 match; speeds up downloads.
+  high_resolution: yes # Fetch high res.
   minwidth: 500 # Require album art to be 500x500 or larger.
   sources: [coverart, itunes, lastfm, filesystem] # Sources to enable.
 
@@ -43,12 +39,6 @@ autobpm:
 discogs:
   index_tracks: yes # Fetch track data from Discogs as a backup.
   user_token: "${DISCOGS_API_KEY}"
-
-# Featured artists configuration.
-ftintitle:
-  auto: yes # Automatically adjust featured artist data.
-  drop: no # Do not remove featured artist data entirely.
-  format: "(feat. {0})" # Move featured artists to the title, i.e Example (feat. Example2)
 
 # Last.fm genre configuration.
 lastgenre:
@@ -67,12 +57,6 @@ lyrics:
   genius_api_key: "${GENIUS_API_KEY}"
   sources: [lrclib, genius] # Sources to enable.
   synced: yes # Prefer synced lyrics.
-
-# ReplayGain configuration.
-replaygain:
-  auto: yes # Automatically determine ReplayGain data.
-  backend: ffmpeg # Use ffmpeg as the backend.
-  overwrite: yes # Overwrite existing ReplayGain data.
 
 # Tag scrubbing configuration.
 scrub:

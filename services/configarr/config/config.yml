@@ -37,10 +37,10 @@ lidarr:
 
     # Custom Format definitions.
     customFormatDefinitions:
-      # 192KHz & 176.4KHz releases.
+      # 192KHz & 176.4KHz releases
       - trash_id: lidarr-192khz
         trash_scores:
-          default: 200
+          default: -500
         trash_description: 192 KHz
         name: 192 KHz
         includeCustomFormatWhenRenaming: false
@@ -121,7 +121,7 @@ lidarr:
       # CD releases.
       - trash_id: lidarr-cd
         trash_scores:
-          default: 100
+          default: 500
         includeCustomFormatWhenRenaming: false
         name: CD
         trash_description: CD
@@ -136,7 +136,7 @@ lidarr:
       # Deluxe / Extended releases.
       - trash_id: lidarr-deluxe
         trash_scores:
-          default: 200 # Positive score to prefer it over standard releases.
+          default: 200
         trash_description: Deluxe / Extended
         name: Deluxe / Extended
         includeCustomFormatWhenRenaming: false
@@ -148,10 +148,10 @@ lidarr:
             fields:
               value: '(?i)\b(deluxe|extended|bonus|special ?edition)\b'
 
-      # Vinyl releases.
+      # Vinyl releases
       - trash_id: lidarr-vinyl
         trash_scores:
-          default: -10000 # Nukes vinyl rips from orbit
+          default: -10000
         includeCustomFormatWhenRenaming: false
         name: Vinyl
         trash_description: Vinyl
@@ -161,7 +161,7 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '(?i)\b(Vinyl|LP|Rip|dub)\b'
+              value: '(?i)\b(Vinyl|LP|Rip|dub|Cassette)\b'
 
       # WEB releases.
       - trash_id: lidarr-web
@@ -178,7 +178,22 @@ lidarr:
             fields:
               value: '(?i)\b(WEB|WEB(DL)?|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
 
-    # Custom formats to import.
+      # MQA releases.
+      - trash_id: lidarr-mqa
+        trash_scores:
+          default: -10000
+        includeCustomFormatWhenRenaming: false
+        name: MQA
+        trash_description: MQA
+        specifications:
+          - name: MQA
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\b(MQA)\b'
+
+    # Custom formats to import (Fully Restored)
     custom_formats:
       - trash_ids:
           - lidarr-192khz
@@ -188,6 +203,7 @@ lidarr:
           - lidarr-deluxe
           - lidarr-explicit
           - lidarr-lossless
+          - lidarr-mqa
           - lidarr-vinyl
           - lidarr-web
         assign_scores_to:
