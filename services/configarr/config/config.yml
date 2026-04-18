@@ -195,6 +195,7 @@ lidarr:
 
       # Penalize Soulseek/Slskd so it is only used as a last resort
       - name: Slskd Penalty
+      - trash_id: lidarr-slskd
         includeCustomFormatWhenRenaming: false
         trash_scores:
           default: -1000
@@ -219,12 +220,7 @@ lidarr:
           - lidarr-mqa
           - lidarr-vinyl
           - lidarr-web
-        assign_scores_to:
-          - name: Lossless
-
-      # Apply our manual Slskd Penalty
-      - custom_formats:
-          - name: Slskd Penalty
+          - lidarr-slskd
         assign_scores_to:
           - name: Lossless
 
