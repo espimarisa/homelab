@@ -166,7 +166,7 @@ lidarr:
       # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
-          default: 600
+          default: 500
         includeCustomFormatWhenRenaming: false
         name: WEB
         trash_description: WEB
@@ -193,7 +193,20 @@ lidarr:
             fields:
               value: '(?i)\b(MQA)\b'
 
-    # Custom formats to import (Fully Restored)
+      # Penalize Soulseek/Slskd so it is only used as a last resort
+      - name: Slskd Penalty
+        includeCustomFormatWhenRenaming: false
+        trash_scores:
+          default: -1000
+        specifications:
+          - name: Slskd Indexer
+            implementation: IndexerSpecification
+            negate: false
+            required: true
+            fields:
+              value: "(?i)(slskd|soulseek)"
+
+    # Custom formats to import
     custom_formats:
       - trash_ids:
           - lidarr-192khz
@@ -206,6 +219,12 @@ lidarr:
           - lidarr-mqa
           - lidarr-vinyl
           - lidarr-web
+        assign_scores_to:
+          - name: Lossless
+
+      # Apply our manual Slskd Penalty
+      - custom_formats:
+          - name: Slskd Penalty
         assign_scores_to:
           - name: Lossless
 
