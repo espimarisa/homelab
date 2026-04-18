@@ -166,7 +166,7 @@ lidarr:
       # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
-          default: 100
+          default: 600
         includeCustomFormatWhenRenaming: false
         name: WEB
         trash_description: WEB
