@@ -201,12 +201,12 @@ lidarr:
         name: Slskd Penalty
         trash_description: Slskd Penalty
         specifications:
-          - name: Slskd Indexer
-            implementation: IndexerSpecification
+          - name: Tubifarry Artifacts
+            implementation: ReleaseTitleSpecification
             negate: false
             required: true
             fields:
-              value: "(?i)(slskd|soulseek)"
+              value: '(?i)\[.*?(MB/s|kB/s).*?\]'
 
     # Custom formats to import
     custom_formats:
