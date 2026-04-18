@@ -194,11 +194,12 @@ lidarr:
               value: '(?i)\b(MQA)\b'
 
       # Penalize Soulseek/Slskd so it is only used as a last resort
-      - name: Slskd Penalty
       - trash_id: lidarr-slskd
-        includeCustomFormatWhenRenaming: false
         trash_scores:
           default: -1000
+        includeCustomFormatWhenRenaming: false
+        name: Slskd Penalty
+        trash_description: Slskd Penalty
         specifications:
           - name: Slskd Indexer
             implementation: IndexerSpecification
