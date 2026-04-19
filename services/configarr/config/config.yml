@@ -40,7 +40,7 @@ lidarr:
       # 192KHz & 176.4KHz releases
       - trash_id: lidarr-192khz
         trash_scores:
-          default: -500
+          default: -10000
         trash_description: 192 KHz
         name: 192 KHz
         includeCustomFormatWhenRenaming: false
@@ -55,7 +55,7 @@ lidarr:
       # 96KHz & 88.2KHz releases.
       - trash_id: lidarr-96khz
         trash_scores:
-          default: 100
+          default: -10000
         trash_description: 96 KHz
         name: 96 KHz
         includeCustomFormatWhenRenaming: false
@@ -70,7 +70,7 @@ lidarr:
       # 24-bit releases.
       - trash_id: lidarr-24bit
         trash_scores:
-          default: 500
+          default: -10000
         trash_description: 24 Bit
         name: 24 Bit
         includeCustomFormatWhenRenaming: false
@@ -166,7 +166,7 @@ lidarr:
       # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
-          default: 500
+          default: 600
         includeCustomFormatWhenRenaming: false
         name: WEB
         trash_description: WEB
@@ -193,21 +193,6 @@ lidarr:
             fields:
               value: '(?i)\b(MQA)\b'
 
-      # Penalize Soulseek/Slskd so it is only used as a last resort
-      - trash_id: lidarr-slskd
-        trash_scores:
-          default: -1000
-        includeCustomFormatWhenRenaming: false
-        name: Slskd Penalty
-        trash_description: Slskd Penalty
-        specifications:
-          - name: Tubifarry Artifacts
-            implementation: ReleaseTitleSpecification
-            negate: false
-            required: true
-            fields:
-              value: '(?i)\[.*?(MB/s|kB/s).*?\]'
-
     # Custom formats to import
     custom_formats:
       - trash_ids:
@@ -221,7 +206,6 @@ lidarr:
           - lidarr-mqa
           - lidarr-vinyl
           - lidarr-web
-          - lidarr-slskd
         assign_scores_to:
           - name: Lossless
 
@@ -232,12 +216,11 @@ lidarr:
           enabled: true
         upgrade:
           allowed: true
-          until_quality: FLAC 24bit
-          until_score: 1700
+          until_quality: FLAC
+          until_score: 1600
         min_format_score: 0
         quality_sort: top
         qualities:
-          - name: FLAC 24bit
           - name: FLAC
 
 # Radarr configuration.
