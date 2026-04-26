@@ -136,7 +136,7 @@ lidarr:
       # Deluxe / Extended releases.
       - trash_id: lidarr-deluxe
         trash_scores:
-          default: 200
+          default: -100
         trash_description: Deluxe / Extended
         name: Deluxe / Extended
         includeCustomFormatWhenRenaming: false
