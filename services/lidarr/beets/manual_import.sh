@@ -3,8 +3,8 @@
 # Internal container paths
 MUSIC_DIR="/library/music" 
 CONFIG="/musiclibrary.blb"
-LOG_FILE="/beets-logs/beet.log"
-SKIPPED_FILE="/beets-logs/needs_manual_fixing.txt"
+LOG_FILE="/config/beets-logs/beet.log"
+SKIPPED_FILE="/config/beets-logs/needs_manual_fixing.txt"
 
 # Clear previous run log
 > "$LOG_FILE"
