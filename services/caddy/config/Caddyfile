@@ -94,11 +94,6 @@
 	import external_proxy jellyfin:8096
 }
 
-# Navidrome web interface.
-{$NAVIDROME_URL} {
-	import external_proxy navidrome:4533
-}
-
 # OpenCloud web interface.
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200

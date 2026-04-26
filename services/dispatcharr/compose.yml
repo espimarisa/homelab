@@ -4,7 +4,7 @@
 ---
 services:
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr:0.22.1
+    image: ghcr.io/dispatcharr/dispatcharr:0.23.0
     container_name: dispatcharr
     restart: unless-stopped
     hostname: dispatcharr
@@ -14,7 +14,11 @@ services:
       CELERY_BROKER_URL: "redis://localhost:6379/0" # Connect to redis.
       DISPATCHARR_ENV: "aio" # Use AIO mode.
       DISPATCHARR_LOG_LEVEL: "info" # Sets the log level.
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
       REDIS_HOST: "localhost" # Connect to localhost redis.
+      TZ: "${TZ}" # Sets the timezone.
+      UMASK: "${UMASK}" # Default umask to use.
     expose:
       - 9191/tcp # Web interface reverse proxied internally at dispatcharr.${INTERNAL_DOMAIN}.
     networks:

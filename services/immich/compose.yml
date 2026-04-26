@@ -14,7 +14,7 @@ x-defaults: &defaults
 services:
   immich:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v2.7.4
+    image: ghcr.io/immich-app/immich-server:v2.7.5
     container_name: immich
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
@@ -111,7 +111,7 @@ services:
 
   immich-ml:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v2.7.4-openvino # Use OpenVino for Intel Arc.
+    image: ghcr.io/immich-app/immich-machine-learning:v2.7.5-openvino # Use OpenVino for Intel Arc.
     container_name: immich-ml
     hostname: immich-ml
     read_only: false

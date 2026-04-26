@@ -6,6 +6,9 @@ threaded: yes # Enable multithreading.
 match:
   preferred:
     original_year: yes # Match releases to their original year instead of reissue.
+    media: ["Digital Media", "CD"]
+    countries: ["XW", "US", "GB"]
+
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
 
@@ -33,7 +36,7 @@ fetchart:
   enforce_ratio: yes # Require album art to be a 1:1 ratio.
   minwidth: 500 # Require album art to be 500x500 or larger.
   maxwidth: 1200 # Max width of 1200.
-  sources: [coverart, itunes, filesystem] # Sources to enable.
+  sources: [itunes, coverart, filesystem] # Sources to enable.
 
 # Discogs configuration.
 discogs:
@@ -44,7 +47,7 @@ discogs:
 lastgenre:
   auto: yes # Automatically fetch genre data from Last.fm.
   canonical: yes # Use a canonical whitelisted map.
-  count: 5 # Fetch the top 5 most popular genres.
+  count: 1 # Fetch the most popular genre.
   force: yes # Force setting the genre tags.
   keep_existing: no # Do not keep pre-existing genre tags.
   prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
@@ -62,5 +65,5 @@ lyrics:
 scrub:
   auto: yes # Automatically scrub existing tags.
 zero:
-  fields: comments encoder # Tags to remove.
+  fields: comments encoder disambig media # Tags to remove.
   update_database: true # Update the database when finished.

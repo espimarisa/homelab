@@ -4,7 +4,7 @@
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.16
+    image: ghcr.io/autobrr/qui:v1.17
     container_name: qui
     hostname: qui
     read_only: true # Prevent writing directly to the image.

@@ -4,21 +4,21 @@
 ---
 services:
   chhoto:
-    image: ghcr.io/sintan1729/chhoto-url:6.5-alpine
+    image: ghcr.io/sintan1729/chhoto-url:6.6-alpine
     container_name: chhoto
     hostname: chhoto
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      api_key: "${CHHOTO_API_KEY}" # Sets the API key. $ openssl rand -hex 32
-      db_url: "/db/urls.sqlite" # SQLite database file to use.
-      ensure_acid: "True" # Ensures ACID compliance.
-      password: "${CHHOTO_PASSWORD}" # Sets the password.
-      site_url: "https://${CHHOTO_URL}" # Sets the URL to use for forwarding.
-      slug_style: "Pair" # Use paired slug styling.
+      CHHOTO_API_KEY: "${CHHOTO_API_KEY}" # Sets the API key. $ openssl rand -hex 32
+      CHHOTO_DB_URL: "/db/urls.sqlite" # SQLite database file to use.
+      CHHOTO_PASSWORD: "${CHHOTO_PASSWORD}" # Sets the password.
+      CHHOTO_SITE_URL: "https://${CHHOTO_URL}" # Sets the URL to use for forwarding.
+      CHHOTO_SLUG_STYLE: "Pair" # Use paired slug styling.
+      CHHOTO_SQLITE_ENSURE_ACID: "True" # Ensures ACID compliance.
+      CHHOTO_SQLITE_USE_WAL_MODE: "True" # Use WAL mode for SQLite.
       TZ: "${TZ}" # Sets the timezone.
-      use_wal_mode: "True" # Use WAL mode for SQLite.
     expose:
       - 4567/tcp # Web interface; reverse proxied at ${CHHOTO_URL}.
     networks:
