@@ -2,7 +2,7 @@
 
 # Internal container paths
 MUSIC_DIR="/library/music" 
-CONFIG="/musiclibrary.blb"
+CONFIG="/config/musiclibrary.blb"
 LOG_FILE="/config/beets-logs/beet.log"
 SKIPPED_FILE="/config/beets-logs/needs_manual_fixing.txt"
 
