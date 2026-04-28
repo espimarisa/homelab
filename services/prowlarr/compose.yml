@@ -1,36 +1,38 @@
-# Prowlarr: Indexer manager and synchronization for 'ARR apps.
-# https://prowlarr.com/
+# Prowlarr: Indexer manager for 'ARR apps.
+# https://prowlarr.com
 
 ---
 services:
   prowlarr:
     image: ghcr.io/11notes/prowlarr:2
     container_name: prowlarr
-    network_mode: service:gluetun # Route all traffic through gluetun.
-    read_only: true # Prevent writing directly to the image.
+    network_mode: service:gluetun
+    read_only: true
     restart: unless-stopped
     environment:
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     tmpfs:
       - "/tmp:uid=1000,gid=1000" # Required for read-only image.
     volumes:
       - prowlarr:/prowlarr/etc:rw # Prowlarr configuration storage.
     depends_on:
       arr-db:
-        condition: service_healthy # Require arr-db to be healthy before starting.
-        restart: true # Restart when arr-db restarts.
+        condition: service_healthy
+        restart: true
       gluetun:
-        condition: service_healthy # Require Gluetun to be healthy before starting.
-        restart: true # Restart when Gluetun restarts.
+        condition: service_healthy
+        restart: true
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9696/api/v1/system/status?apikey=${PROWLARR_API_KEY} || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   gluetun:

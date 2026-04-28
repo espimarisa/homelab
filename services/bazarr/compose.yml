@@ -1,4 +1,4 @@
-# Bazarr: Subtitle manager and synchronization for 'ARR apps.
+# Bazarr: Subtitle manager for media.
 # https://www.bazarr.media
 
 ---
@@ -9,16 +9,16 @@ services:
     hostname: bazarr
     restart: unless-stopped
     environment:
-      PGID: "${PGID}" # Group ID to run as.
-      POSTGRES_DATABASE: "postgres" # PostgreSQL database.
-      POSTGRES_ENABLED: "true" # Enable PostgreSQL.
-      POSTGRES_HOST: "arr-db" # PostgreSQL hostname.
-      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # PostgreSQL password.
-      POSTGRES_PORT: "5432" # PostgreSQL port.
-      POSTGRES_USERNAME: "postgres" # PostgreSQL username.
-      PUID: "${PUID}" # User ID to run as.
-      TZ: "${TZ}" # Sets the timezone.
-      UMASK: "${UMASK}" # Default umask to apply.
+      PGID: "${PGID}"
+      POSTGRES_DATABASE: "postgres"
+      POSTGRES_ENABLED: "true"
+      POSTGRES_HOST: "arr-db"
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: "postgres"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
       - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
     networks:
@@ -26,12 +26,8 @@ services:
       - internal
     volumes:
       - media-library:/library:rw # Root media library directory.
-      - bazarr:/config:rw # Configuration and data.
-    depends_on:
-      arr-db:
-        condition: service_healthy # Require arr-db to be healthy before starting.
-        restart: true # Restart when arr-db restarts.
-    cap_drop: # Drop all unnecessary privileges.
+      - bazarr:/config:rw # Bazarr configuration and data.
+    cap_drop:
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -39,15 +35,19 @@ services:
       - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
-    security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+          cpus: 1
+          memory: 1G
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:6767/ || exit 1"
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   external:

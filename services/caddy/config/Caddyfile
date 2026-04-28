@@ -113,11 +113,6 @@
 	import cloudflare_proxy gatus:8080
 }
 
-# Homarr.
-{$HOMARR_URL} {
-	import cloudflare_proxy homarr:7575
-}
-
 # Seerr.
 {$SEERR_URL} {
 	import cloudflare_proxy seerr:5055

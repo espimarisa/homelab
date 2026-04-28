@@ -12,7 +12,6 @@ include:
   - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
-  - ./services/homarr/compose.yml
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/lidarr/compose.yml

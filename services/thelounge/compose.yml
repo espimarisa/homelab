@@ -1,4 +1,4 @@
-# The Lounge: Web-based IRC client and bouncer.
+# The Lounge: Self-hosted web-based IRC client.
 # https://github.com/thelounge/thelounge-docker
 
 ---
@@ -7,29 +7,29 @@ services:
     image: ghcr.io/thelounge/thelounge:4
     container_name: thelounge
     hostname: thelounge
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     expose:
       - 9000/tcp # Web interface; reverse proxied at thelounge.${INTERNAL_DOMAIN}.
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
+      - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - thelounge:/var/opt/thelounge:rw # The Lounge configuration and data.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 512M # Allow using up to 512MB of RAM.
+          cpus: 0.5
+          memory: 512M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9000 || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

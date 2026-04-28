@@ -10,12 +10,12 @@ services:
     read_only: true
     restart: unless-stopped
     environment:
-      BACKREST_CONFIG: "/config/config.json" # Sets the config file path.
-      BACKREST_DATA: "/data" # Sets the config data path.
+      BACKREST_CONFIG: "/config/config.json"
+      BACKREST_DATA: "/data"
       DOCKER_PATH: "${DOCKER_PATH}" # Path to Docker data.
-      TMPDIR: "/tmp" # Use /tmp for temporary files.
-      TZ: "${TZ}" # Sets the timezone.
-      XDG_CACHE_HOME: "/cache" # Use /cache for cached files.
+      TMPDIR: "/tmp"
+      TZ: "${TZ}"
+      XDG_CACHE_HOME: "/cache"
     expose:
       - 9898/tcp # Web interface proxied internally at backrest.${INTERNAL_DOMAIN}.
     networks:
@@ -30,7 +30,7 @@ services:
       - backups:/mnt/backups:rw # Mounted local backups HDD.
       - docker:/mnt/docker:ro # Mounted local Docker data path.
       - storage:/mnt/storage:ro # Root storage directory.
-    cap_drop: # Drop all unneccesary priveleges.
+    cap_drop:
       - AUDIT_WRITE
       - MKNOD
       - SYS_ADMIN
@@ -41,6 +41,8 @@ services:
         limits:
           cpus: 4 # Allow using up to 4 CPU cores.
           memory: 8G # Allow using up to 8GB of RAM.
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9898 || exit 1"
     security_opt:
       - no-new-privileges:true # Prevents privelege escalation.
 

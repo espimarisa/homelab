@@ -1,4 +1,4 @@
-# Dispatcharr: IPTV stream manager.
+# Dispatcharr: IPTV stream and playlist manager.
 # https://github.com/dispatcharr/dispatcharr
 
 ---
@@ -12,22 +12,22 @@ services:
       - /dev/dri:/dev/dri:rw # Required for transcoding.
     environment:
       CELERY_BROKER_URL: "redis://localhost:6379/0" # Connect to redis.
-      DISPATCHARR_ENV: "aio" # Use AIO mode.
-      DISPATCHARR_LOG_LEVEL: "info" # Sets the log level.
-      PGID: "${PGID}" # Group ID to run as.
-      PUID: "${PUID}" # User ID to run as.
-      REDIS_HOST: "localhost" # Connect to localhost redis.
-      TZ: "${TZ}" # Sets the timezone.
-      UMASK: "${UMASK}" # Default umask to use.
+      DISPATCHARR_ENV: "aio" # Use AIO mode with bundled services.
+      DISPATCHARR_LOG_LEVEL: "info"
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      REDIS_HOST: "localhost" # Connect to the local redis.
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
       - 9191/tcp # Web interface reverse proxied internally at dispatcharr.${INTERNAL_DOMAIN}.
     networks:
       - external
       - internal
     volumes:
-      - dispatcharr:/data:rw # Dispatcharr data.
+      - dispatcharr:/data:rw # Dispatcharr configuration and data.
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-    cap_drop: # Drop all unneeded priveleges.
+    cap_drop:
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -38,20 +38,20 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
     group_add:
       - "${RENDER_PGID}" # Required for transcoding.
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
-  internal:
-    external: true
-    name: internal-network
   external:
     external: true
     name: external-network
+  internal:
+    external: true
+    name: internal-network
 
 volumes:
   dispatcharr:

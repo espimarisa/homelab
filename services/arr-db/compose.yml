@@ -7,13 +7,13 @@ services:
     image: ghcr.io/11notes/postgres:18
     container_name: arr-db
     hostname: arr-db
-    read_only: true # Prevent writing directly to the image.
-    shm_size: 512M # Raises shared memory allocation.
+    read_only: true
+    shm_size: 512M
     environment:
       POSTGRES_BACKUP_RETENTION: "7" # Retain backups for 7 days.
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
       POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Sets the PostgreSQL password.
-      TZ: "${TZ}" # Timezone to use.
+      TZ: "${TZ}"
     networks:
       - internal
       - gluetun
@@ -25,12 +25,12 @@ services:
       - arr-db-config:/postgres/etc:rw # PostgreSQL configuration storage.
       - arr-db-data:/postgres/var:rw # PostgreSQL database storage.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 

@@ -5,13 +5,12 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
-	"DOWNLOADS_PATH"
 	"DOWNLOADS_INCOMPLETE_PATH"
+	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
 	"IMMICH_UPLOADS_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_UPLOADS_PATH"
-	"HOMARR_DATA_PATH"
 	"PGID"
 	"PUID"
 	"STORAGE_PATH"
@@ -196,7 +195,6 @@ create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
-create_dirs "$HOMARR_DATA_PATH"
 
 # Creates Docker networks.
 echo -e "\nCreating Docker networks..."
@@ -236,23 +234,21 @@ echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 
 $SUDO chown -R "${PUID}:${PGID}" \
-	"${IMMICH_UPLOADS_PATH}" \
-	"${HOMARR_DATA_PATH}" \
-	"${OPENCLOUD_UPLOADS_PATH}" \
-	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
+	"${IMMICH_UPLOADS_PATH}" \
+	"${OPENCLOUD_UPLOADS_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
 # Set permissions of the main bind mount directories on the host.
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
-	"${IMMICH_UPLOADS_PATH}" \
-	"${HOMARR_DATA_PATH}" \
-	"${OPENCLOUD_UPLOADS_PATH}" \
-	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
+	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
+	"${IMMICH_UPLOADS_PATH}" \
+	"${OPENCLOUD_UPLOADS_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
 
 echo -e "\nInitial setup complete!"

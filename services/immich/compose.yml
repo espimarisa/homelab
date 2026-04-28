@@ -1,31 +1,33 @@
 # Immich: Self-hosted photo manager and organizer.
+# ML is configured for OpenVINO/Intel ARC in this, you will wanna configure it in the web UI.
+# You will also want to tweak the resources as they're pretty high here
 # https://immich.app
 
 ---
 # Default container options.
 x-defaults: &defaults
   restart: unless-stopped
-  read_only: true # Prevent writing directly to the image.
+  read_only: true
   cap_drop:
-    - ALL # Drop all unnecessary privileges.
+    - ALL
   security_opt:
-    - no-new-privileges:true # Prevent privilege escalation.
+    - no-new-privileges:true
 
 services:
   immich:
     <<: *defaults
     image: ghcr.io/immich-app/immich-server:v2.7.5
     container_name: immich
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
       DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connect to PostgreSQL.
-      REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache.
-      MACHINE_LEARNING_HOST: "immich-ml" # Connect to immich-ml.
+      REDIS_HOSTNAME: "immich-cache"
+      MACHINE_LEARNING_HOST: "immich-ml"
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for transcoding; renderD128 is usually GPU0.
+      - /dev/dri:/dev/dri:rw # Required for transcoding.
     expose:
-      - 2283/tcp # Web interface; reverse proxied at ${IMMICH_URL}.
+      - 2283/tcp # Web interface; externally reverse proxied at ${IMMICH_URL}.
     networks:
       - external
       - internal
@@ -36,22 +38,22 @@ services:
       - "/usr/src/app/.config:uid=${PUID},gid=${PGID}" # Required for read-only image; cache.
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-      - immich-data:/data:rw # Immich storage mount.
+      - immich-data:/data:rw # Immich storage mount (user uploads).
     depends_on:
       immich-cache:
-        condition: service_healthy # Require immich-cache to be healthy before starting.
-        restart: true # Restart when immich-cache is restarted.
+        condition: service_healthy
+        restart: true
       immich-db:
-        condition: service_healthy # Require immich-db to be healthy before starting.
-        restart: true # Restart when immich-db is restarted.
+        condition: service_healthy
+        restart: true
       immich-ml:
-        condition: service_healthy # Require immich-ml to be healthy before starting.
-        restart: true # Restart when immich-ml is restarted.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 6 # Allow using up to 6 CPU cores.
-          memory: 4G # Allow using up to 8GB of RAM.
+          cpus: 4
+          memory: 4G
     group_add:
       - "${RENDER_PGID}" # Required for video transcoding.
 
@@ -61,7 +63,7 @@ services:
     container_name: immich-cache
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the redis password.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:
@@ -72,8 +74,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
 
   immich-db:
     <<: *defaults
@@ -81,21 +83,20 @@ services:
     container_name: immich-db
     shm_size: 512MB # Increases the shared memory size.
     environment:
-      DB_STORAGE_TYPE: "${IMMICH_DB_STORAGE_TYPE}" # HDD or SSD; enables optimizations.
       POSTGRES_DB: "immich" # Use the immich database.
       POSTGRES_INITDB_ARGS: "--data-checksums" # Enable checksums.
       POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}" # Sets the PostgreSQL password.
-      POSTGRES_USER: "postgres" # Use the immich user.
-      TZ: "${TZ}" # Sets the timezone.
+      POSTGRES_USER: "postgres"
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:
-      - "/etc/postgresql:exec" # Required for read-only image; psql.
+      - "/etc/postgresql:exec" # Required for read-only image; psql binary.
       - "/run" # Required for read-only image.
       - "/tmp" # Required for read-only image.
     volumes:
       - immich-db:/var/lib/postgresql:rw # PostgreSQL database storage.
-    cap_drop: # Drop all unnecessary privileges.
+    cap_drop:
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -106,12 +107,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 2G # Allow using up to 2GB of RAM.
+          cpus: 1
+          memory: 2G
 
   immich-ml:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v2.7.5-openvino # Use OpenVino for Intel Arc.
+    image: ghcr.io/immich-app/immich-machine-learning:v2.7.5-openvino # Use OpenVino for Intel Arc, see wiki for other stuff.
     container_name: immich-ml
     hostname: immich-ml
     read_only: false
@@ -121,21 +122,21 @@ services:
       MACHINE_LEARNING_MAX_BATCH_SIZE__TEXT_RECOGNITION: 1 # Max num of OCR batches.
       MACHINE_LEARNING_MAX_BATCH_SIZE__FACIAL_RECOGNITION: 1 # Max num of faces.
       MACHINE_LEARNING_WORKER_TIMEOUT: 300 # Timeout after 300s.
-      MACHINE_LEARNING_WORKERS: 1 # Use 1 worker.
+      MACHINE_LEARNING_WORKERS: 1 # Use 1 worker. Setting any higher uses >=2x resources.
     expose:
       - 3003/tcp # Internal API port for the Immich server.
     networks:
       - internal
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - /etc/localtime:/etc/localtime:ro
       - immich-model-cache:/cache:rw # Persistent storage for downloaded ML models.
-    group_add:
-      - "${RENDER_PGID}" # Grants permission to use the GPU via the render group.
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow using up to 4 CPU cores.
-          memory: 8G # Allow using up to 8GB of RAM.
+          cpus: 4
+          memory: 8G
+    group_add:
+      - "${RENDER_PGID}" # Required for transcoding and ML.
 
 networks:
   external:

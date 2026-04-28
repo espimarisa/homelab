@@ -5,31 +5,31 @@
 services:
   opencloud:
     image: opencloudeu/opencloud-rolling:6
-    command: ["-c", "opencloud init --insecure true || true; opencloud server"] # Init on first run, then run the server.
+    command: ["-c", "opencloud init --insecure true || true; opencloud server"] # Init if needed then run the server.
     container_name: opencloud
     entrypoint: /bin/sh # Use sh as an entrypoint for running the binary.
     hostname: opencloud
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
       FRONTEND_ARCHIVER_MAX_SIZE: "1000000000" # Maximum frontend archive size in bytes.
       IDM_ADMIN_PASSWORD: "${OPENCLOUD_ADMIN_PASSWORD}" # Sets the admin password.
-      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}" # SMTP server encryption method.
-      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}" # SMTP server hostname.
-      NOTIFICATIONS_SMTP_INSECURE: "false" # Do not use insecure mode for SMTP.
-      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}" # SMTP server password.
-      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}" # SMTP server port.
+      NOTIFICATIONS_SMTP_ENCRYPTION: "${SMTP_TRANSPORT_ENCRYPTION}"
+      NOTIFICATIONS_SMTP_HOST: "${SMTP_HOST}"
+      NOTIFICATIONS_SMTP_INSECURE: "false"
+      NOTIFICATIONS_SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      NOTIFICATIONS_SMTP_PORT: "${SMTP_PORT}"
       NOTIFICATIONS_SMTP_SENDER: "OpenCloud <${SMTP_SENDER}>" # SMTP server sender.
-      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}" # SMTP server username.
-      OC_INSECURE: "false" # Disable insecure mode.
-      OC_LOG_COLOR: "true" # Enables colored logging.
-      OC_LOG_LEVEL: "info" # Sets the log level.
-      OC_LOG_PRETTY: "true" # Enables pretty logging.
+      NOTIFICATIONS_SMTP_USERNAME: "${SMTP_USERNAME}"
+      OC_INSECURE: "false" # Disable insecure mode. Required if exposing externally.
+      OC_LOG_COLOR: "true"
+      OC_LOG_LEVEL: "info"
+      OC_LOG_PRETTY: "true"
       OC_SHARING_PUBLIC_SHARE_MUST_HAVE_PASSWORD: "false" # Allow passwordless r/o shares.
       OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD: "true" # Require passwords for r/w shares.
       OC_URL: "https://${OPENCLOUD_URL}" # Sets the URL to use.
-      PROXY_TLS: "false" # Do not proxy internal services.
+      PROXY_TLS: "false" # Do not proxy internal services. Required if using a reverse proxy.
     expose:
       - 9200/tcp # Web interface; reverse proxied at ${OPENCLOUD_URL}.
     networks:
@@ -40,18 +40,18 @@ services:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - opencloud-config:/etc/opencloud:rw # OpenCloud configuration, stored in volume.
       - opencloud-metadata:/var/lib/opencloud:rw # OpenCloud metadata, stored in volume.
-      - opencloud-data:/var/lib/opencloud/storage:rw # OpenCloud user uploads; bind mount.
+      - opencloud-data:/var/lib/opencloud/storage:rw # OpenCloud user uploads; stored in bind mount.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow using up to 4 CPU cores.
-          memory: 4G # Allow using up to 4GB of RAM.
+          cpus: 4
+          memory: 4G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9200 || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

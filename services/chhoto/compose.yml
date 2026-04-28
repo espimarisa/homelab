@@ -7,35 +7,35 @@ services:
     image: ghcr.io/sintan1729/chhoto-url:6.6-alpine
     container_name: chhoto
     hostname: chhoto
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
       CHHOTO_API_KEY: "${CHHOTO_API_KEY}" # Sets the API key. $ openssl rand -hex 32
-      CHHOTO_DB_URL: "/db/urls.sqlite" # SQLite database file to use.
-      CHHOTO_PASSWORD: "${CHHOTO_PASSWORD}" # Sets the password.
+      CHHOTO_DB_URL: "/db/urls.sqlite" # SQLite database file to use. $ touch /path/to/chhoto-volume/_data/urls.sqlite
+      CHHOTO_PASSWORD: "${CHHOTO_PASSWORD}"
       CHHOTO_SITE_URL: "https://${CHHOTO_URL}" # Sets the URL to use for forwarding.
       CHHOTO_SLUG_STYLE: "Pair" # Use paired slug styling.
       CHHOTO_SQLITE_ENSURE_ACID: "True" # Ensures ACID compliance.
       CHHOTO_SQLITE_USE_WAL_MODE: "True" # Use WAL mode for SQLite.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     expose:
       - 4567/tcp # Web interface; reverse proxied at ${CHHOTO_URL}.
     networks:
       - external
     volumes:
-      - chhoto:/db:rw # Chhoto database storage.
+      - chhoto:/db:rw # Chhoto database storage. $ touch /path/to/chhoto-volume/_data/urls.sqlite && chown -R $PUID:$PGID
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     deploy:
       resources:
         limits:
-          cpus: 0.5 # Allow using up to 0.5 CPU cores.
-          memory: 128M # Allow using up to 128MB of RAM.
+          cpus: 0.5
+          memory: 128M
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4567/api/whoami || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

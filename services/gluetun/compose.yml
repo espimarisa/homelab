@@ -1,6 +1,8 @@
-# Gluetun: VPN client. I'm currently using AirVPN.
-# Many of these options are redundant to explicitly set, but I do so anyways
+# Gluetun: VPN client. This configuration is setup for AirVPN specifically.
+# For other providers, see the wiki, but this does serve as a decent reference.
+# Many of these options are redundant to explicitly set, but we do so
 # as Gluetun has a habit of randomly changing defaults from time-to-time.
+# Additionally I target Quad9/LibreDNS as Cloudflare DNS tends to bug out with private trackers.
 # https://github.com/qdm12/gluetun-wiki/tree/main/setup/options
 
 ---
@@ -14,7 +16,7 @@ services:
       - /dev/net/tun:/dev/net/tun:rw # Wireguard TUN/TAP device.
     environment:
       BLOCK_MALICIOUS: "off" # Disable unbound; lowers resource usage heavily.
-      DNS_UPDATE_PERIOD: "24h" # Update DNS every 24 hours.
+      DNS_UPDATE_PERIOD: "24h" # Update DNS records every 24 hours.
       DNS_UPSTREAM_RESOLVER_TYPE: "doh" # Use DNS over HTTPS until DOT is more stable.
       DNS_UPSTREAM_RESOLVERS: "libredns,quad9" # Use LibreDNS and Quad9 as DNS resolvers.
       FIREWALL_OUTBOUND_SUBNETS: "${FIREWALL_OUTBOUND_SUBNETS}" # Subnets to allow into the internal firewall.
@@ -23,26 +25,21 @@ services:
       HEALTH_ICMP_TARGET_IPS: "116.202.176.26,9.9.9.9" # Target LibreDNS and Quad9 for healthchecks.
       HEALTH_TARGET_ADDRESSES: "libredns.gr:443,quad9.net:443" # Target LibreDNS and Quad9 for healthchecks.
       HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE: '{"auth":"apikey","apikey":"${GLUETUN_API_KEY}"}' # Configures auth for the control server.
-      PGID: "${PGID}" # Group ID to run as.
-      PORT_FORWARD_ONLY: "${PROTONVPN_PORT_FORWARDING:-false}" # Only enable if using ProtonVPN. Enables port forwarding.
-      PUID: "${PUID}" # User ID to run as.
+      PGID: "${PGID}"
+      PUID: "${PUID}"
       SERVER_CITIES: "${SERVER_CITIES}" # List of server cities to connect to.
       SERVER_COUNTRIES: "${SERVER_COUNTRIES}" # List of server countries to connect to.
       SERVER_REGIONS: "${SERVER_REGIONS}" # List of server regions to connect to.
-      TZ: "${TZ}" # Timezone to use.
+      TZ: "${TZ}"
       UPDATER_PERIOD: "24h" # Update server data every 24 hours.
-      UPDATER_PROTONVPN_EMAIL: "${UPDATER_PROTONVPN_EMAIL}" # If using ProtonVPN, email to authenticate with.
-      UPDATER_PROTONVPN_PASSWORD: "${UPDATER_PROTONVPN_PASSWORD}" # If using ProtonVPN, password to authenticate with.
-      VPN_PORT_FORWARDING: "${PROTONVPN_PORT_FORWARDING:-false}" # Only enable if using ProtonVPN.
       VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers
       VPN_TYPE: "wireguard" # Use Wireguard instead of OpenVPN.
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # List of Wireguard addresses to connect to.
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # Wireguard port to connect to.
-      WIREGUARD_MTU: "${WIREGUARD_MTU}" # If set, overrides auto-MTU detection.
-      WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL: "${WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL}" # Custom keepalive interval.
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # PresharedKey from Wireguard config file.
       WIREGUARD_PRIVATE_KEY: "${WIREGUARD_PRIVATE_KEY}" # PrivateKey from Wireguard config file.
       WIREGUARD_PUBLIC_KEY: "${WIREGUARD_PUBLIC_KEY}" # PublicKey from Wireguard config file.
+      BORINGPOLL_GLUETUNCOM: "on" # poll ai slop site to hopefully get rid of it
     networks:
       - gluetun
     volumes:

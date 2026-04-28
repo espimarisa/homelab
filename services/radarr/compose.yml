@@ -1,5 +1,5 @@
 # Radarr: Movie manager, organizer, and PVR.
-# https://radarr.video/
+# https://radarr.video
 
 ---
 services:
@@ -7,7 +7,7 @@ services:
     image: ghcr.io/11notes/radarr:6
     container_name: radarr
     hostname: radarr
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
     environment:
       TZ: "${TZ}" # Sets the timezone.
@@ -20,22 +20,25 @@ services:
     tmpfs:
       - "/tmp:uid=1000,gid=1000" # Required for read-only image.
     volumes:
+      - ./scripts:/radarr/scripts:ro # Local scripts.
       - downloads:/downloads:rw # Completed downloads mount.
       - media-library:/library:rw # Media library mount.
       - radarr:/radarr/etc:rw # Radarr configuration storage.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       arr-db:
-        condition: service_healthy # Require arr-db to be healthy before starting.
-        restart: true # Restart when arr-db restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using up to 2 CPU cores.
-          memory: 4G # Allow using up to 4GB of RAM.
+          cpus: 2
+          memory: 2G
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

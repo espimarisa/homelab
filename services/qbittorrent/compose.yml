@@ -7,31 +7,31 @@ services:
   qbittorrent:
     image: ghcr.io/11notes/qbittorrent:5
     container_name: qbittorrent
-    network_mode: service:gluetun # Route all traffic through Gluetun.
-    read_only: true # Prevent writing directly to the image.
+    network_mode: service:gluetun
+    read_only: true
     restart: unless-stopped
     environment:
       TZ: "${TZ}" # Sets the timezone.
     volumes:
-      - downloads:/downloads:rw # Completed downloads mount.
       - downloads-incomplete:/downloads-incomplete:rw # Incomplete downloads mount.
       - downloads-permaseed:/downloads-permaseed:rw # Permaseed downloads mount.
+      - downloads:/downloads:rw # Completed downloads mount.
       - qbittorrent-config:/qbittorrent/etc:rw # qBittorrent configuration storage.
       - qbittorrent-data:/qbittorrent/var:rw # qBittorrent data and database storage.
-      - qbittorrent-themes:/qbittorrent/themes:rw # qBittorrent themes (Vuetorrent is built in) storage.
+      - qbittorrent-themes:/qbittorrent/themes:rw # qBittorrent themes storage.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       gluetun:
-        condition: service_healthy # Require Gluetun to be healthy before starting.
-        restart: true # Restart when Gluetun restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow using up to 4 CPU cores.
-          memory: 4GB # Allow using up to 4GB of RAM.
+          cpus: 4
+          memory: 4GB
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 volumes:
   qbittorrent-config:

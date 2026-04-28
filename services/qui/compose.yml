@@ -1,4 +1,4 @@
-# qui: Alternative web interface for qBittorrent.
+# qui: qBittorrent management interface.
 # https://github.com/autobrr/qui
 
 ---
@@ -7,11 +7,11 @@ services:
     image: ghcr.io/autobrr/qui:v1.17
     container_name: qui
     hostname: qui
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     networks:
       - external
       - gluetun
@@ -19,18 +19,18 @@ services:
     volumes:
       - qui:/config:rw # qui configuration storage.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       qbittorrent:
-        condition: service_healthy # Require qBittorrent to be healthy before starting.
-        restart: true # Restart when qBittorrent restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 512M # Allow using up to 512MB of RAM.
+          cpus: 1
+          memory: 512M
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

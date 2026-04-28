@@ -1,4 +1,4 @@
-# Dozzle: Docker container log viewer.
+# Dozzle: Docker container monitor and log viewer.
 # https://dozzle.dev/guide/getting-started
 
 ---
@@ -7,9 +7,9 @@ services:
     image: ghcr.io/amir20/dozzle:v10
     container_name: dozzle
     hostname: dozzle
-    read_only: true # Prevent writing directly to the image.
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
       DOZZLE_ENABLE_ACTIONS: "true" # Enable container actions.
@@ -24,20 +24,20 @@ services:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - dozzle:/data:rw # Configuration and cache storage.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       socket-proxy:
-        condition: service_healthy # Require socket-proxy to be healthy before starting.
-        restart: true # Restart when socket-proxy restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 512M # Allow using up to 512MB of RAM.
+          cpus: 0.5
+          memory: 256M
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

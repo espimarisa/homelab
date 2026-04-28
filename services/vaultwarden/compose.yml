@@ -2,13 +2,14 @@
 # https://github.com/dani-garcia/vaultwarden/wiki
 
 ---
+# Default container options.
 x-defaults: &defaults
-  read_only: true # Prevent writing directly to the image.
+  read_only: true
   restart: unless-stopped
   cap_drop:
-    - ALL # Drop all unnecessary privileges.
+    - ALL
   security_opt:
-    - no-new-privileges:true # Prevent privilege escalation.
+    - no-new-privileges:true
 
 services:
   vaultwarden:
@@ -16,7 +17,7 @@ services:
     image: ghcr.io/dani-garcia/vaultwarden:1.35.8-alpine
     container_name: vaultwarden
     hostname: vaultwarden
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
       ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN} # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-admin-page#using-argon2
       DATABASE_URL: "postgres://postgres:${VAULTWARDEN_DB_PASSWORD}@vaultwarden-db:5432/postgres" # Connects to PostgreSQL.
@@ -27,23 +28,23 @@ services:
       EMERGENCY_ACCESS_ALLOWED: "true" # Allow emergency access.
       EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "fido2-vault-credentials,inline-menu-positioning-improvements,inline-menu-totp,ssh-agent,ssh-key-vault-item,pm-25373-windows-biometrics-v2,export-attachments" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
       IP_HEADER: "X-Forwarded-For" # Use the X-Forwarded-For header for reverse proxying.
-      PUSH_ENABLED: "true" # Enables push notification support.
+      PUSH_ENABLED: "true" # Enables push notification support. Requires the following two options:
       PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # https://bitwarden.com/host
       PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_INSTALLATION_KEY}" # https://bitwarden.com/host
       REQUIRE_DEVICE_EMAIL: "true" # Require new devices to verify by email.
       SENDS_ALLOWED: "true" # Enables the sends feature.
       SIGNUPS_ALLOWED: "${VAULTWARDEN_SIGNUPS}" # Toggles signup support.
       SIGNUPS_VERIFY: "true" # Require new accounts to be verified.
-      SMTP_FROM: "${SMTP_SENDER}" # SMTP sender to use.
-      SMTP_HOST: "${SMTP_HOST}" # SMTP host to connect to.
-      SMTP_PASSWORD: "${SMTP_PASSWORD}" # SMTP password to login with.
-      SMTP_PORT: "${SMTP_PORT}" # SMTP port to connect to.
-      SMTP_SECURITY: "${SMTP_SECURITY}" # SMTP security method.
+      SMTP_FROM: "${SMTP_SENDER}"
+      SMTP_HOST: "${SMTP_HOST}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_PORT: "${SMTP_PORT}"
+      SMTP_SECURITY: "${SMTP_SECURITY}"
       YUBICO_CLIENT_ID: "${YUBICO_CLIENT_ID}" # https://upgrade.yubico.com/getapikey/
       YUBICO_SECRET_KEY: "${YUBICO_SECRET_KEY}" # https://upgrade.yubico.com/getapikey/
-      SMTP_USERNAME: "${SMTP_USERNAME}" # SMTP username to login with.
+      SMTP_USERNAME: "${SMTP_USERNAME}"
       TRASH_AUTO_DELETE_DAYS: "30" # Wait 30 days before deleting items in the trash.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     expose:
       - 80/tcp # Web interface; reverse proxied at ${VAULTWARDEN_URL}. Admin page is /admin.
     networks:
@@ -55,13 +56,13 @@ services:
       - vaultwarden:/data:rw # Vaultwarden configuration storage.
     depends_on:
       vaultwarden-db:
-        condition: service_healthy # Require vaultwarden-db to be healthy before connecting.
-        restart: true # Restart when vaultwarden-db is restarted.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:80/alive || exit 1"
 
@@ -75,7 +76,7 @@ services:
       POSTGRES_BACKUP_RETENTION: "14" # Retain backups for 14 days.
       POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the password.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     networks:
       - internal
     tmpfs:
@@ -88,8 +89,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 512M # Allow using up to 512MB of RAM.
+          cpus: 1
+          memory: 512M
 
 networks:
   external:

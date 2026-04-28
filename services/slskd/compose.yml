@@ -6,10 +6,10 @@ services:
   slskd:
     image: ghcr.io/slskd/slskd:0.25.1
     container_name: slskd
-    network_mode: service:gluetun # Route all traffic through Gluetun.
-    read_only: true # Prevent writing directly to the image.
+    network_mode: service:gluetun
+    read_only: true
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     environment:
       SLSKD_API_KEY: "${SLSKD_API_KEY}" # Sets the API key.
       SLSKD_DOWNLOAD_SPEED_LIMIT: "${SLSKD_DOWNLOAD_SPEED_LIMIT}" # Download speed limit, in kibibytes.
@@ -23,19 +23,19 @@ services:
       SLSKD_REMOTE_FILE_MANAGEMENT: "true" # Allows web file management.
       SLSKD_SHARE_CACHE_RETENTION: "1440" # Retain cache for 24 hours.
       SLSKD_SHARE_CACHE_STORAGE_MODE: "memory" # Cache shares in memory.
-      SLSKD_SHARE_CACHE_WORKERS: "4" # Use 4 threads for caching shares.
+      SLSKD_SHARE_CACHE_WORKERS: "2" # Use 2 threads for caching shares.
       SLSKD_SHARED_DIR: "/library/music" # Share the entire music library.
       SLSKD_SLSK_DESCRIPTION: "${SOULSEEK_USER_DESCRIPTION}" # Soulseek user description to set.
       SLSKD_SLSK_LISTEN_PORT: "${SOULSEEK_PORT:-50300}" # Soulseek traffic port to use.
       SLSKD_SLSK_PASSWORD: "${SOULSEEK_PASSWORD}" # Soulseek user password to login with.
-      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}" # Soulseek user password to login with.
-      SLSKD_UMASK: "${UMASK}" # Umask to apply.
+      SLSKD_SLSK_USERNAME: "${SOULSEEK_USERNAME}" # Soulseek username to login with.
+      SLSKD_UMASK: "${UMASK}"
       SLSKD_UPLOAD_SPEED_LIMIT: "${SLSKD_UPLOAD_SPEED_LIMIT}" # Upload speed limit, in kibibytes.
       SLSKD_USERNAME: "${SLSKD_USERNAME}" # slskd web interface username to set.
       SLSKD_VPN_GLUETUN_API_KEY: "${GLUETUN_API_KEY}" # Reads the Gluetun API key.
       SLSKD_VPN_GLUETUN_URL: "http://127.0.0.1:8000" # Connect to the Gluetun control server.
       SLSKD_VPN: "true" # Enables Gluetun integration.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     tmpfs:
       - "/.net:uid=${PUID},gid=${PGID},exec" # Required for read-only image; update extraction.
       - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read-only image.
@@ -45,11 +45,11 @@ services:
       - media-library:/library:ro # Media library mount.
       - slskd:/app:rw # slskd configuration and data storage.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       gluetun:
-        condition: service_healthy # Require gluetun to be healthy before connecting.
-        restart: true # Restart when Gluetun restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:

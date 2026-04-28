@@ -1,4 +1,5 @@
-# Byparr: Captcha solver and cookie scraper. Alternative to Flaresolverr.
+# Byparr: Captcha solver and session cookie scraper.
+# Used as a modern alternative to Flaresolverr.
 # https://github.com/ThePhaseless/Byparr
 
 ---
@@ -12,15 +13,15 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       gluetun:
-        condition: service_healthy # Require Gluetun to be healthy to run.
-        restart: true # Restart when Gluetun restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true

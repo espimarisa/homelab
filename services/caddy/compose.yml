@@ -13,33 +13,33 @@ services:
     environment:
       CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom" # Use the mounted custom Caddyfile.
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     networks:
       - external
       - gluetun
       - internal
     ports:
-      - 80:80/tcp # HTTP.
-      - 443:443/tcp # HTTPS.
-      - 443:443/udp # HTTPS/3.
+      - 80:80/tcp
+      - 443:443/tcp
+      - 443:443/udp
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
       - caddy:/data:rw # Caddy data and certificate storage.
     cap_add:
-      - NET_BIND_SERVICE # Required for binding to ports.
+      - NET_BIND_SERVICE # Required for binding to priveleged ports.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     depends_on:
       socket-proxy:
-        condition: service_healthy # Require socket-proxy to be healthy before starting.
-        restart: true # Restart when socket-proxy is restarted.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 512M # Allow using up to 512MB of RAM.
+          cpus: 1
+          memory: 512M
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 networks:
   external:

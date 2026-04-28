@@ -11,17 +11,16 @@ services:
     restart: unless-stopped
     environment:
       BEETS_DISCORD_WEBHOOK_URL: "${BEETS_DISCORD_WEBHOOK_URL}" # Discord webhook URL for Beets.
-      DISCOGS_API_KEY: "${DISCOGS_API_KEY}" # Passes the Discogs API key for scripts.
+      DISCOGS_API_KEY: "${DISCOGS_API_KEY}" # Pass Discogs API key for scripts.
       DOCKER_MODS: "linuxserver/mods:universal-package-install" # Add universal-package-install support.
-      GENIUS_API_KEY: "${GENIUS_API_KEY}" # Passes the Genius API key for scripts.
+      GENIUS_API_KEY: "${GENIUS_API_KEY}" # Pass Genius API key for scripts.
       INSTALL_PACKAGES: "beets chromaprint ffmpeg gettext-envsubst imagemagick py3-beautifulsoup4 py3-discogs-client py3-flask py3-langdetect py3-pyacoustid py3-pylast py3-requests" # Installs required alpine packages for beets.
-      INSTALL_PIP_PACKAGES: "librosa beets-autobpm" # Needed for autobpm.
-      LASTFM_API_KEY: "${LASTFM_API_KEY}" # Passes the Last.fm API key for scripts.
-      LIDARR_API_KEY: "${LIDARR_API_KEY}" # Passes the API key for scripts.
-      PGID: "${PGID}" # Group ID to run as.
-      PUID: "${PUID}" # User ID to run as.
-      TZ: "${TZ}" # Sets the timezone.
-      UMASK: "${UMASK}" # Umask to use.
+      LASTFM_API_KEY: "${LASTFM_API_KEY}" # Pass Last.fm API key for scripts.
+      LIDARR_API_KEY: "${LIDARR_API_KEY}" # Pass Lidarr API key for scripts.
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
       - 8686/tcp # Web interface; reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     networks:
@@ -29,11 +28,12 @@ services:
       - gluetun
       - internal
     volumes:
-      - ./beets:/beets:ro # Beets configuration and scripts mount.
+      - ./beets:/config/beets:ro # Beets configuration mount.
+      - ./scripts:/config/scripts:ro # Scripts mount.
       - downloads:/downloads:rw # Completed downloads mount.
       - lidarr:/config:rw # Lidarr configuration storage.
       - media-library:/library:rw # Media library mount.
-    cap_drop: # Drop all unnecessary privileges.
+    cap_drop:
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -43,18 +43,18 @@ services:
       - SYS_PTRACE
     depends_on:
       arr-db:
-        condition: service_healthy # Require arr-db to be healthy before starting.
-        restart: true # Restart when arr-db is restarted.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 4 # Allow using up to 4 CPU cores.
-          memory: 4G # Allow using up to 4GB of RAM.
+          cpus: 2
+          memory: 2G
     healthcheck:
-      interval: 30s
-      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/ping || exit 1"
+      interval: 1m # Run on a slower interval to avoid false negatives upon bootup due to adding packages.
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
     security_opt:
-      - no-new-privileges:true # Prevent privilege escalation.
+      - no-new-privileges:true
 
 volumes:
   lidarr:

@@ -8,32 +8,23 @@ x-defaults: &defaults
   restart: unless-stopped
   tmpfs:
     - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
-  cap_drop: # Drop as many privileges as possible.
-    - AUDIT_WRITE
-    - MKNOD
-    - SETFCAP
-    - SETPCAP
-    - SYS_ADMIN
-    - SYS_CHROOT
-    - SYS_PTRACE
   deploy:
     resources:
       limits:
-        cpus: 1 # Allow using up to 1 CPU core.
-        memory: 128M # Allow using up to 128MB of RAM.
+        cpus: 1
+        memory: 128M
   security_opt:
-    - no-new-privileges:true # Prevent privilege escalation.
+    - no-new-privileges:true
 
 services:
-  # Beszel: Hub and interface for Beszel agents to connect to.
   beszel:
     <<: *defaults
     image: ghcr.io/henrygd/beszel/beszel:0.18
     container_name: beszel
     hostname: beszel
-    user: "${PUID}:${PGID}" # Run as non-root user.
+    user: "${PUID}:${PGID}"
     ports:
-      - 127.0.0.1:8090:8090/tcp # Expose the hub locally.
+      - 127.0.0.1:8090:8090/tcp # Expose the hub locally so the agent can connect in network_mode: host.
     networks:
       - external
       - internal
@@ -42,24 +33,20 @@ services:
       - beszel-data:/beszel_data:rw # Beszel hub configuration and data.
       - beszel-socket:/beszel_socket:rw # Beszel socket mount.
     cap_drop:
-      - ALL # Drop all unnecessary privileges.
+      - ALL
     healthcheck:
       interval: 1m
-      start_period: 5s
       test: ["CMD", "/beszel", "health --url http://127.0.0.1:8090"]
 
-  # Beszel Agent: System monitoring agent.
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.18 # Use -intel for Intel GPU support.
+    image: ghcr.io/henrygd/beszel/beszel-agent:0.18
     container_name: beszel-agent
     hostname: beszel-agent
     network_mode: host # Required for accurate network statistics.
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128:rw # Required for GPU monitoring; renderD128 is usually GPU0.
     environment:
-      HUB_URL: http://localhost:8090 # Connect to the local Beszel hub.
-      LISTEN: /beszel_socket/beszel.sock # Listen on the mounted Beszel socket.
+      HUB_URL: "http://localhost:8090" # Connect to the local Beszel hub.
+      LISTEN: "/beszel_socket/beszel.sock" # Listen on the mounted Beszel socket.
       KEY: "${BESZEL_KEY}" # Beszel hub key to register with.
       TOKEN: "${BESZEL_TOKEN}" # Beszel hub token to register with.
     volumes:
@@ -68,13 +55,20 @@ services:
       - beszel-agent:/var/lib/beszel-agent:rw # Beszel agent storage.
       - beszel-socket:/beszel_socket:rw # Beszel socket mount.
     cap_add:
-      - CAP_PERFMON # Possibly required for GPU monitoring.
-      - SYS_ADMIN # Possibly required for NVME SMART data.
-      - SYS_RAWIO # Possibly required for SMART data.
+      - SYS_ADMIN # Required for NVME SMART data.
+      - SYS_RAWIO # Required for SMART data.
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
     depends_on:
       beszel:
-        condition: service_healthy # Require the beszel hub to be healthy before connecting.
-        restart: true # Restart when the Beszel hub is restarted.
+        condition: service_healthy
+        restart: true
     healthcheck:
       interval: 1m
       test: ["CMD", "/agent", "health"]
