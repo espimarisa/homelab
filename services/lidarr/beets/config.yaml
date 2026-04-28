@@ -57,7 +57,8 @@ ftintitle:
 lastgenre:
   auto: yes # Automatically fetch genre data from Last.fm.
   canonical: yes # Use a canonical whitelisted map.
-  count: 1 # Fetch the most popular genre.
+  separator: "; "
+  count: 5 # Fetch the most popular genre.
   force: yes # Force setting the genre tags.
   keep_existing: no # Do not keep pre-existing genre tags.
   prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
