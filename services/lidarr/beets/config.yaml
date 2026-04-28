@@ -79,5 +79,5 @@ lyrics:
 scrub:
   auto: yes # Automatically scrub existing tags.
 zero:
-  fields: comments encoder disambig media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain
+  fields: comments encoder media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain
   update_database: true # Update the database when finished.
