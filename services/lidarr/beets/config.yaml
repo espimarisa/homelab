@@ -8,9 +8,6 @@ match:
     original_year: yes # Match releases to their original year instead of reissue.
     media: ["Digital Media", "CD"]
     countries: ["XW", "US", "GB"]
-  medium_rec_thresh: 0.25
-  rec_gap_thresh: 0.25
-  strong_rec_thresh: 0.10 # Raised from 0.04. Makes Beets more forgiving so more gets auto-imported.
 
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
@@ -31,14 +28,14 @@ import:
 art_filename: cover
 embedart:
   auto: yes # Automatically embed album art.
-  maxwidth: 1200 # Save album art up to 1200x1200.
+  maxwidth: 1500 # Save album art up to 1500x1500.
   remove_art_file: no # Do not remove the album art file.
   compare_threshold: 0 # Force Beets to always use the newly fetched art instead of getting stuck on old embedded garbage.
 fetchart:
   cover_names: cover front back art folder album # Names to store files as.
   auto: yes # Automatically fetch album art.
   minwidth: 500 # Require album art to be 500x500 or larger.
-  maxwidth: 1200 # Max width of 1200.
+  maxwidth: 1500 # Max width of 1500.
   sources: [filesystem, itunes, coverart] # Sources to enable.
 
 # Acoustic fingerprinting configuration.
