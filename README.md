@@ -1,4 +1,4 @@
-# [marilab]
+# marilab
 
 WIP
 

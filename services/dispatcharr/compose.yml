@@ -4,7 +4,7 @@
 ---
 services:
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr:0.23.0
+    image: ghcr.io/dispatcharr/dispatcharr:0.24.0
     container_name: dispatcharr
     restart: unless-stopped
     hostname: dispatcharr

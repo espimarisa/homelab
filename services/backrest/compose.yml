@@ -4,7 +4,7 @@
 ---
 services:
   backrest:
-    image: ghcr.io/garethgeorge/backrest:v1.12
+    image: ghcr.io/garethgeorge/backrest:v1.13
     container_name: backrest
     hostname: backrest
     read_only: true
@@ -12,7 +12,7 @@ services:
     environment:
       BACKREST_CONFIG: "/config/config.json"
       BACKREST_DATA: "/data"
-      DOCKER_PATH: "${DOCKER_PATH}" # Path to Docker data.
+      DOCKER_PATH: "${DOCKER_PATH}"
       TMPDIR: "/tmp"
       TZ: "${TZ}"
       XDG_CACHE_HOME: "/cache"
