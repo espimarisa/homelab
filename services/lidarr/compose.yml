@@ -29,7 +29,6 @@ services:
       - internal
     volumes:
       - ./beets:/config/beets:ro # Beets configuration mount.
-      - ./scripts:/config/scripts:ro # Scripts mount.
       - downloads:/downloads:rw # Completed downloads mount.
       - lidarr:/config:rw # Lidarr configuration storage.
       - media-library:/library:rw # Media library mount.

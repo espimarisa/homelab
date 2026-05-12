@@ -1,11 +1,19 @@
 #!/bin/sh
 
+# Handle Lidarr's connection test
+# shellcheck disable=SC2154
+if [ "$lidarr_eventtype" = "Test" ]; then
+	echo "Lidarr connection test successful."
+	exit 0
+fi
+
 export BEETSDIR="/config/beets"
 LOG_DIR="/config/beets-logs"
 MAIN_LOG="$LOG_DIR/beets-connect.log"
 UNPROCESSED_LOG="$LOG_DIR/beets-unprocessed.log"
 
 mkdir -p "$LOG_DIR"
+mkdir -p "$BEETSDIR"
 
 # Inject env vars into Beets config.
 if [ ! -f "$BEETSDIR/config.yaml" ] || [ "/beets/config.yaml" -nt "$BEETSDIR/config.yaml" ]; then
