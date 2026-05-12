@@ -36,7 +36,7 @@ fetchart:
   auto: yes # Automatically fetch album art.
   minwidth: 500 # Require album art to be 500x500 or larger.
   maxwidth: 1500 # Max width of 1500.
-  sources: [filesystem, itunes, coverart] # Sources to enable.
+  sources: [itunes, coverart, filesystem] # Sources to enable.
 
 # Acoustic fingerprinting configuration.
 chroma:
@@ -58,7 +58,7 @@ lastgenre:
   auto: yes # Automatically fetch genre data from Last.fm.
   canonical: yes # Use a canonical whitelisted map.
   separator: "; "
-  count: 5 # Fetch the most popular genre.
+  count: 3 # Fetch the 3 most popular genres.
   force: yes # Force setting the genre tags.
   keep_existing: no # Do not keep pre-existing genre tags.
   prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
