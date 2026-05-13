@@ -25,8 +25,16 @@ if [ -z "$lidarr_addedtrackpaths" ]; then
 	exit 1
 fi
 
-# Extract album path using native string manipulation instead of a subshell.
-LIDARR_ALBUM_PATH=$(dirname "${lidarr_addedtrackpaths%%|*}")
+# Extract the directory of the first track
+FIRST_TRACK_DIR=$(dirname "${lidarr_addedtrackpaths%%|*}")
+
+# If Lidarr put the track in a "CD 1" or "Disc 2" subfolder, target the parent album folder instead
+if echo "$FIRST_TRACK_DIR" | grep -qiE "/(cd|disc|volume)\s*[0-9]+$"; then
+	LIDARR_ALBUM_PATH=$(dirname "$FIRST_TRACK_DIR")
+else
+	LIDARR_ALBUM_PATH="$FIRST_TRACK_DIR"
+fi
+
 ALBUM_FOLDER_NAME=$(basename "$LIDARR_ALBUM_PATH")
 
 # shellcheck disable=SC2154
