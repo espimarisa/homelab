@@ -1,6 +1,7 @@
 plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics scrub zero
 library: /config/musiclibrary.blb # Save the beets library to the volume.
 threaded: yes # Enable multithreading.
+directory: /library/music
 
 # Matching/metadata options.
 match:
