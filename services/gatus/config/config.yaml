@@ -165,7 +165,7 @@ endpoints:
 
   # Musicseerr.
   - name: Musicseerr
-    <<: *defaults-http
+    <<: *defaults-container
     group: Services
     url: ${SOCKET_PROXY_URL}/musicseerr/json
 
@@ -183,7 +183,7 @@ endpoints:
 
   # Seerr.
   - name: Seerr
-    <<: *defaults-http
+    <<: *defaults-container
     group: Services
     url: ${SOCKET_PROXY_URL}/seerr/json
 
