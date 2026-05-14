@@ -6,9 +6,20 @@ directory: /library/music
 # Matching/metadata options.
 match:
   preferred:
-    original_year: yes # Match releases to their original year instead of reissue.
+    original_year: yes
     media: ["Digital Media", "CD"]
-    countries: ["XW", "US", "GB"]
+    countries: ["XW", "US", "GB", "AU", "EU"]
+  distance_weights:
+    album: 3.0
+    artist: 3.0
+    country: 0.5
+    media: 1.0
+    mediums: 1.0
+    source: 2.0
+    track_index: 1.0
+    track_length: 0.5 # Makes Beets more forgiving of slight rip duration differences
+    track_title: 3.0
+    year: 1.0
 
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
@@ -77,5 +88,5 @@ lyrics:
 scrub:
   auto: yes # Automatically scrub existing tags.
 zero:
-  fields: comments encoder media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain
+  fields: images comments encoder media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain
   update_database: true # Update the database when finished.
