@@ -1,26 +1,12 @@
 plugins: chroma embedart fetchart ftintitle lastgenre lyrics scrub zero
 library: /config/musiclibrary.blb # Save the beets library to the volume.
 threaded: yes # Enable multithreading.
-directory: /library/music
+directory: /library/music # Path to the music library.
 
 # Matching/metadata options.
 match:
   preferred:
-    original_year: yes
-    media: ["Digital Media", "CD"]
-    countries: ["XW", "US", "GB", "AU", "EU"]
-  distance_weights:
-    album: 3.0
-    artist: 3.0
-    country: 0.5
-    media: 1.0
-    mediums: 1.0
-    source: 2.0
-    track_index: 1.0
-    track_length: 0.5 # Makes Beets more forgiving of slight rip duration differences
-    track_title: 3.0
-    year: 1.0
-
+    original_year: yes # Prefer the original year instead of the reissue year.
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
 
@@ -54,11 +40,6 @@ fetchart:
 chroma:
   auto: yes # Automatically fingerprint and match unrecognized files.
 
-# # Discogs configuration.
-# discogs:
-#   index_tracks: yes # Fetch track data from Discogs as a backup.
-#   user_token: "${DISCOGS_API_KEY}"
-
 # Feature in Title configuration.
 ftintitle:
   auto: yes
@@ -80,7 +61,7 @@ lastgenre:
 lyrics:
   auto: yes # Automatically fetch lyrics.
   fallback: "" # Wipe existing lyrics if none are found.
-  genius_api_key: "${GENIUS_API_KEY}"
+  genius_api_key: "${GENIUS_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   sources: [lrclib, genius] # Sources to enable.
   synced: yes # Prefer synced lyrics.
 
@@ -88,5 +69,5 @@ lyrics:
 scrub:
   auto: yes # Automatically scrub existing tags.
 zero:
-  fields: images comments encoder media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain
+  fields: images comments encoder media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain # Scrub old art and replaygain.
   update_database: true # Update the database when finished.
