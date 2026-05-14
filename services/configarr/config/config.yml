@@ -161,7 +161,7 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '(?i)\b(Vinyl|LP|Rip|dub|Cassette)\b'
+              value: '(?i)\b(Vinyl|Rip|dub|Cassette)\b'
 
       # WEB releases. FLAC16-WEB-DELUXE is preferred as it is often the cleanest.
       - trash_id: lidarr-web
