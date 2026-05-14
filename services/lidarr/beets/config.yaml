@@ -1,4 +1,4 @@
-plugins: chroma discogs embedart fetchart ftintitle lastgenre lyrics scrub zero
+plugins: chroma embedart fetchart ftintitle lastgenre lyrics scrub zero
 library: /config/musiclibrary.blb # Save the beets library to the volume.
 threaded: yes # Enable multithreading.
 directory: /library/music
@@ -54,10 +54,10 @@ fetchart:
 chroma:
   auto: yes # Automatically fingerprint and match unrecognized files.
 
-# Discogs configuration.
-discogs:
-  index_tracks: yes # Fetch track data from Discogs as a backup.
-  user_token: "${DISCOGS_API_KEY}"
+# # Discogs configuration.
+# discogs:
+#   index_tracks: yes # Fetch track data from Discogs as a backup.
+#   user_token: "${DISCOGS_API_KEY}"
 
 # Feature in Title configuration.
 ftintitle:
