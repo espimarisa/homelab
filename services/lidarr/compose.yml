@@ -5,7 +5,7 @@
 ---
 services:
   lidarr:
-    image: ghcr.io/linuxserver-labs/prarr:lidarr-plugins # LSIO plugins branch.
+    image: lscr.io/linuxserver/lidarr:nightly
     container_name: lidarr
     hostname: lidarr
     restart: unless-stopped

@@ -134,7 +134,7 @@ services:
       resources:
         limits:
           cpus: 4
-          memory: 8G
+          memory: 16G
     group_add:
       - "${RENDER_PGID}" # Required for transcoding and ML.
 

@@ -74,7 +74,7 @@ services:
     shm_size: 256MB # Increases the shared memory size.
     environment:
       POSTGRES_BACKUP_RETENTION: "14" # Retain backups for 14 days.
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
+      POSTGRES_BACKUP_SCHEDULE: "0 5 * * *" # Backup daily at 5:00 AM.
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the password.
       TZ: "${TZ}"
     networks:

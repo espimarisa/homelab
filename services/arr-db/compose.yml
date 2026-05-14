@@ -11,7 +11,7 @@ services:
     shm_size: 512M
     environment:
       POSTGRES_BACKUP_RETENTION: "7" # Retain backups for 7 days.
-      POSTGRES_BACKUP_SCHEDULE: "0 6 * * *" # Backup daily at 6:00 AM.
+      POSTGRES_BACKUP_SCHEDULE: "0 5 * * *" # Backup daily at 5:00 AM.
       POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Sets the PostgreSQL password.
       TZ: "${TZ}"
     networks:

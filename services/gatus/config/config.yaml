@@ -95,12 +95,6 @@ endpoints:
   # Infrastructure.                                                         #
   ###########################################################################
 
-  # Backrest.
-  - name: Backrest
-    <<: *defaults-container
-    group: Infrastructure
-    url: ${SOCKET_PROXY_URL}/backrest/json
-
   # Caddy.
   - name: Caddy
     <<: *defaults-container
@@ -169,6 +163,12 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/lidarr/json
 
+  # Musicseerr.
+  - name: Musicseerr
+    <<: *defaults-http
+    group: Services
+    url: ${SOCKET_PROXY_URL}/musicseerr/json
+
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
@@ -180,6 +180,12 @@ endpoints:
     <<: *defaults-container
     group: Media Management
     url: ${SOCKET_PROXY_URL}/radarr/json
+
+  # Seerr.
+  - name: Seerr
+    <<: *defaults-http
+    group: Services
+    url: ${SOCKET_PROXY_URL}/seerr/json
 
   # Sonarr.
   - name: Sonarr
@@ -254,12 +260,6 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
-
-  # Seerr.
-  - name: Seerr
-    <<: *defaults-http
-    group: Services
-    url: https://${SEERR_URL}
 
   # The Lounge.
   - name: The Lounge

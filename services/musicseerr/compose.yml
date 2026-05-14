@@ -1,0 +1,57 @@
+# Musicseerr: Self-hosted music request software.
+# https://github.com/HabiRabbu/Musicseerr
+
+---
+services:
+  musicseerr:
+    image: ghcr.io/habirabbu/musicseerr:v1.3.4
+    container_name: musicseerr
+    hostname: musicseerr
+    restart: unless-stopped
+    environment:
+      PGID: "${PGID}"
+      PORT: "8688"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+    expose:
+      - 8688/tcp # Internal web interface; reverse proxied at musicseerr.${INTERNAL_DOMAIN}
+    networks:
+      - external
+      - internal
+    volumes:
+      - musicseerr-config:/app/config # Persistent app configuration
+      - musicseerr-cache:/app/cache # Cover art and metadata cache
+      - music-library:/music:ro
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_ADMIN
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8688/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+volumes:
+  musicseerr-config:
+    external: true
+    name: musicseerr-config-volume
+  musicseerr-cache:
+    external: true
+    name: musicseerr-cache-volume
+  music-library:
+    name: music-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}/music"
+      o: bind
+      type: none

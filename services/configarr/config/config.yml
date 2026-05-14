@@ -37,7 +37,7 @@ lidarr:
 
     # Custom Format definitions.
     customFormatDefinitions:
-      # 192KHz & 176.4KHz releases
+      # 192KHz & 176.4KHz releases. Try not to grab them as they are often crappy vinyl rips.
       - trash_id: lidarr-192khz
         trash_scores:
           default: -10000
@@ -52,7 +52,7 @@ lidarr:
             fields:
               value: '(?i)\b(192|176\.4) ?k(hz)?\b|\b24[/-]?(192|176\.4)\b|\b(192|176\.4)[/-]?24\b'
 
-      # 96KHz & 88.2KHz releases.
+      # 96KHz & 88.2KHz releases. Try not to grab them as they are often crappy vinyl rips.
       - trash_id: lidarr-96khz
         trash_scores:
           default: -10000
@@ -67,7 +67,7 @@ lidarr:
             fields:
               value: '(?i)\b(96|88\.2) ?k(hz)?\b|\b24[/-]?(96|88\.2)\b|\b(96|88\.2)[/-]?24\b'
 
-      # 24-bit releases.
+      # 24-bit releases. Try not to grab them as they are often crappy vinyl rips.
       - trash_id: lidarr-24bit
         trash_scores:
           default: -10000
@@ -82,7 +82,7 @@ lidarr:
             fields:
               value: '(?i)\b24 ?bit(s)?\b|\bFLAC24\b|\b24[/-]?(192|176\.4|96|88\.2|48|44\.1)\b'
 
-      # Explicit releases.
+      # Explicit releases. Slight bump to hopefully not grab any clean releases.
       - trash_id: lidarr-explicit
         trash_scores:
           default: 10
@@ -118,10 +118,10 @@ lidarr:
             fields:
               value: '(?i)\b(Lossless)\b'
 
-      # CD releases.
+      # CD releases. Slight preference but still lower than WEB to avoid weird rips.
       - trash_id: lidarr-cd
         trash_scores:
-          default: 500
+          default: 400
         includeCustomFormatWhenRenaming: false
         name: CD
         trash_description: CD
@@ -133,10 +133,10 @@ lidarr:
             fields:
               value: '(?i)\bCD\b'
 
-      # Deluxe / Extended releases.
+      # Deluxe / Extended releases. Slight preference.
       - trash_id: lidarr-deluxe
         trash_scores:
-          default: -100
+          default: 100
         trash_description: Deluxe / Extended
         name: Deluxe / Extended
         includeCustomFormatWhenRenaming: false
@@ -148,7 +148,7 @@ lidarr:
             fields:
               value: '(?i)\b(deluxe|extended|bonus|special ?edition)\b'
 
-      # Vinyl releases
+      # Vinyl releases. Try not to grab them as they are often crappy.
       - trash_id: lidarr-vinyl
         trash_scores:
           default: -10000
@@ -163,7 +163,7 @@ lidarr:
             fields:
               value: '(?i)\b(Vinyl|LP|Rip|dub|Cassette)\b'
 
-      # WEB releases.
+      # WEB releases. FLAC16-WEB-DELUXE is preferred as it is often the cleanest.
       - trash_id: lidarr-web
         trash_scores:
           default: 600
@@ -178,7 +178,7 @@ lidarr:
             fields:
               value: '(?i)\b(WEB|WEB(DL)?|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
 
-      # MQA releases.
+      # MQA releases. Garbage.
       - trash_id: lidarr-mqa
         trash_scores:
           default: -10000
@@ -193,7 +193,7 @@ lidarr:
             fields:
               value: '(?i)\b(MQA)\b'
 
-    # Custom formats to import
+    # Custom formats to import.
     custom_formats:
       - trash_ids:
           - lidarr-192khz
@@ -315,18 +315,18 @@ radarr:
           - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
         assign_scores_to:
           - name: Remux + WEB 1080p
-            score: 5
+            score: 100
           - name: Remux + WEB 2160p
-            score: 5
+            score: 100
           - name: Remux-1080p - Anime
-            score: 5
+            score: 100
 
       # Anime Dual Audio boost.
       - trash_ids:
           - 4a3b087eea2ce012fcc1ce319259a3be # Dual Audio
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 100
+            score: 200
 
       # YayPonies custom format assignment.
       - trash_ids:
@@ -461,20 +461,20 @@ sonarr:
           - 026d5aadd1a6b4e550b134cb6c72b3ca # Uncensored
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 5
+            score: 100
           - name: Remux-2160p
-            score: 5
+            score: 100
           - name: WEB-1080p
-            score: 5
+            score: 100
           - name: WEB-2160p
-            score: 5
+            score: 100
 
       # Anime Dual Audio boost.
       - trash_ids:
           - 418f50b10f1907201b6cfdf881f467b7 # Dual Audio
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 100
+            score: 200
 
       # YayPonies custom format assignment.
       - trash_ids:

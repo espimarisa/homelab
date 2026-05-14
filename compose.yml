@@ -1,7 +1,6 @@
 ---
 include:
   - ./services/arr-db/compose.yml
-  - ./services/backrest/compose.yml
   - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
   - ./services/byparr/compose.yml
@@ -15,6 +14,7 @@ include:
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/lidarr/compose.yml
+  - ./services/musicseerr/compose.yml
   - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/prowlarr/compose.yml

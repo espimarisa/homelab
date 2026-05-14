@@ -11,7 +11,7 @@ services:
     read_only: true
     restart: unless-stopped
     environment:
-      CONFIGARR_SCHEDULE: "0 6 * * *" # Synchronize every day at 6:00 AM.
+      CONFIGARR_SCHEDULE: "0 5 * * *" # Synchronize every day at 5:00 AM.
       TZ: "${TZ}"
     networks:
       - external

@@ -118,11 +118,6 @@
 	import cloudflare_proxy gatus:8080
 }
 
-# Seerr.
-{$SEERR_URL} {
-	import cloudflare_proxy seerr:5055
-}
-
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
 	import cloudflare_proxy vaultwarden:80
@@ -132,10 +127,6 @@
 # Accessible with a DNS rewrite (i.e *.$INTERNAL_DOMAIN -> 192.x.x.x).
 # Do not have a DNS record set for these, ever!
 
-# Backrest web interface.
-backrest.{$INTERNAL_DOMAIN} {
-	import internal_proxy backrest:9898
-}
 
 # Bazarr web interface.
 bazarr.{$INTERNAL_DOMAIN} {
@@ -162,6 +153,11 @@ lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
 }
 
+# Musicseerr web interface.
+musicseerr.{$INTERNAL_DOMAIN} {
+	import internal_proxy musicseerr:8688
+}
+
 # Prowlarr web interface.
 prowlarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:9696
@@ -180,6 +176,11 @@ qui.{$INTERNAL_DOMAIN} {
 # Radarr web interface.
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
+}
+
+# Seerr web interface.
+seerr.{$INTERNAL_DOMAIN} {
+	import internal_proxy seerr:5055
 }
 
 # slskd web interface.
