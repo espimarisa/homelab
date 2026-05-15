@@ -15,8 +15,8 @@ services:
       POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Sets the PostgreSQL password.
       TZ: "${TZ}"
     networks:
-      - internal
       - gluetun
+      - internal
     tmpfs:
       - "/postgres/log:uid=1000,gid=1000" # Required for read-only image.
       - "/postgres/run:uid=1000,gid=1000" # Required for read-only image.

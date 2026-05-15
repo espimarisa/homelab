@@ -21,6 +21,8 @@ services:
       PUID: "${PUID}"
       TZ: "${TZ}"
       UMASK: "${UMASK}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Allows connecting to local MusicBrainz server with this?
     expose:
       - 8686/tcp # Web interface; reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     networks:

@@ -1,5 +1,8 @@
 ---
 include:
+  # Comment this out if you don't intend on setting up a self-hosted MusicBrainz server.
+  - musicbrainz-docker/docker-compose.yml
+
   - ./services/arr-db/compose.yml
   - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml

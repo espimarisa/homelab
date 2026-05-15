@@ -10,6 +10,12 @@ match:
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
 
+# MusicBrainz configuration. Remove if you do not self-host a MB server!
+musicbrainz:
+  host: host.docker.internal:5000
+  ratelimit: 100
+  searchlimit: 20
+
 # Import configuration.
 import:
   copy: no # Do not copy files.
