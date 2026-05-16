@@ -1,7 +1,7 @@
-plugins: chroma embedart fetchart ftintitle lastgenre lyrics scrub zero
-library: /config/musiclibrary.blb # Save the beets library to the volume.
-threaded: yes # Enable multithreading.
 directory: /library/music # Path to the music library.
+library: /config/musiclibrary.blb # Save the beets library to the volume.
+plugins: chroma embedart fetchart ftintitle lastgenre lyrics scrub zero # Plugins to enable.
+threaded: yes # Enable multithreading.
 
 # Matching/metadata options.
 match:
@@ -10,9 +10,11 @@ match:
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
 
-# MusicBrainz configuration. Remove if you do not self-host a MB server!
+# MusicBrainz configuration.
+# Remove if you do not self-host a MusicBrainz server!
 musicbrainz:
   host: host.docker.internal:5000
+  https: no
   ratelimit: 100
   searchlimit: 20
 
@@ -20,7 +22,7 @@ musicbrainz:
 import:
   copy: no # Do not copy files.
   hardlink: no # Do not hardlink files.
-  incremental: no # Allow re-running later.
+  incremental: yes # Skip processed items. Set this to false if you wanna run things again.
   log: /config/beets-logs/beet.log # Save log files.
   move: no # Do not move files.
   quiet_fallback: skip # Skip files that cannot automatically be matched.
@@ -47,9 +49,10 @@ chroma:
   auto: yes # Automatically fingerprint and match unrecognized files.
 
 # Feature in Title configuration.
+# This is usually frowned upon but I find players don't handle multi artist tags well.
 ftintitle:
-  auto: yes
-  drop: no
+  auto: yes # Automatically move featured artists to the title.
+  drop: no # Do not drop them entirely.
   format: (feat. {0}) # The format appended to the track title.
 
 # Last.fm genre configuration.
