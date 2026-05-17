@@ -1,5 +1,8 @@
 ---
 include:
+  # Remove this line if you do not intend on self-hosting MusicBrainz.
+  - submodules/musicbrainz/docker-compose.yml
+
   - ./services/arr-db/compose.yml
   - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
@@ -7,14 +10,12 @@ include:
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
   - ./services/configarr/compose.yml
-  - ./services/dispatcharr/compose.yml
   - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/lidarr/compose.yml
-  - ./services/musicseerr/compose.yml
   - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/prowlarr/compose.yml

@@ -138,11 +138,6 @@ beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
-# Dispatcharr web interface
-dispatcharr.{$INTERNAL_DOMAIN} {
-	import internal_proxy dispatcharr:9191
-}
-
 # Dozzle web interface
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080
@@ -151,11 +146,6 @@ dozzle.{$INTERNAL_DOMAIN} {
 # Lidarr web interface.
 lidarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy lidarr:8686
-}
-
-# Musicseerr web interface.
-musicseerr.{$INTERNAL_DOMAIN} {
-	import internal_proxy musicseerr:8688
 }
 
 # Prowlarr web interface.

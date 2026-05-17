@@ -1,0 +1,6 @@
+[submodule "submodules/musicbrainz"]
+	path = submodules/musicbrainz
+	url = https://github.com/metabrainz/musicbrainz-docker.git
+[submodule "submodules/lrclib"]
+	path = submodules/lrclib
+	url = https://github.com/tranxuanthang/lrclib.git
