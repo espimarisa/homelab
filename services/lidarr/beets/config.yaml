@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: chroma embedart fetchart ftintitle lastgenre lyrics scrub zero # Plugins to enable.
+plugins: chroma embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 
 # Matching/metadata options.
@@ -38,11 +38,14 @@ embedart:
   remove_art_file: no # Do not remove the album art file.
   compare_threshold: 0 # Force Beets to always use the newly fetched art instead of getting stuck on old embedded garbage.
 fetchart:
-  cover_names: cover front back art folder album # Names to store files as.
   auto: yes # Automatically fetch album art.
-  minwidth: 500 # Require album art to be 500x500 or larger.
+  cover_names: cover front back art folder album # Names to store files as.
+  enforce_ratio: yes # Require 1:1 images.
+  fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
+  lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   maxwidth: 1500 # Max width of 1500.
-  sources: [itunes, coverart, filesystem] # Sources to enable.
+  minwidth: 500 # Require album art to be 500x500 or larger.
+  sources: [itunes, fanarttv, lastfm, filesystem] # Sources to enable.
 
 # Acoustic fingerprinting configuration.
 chroma:
@@ -58,9 +61,8 @@ ftintitle:
 # Last.fm genre configuration.
 lastgenre:
   auto: yes # Automatically fetch genre data from Last.fm.
-  canonical: yes # Use a canonical whitelisted map.
   separator: "; "
-  count: 3 # Fetch the 3 most popular genres.
+  count: 1 # Fetch the most popular genres.
   force: yes # Force setting the genre tags.
   keep_existing: no # Do not keep pre-existing genre tags.
   prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
@@ -74,9 +76,20 @@ lyrics:
   sources: [lrclib, genius] # Sources to enable.
   synced: yes # Prefer synced lyrics.
 
+# ReplayGain configuration.
+replaygain:
+  auto: yes # Automatically analyze and write tags during import.
+  backend: ffmpeg # Use ffmpeg.
+  overwrite: yes # Overwrite existing replaygain data.
+
 # Tag scrubbing configuration.
 scrub:
   auto: yes # Automatically scrub existing tags.
 zero:
-  fields: images comments encoder media rg_track_gain rg_track_peak rg_album_gain rg_album_peak r128_track_gain r128_album_gain # Scrub old art and replaygain.
+  fields: images comments encoder # Scrub useless stuff.
   update_database: true # Update the database when finished.
+
+# Web interface configuration.
+web:
+  host: 0.0.0.0
+  port: 8337

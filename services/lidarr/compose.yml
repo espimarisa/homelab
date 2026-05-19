@@ -13,6 +13,7 @@ services:
       DOCKER_MODS: "linuxserver/mods:universal-package-install" # Add universal-package-install support.
       GENIUS_API_KEY: "${GENIUS_API_KEY}" # Pass Genius API key for scripts.
       INSTALL_PACKAGES: "beets chromaprint ffmpeg gettext-envsubst imagemagick py3-beautifulsoup4 py3-discogs-client py3-flask py3-langdetect py3-pyacoustid py3-pylast py3-requests" # Installs required alpine packages for beets.
+      FANARTTV_API_KEY: "${FANARTTV_API_KEY}" # Pass Fanart.tv API key for scripts.
       LASTFM_API_KEY: "${LASTFM_API_KEY}" # Pass Last.fm API key for scripts.
       LIDARR_API_KEY: "${LIDARR_API_KEY}" # Pass Lidarr API key for scripts.
       PGID: "${PGID}" # Group ID to run as.
@@ -20,6 +21,7 @@ services:
       TZ: "${TZ}" # Sets the timezone.
       UMASK: "${UMASK}" # Umask to apply to newly created files.
     expose:
+      - 8337/tcp # Beets web interface; reverse proxied internally at beets.${INTERNAL_DOMAIN}.
       - 8686/tcp # Web interface; reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
     networks:
       - external
@@ -54,6 +56,16 @@ services:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
 
 volumes:
   lidarr:

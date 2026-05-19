@@ -138,6 +138,11 @@ beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
 }
 
+# Beets web interface
+beets.{$INTERNAL_DOMAIN} {
+	import internal_proxy lidarr:8337
+}
+
 # Dozzle web interface
 dozzle.{$INTERNAL_DOMAIN} {
 	import internal_proxy dozzle:8080

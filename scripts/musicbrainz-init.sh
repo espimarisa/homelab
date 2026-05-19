@@ -1,22 +1,37 @@
 #!/bin/sh
 
+echo "Configuring MusicBrainz profiles..."
+cd submodules/musicbrainz || exit
+sudo ./admin/configure with default replication-cron live-indexing-search
+
+echo "Configuring MetaBrainz API token..."
+sudo ./admin/set-replication-token
+cd ../..
+
 echo "Building MusicBrainz containers..."
 docker compose build musicbrainz
 
-echo "Initializing the MusicBrainz PostgreSQL database..."
-echo "This may take a while."
+echo "Downloading and initializing the MusicBrainz database..."
 docker compose run --rm musicbrainz createdb.sh -fetch
 
 echo "Starting core MusicBrainz services..."
-docker compose up -d musicbrainz search indexer
+docker compose up -d musicbrainz search indexer mq replication-cron
 
-echo "Downloading MusicBrainz search indexes..."
-echo "This will take quite a while."
+echo "Setting up message queues..."
+docker compose exec musicbrainz amqp-setup.sh
 
-echo "Loading MusicBrainz search indexes..."
+echo "Installing search index updater..."
+cd submodules/musicbrainz || exit
+sudo ./admin/setup-sir install
+cd ../..
+
+echo "Fetching search indexes..."
+docker compose exec search fetch-backup-archives
+
+echo "Loading search indexes..."
 docker compose exec search load-backup-archives
 
-echo "Cleaning up..."
+echo "Cleaning up archives..."
 docker compose exec search remove-backup-archives
 
-echo "MusicBrainz initialized at http://127.0.0.1:5000"
+echo "MusicBrainz is live at http://127.0.0.1:5000"

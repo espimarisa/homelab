@@ -1,11 +1,9 @@
 ---
 include:
-  # Remove this line if you do not intend on self-hosting MusicBrainz.
-  - submodules/musicbrainz/docker-compose.yml
-
   - ./services/arr-db/compose.yml
   - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
+  - ./services/beets/compose.yml
   - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
@@ -29,3 +27,10 @@ include:
   - ./services/thelounge/compose.yml
   - ./services/unpackerr/compose.yml
   - ./services/vaultwarden/compose.yml
+
+  # Remove the following lines if you do not self-host MusicBrainz.
+  # Be sure to run `sh scripts/musicbrainz-init.sh` first.
+  # MusicBrainz requires around 350GB of storage space :)
+  - submodules/musicbrainz/docker-compose.yml
+  - submodules/musicbrainz/compose/live-indexing-search.yml
+  - submodules/musicbrainz/compose/replication-cron.yml
