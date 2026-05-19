@@ -3,7 +3,6 @@ include:
   - ./services/arr-db/compose.yml
   - ./services/bazarr/compose.yml
   - ./services/beszel/compose.yml
-  - ./services/beets/compose.yml
   - ./services/byparr/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
