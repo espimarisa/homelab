@@ -15,7 +15,7 @@ echo "Downloading and initializing the MusicBrainz database..."
 docker compose run --rm musicbrainz createdb.sh -fetch
 
 echo "Starting core MusicBrainz services..."
-docker compose up -d musicbrainz search indexer replication-cron
+docker compose up -d musicbrainz search indexer
 
 echo "Installing search index updater..."
 cd submodules/musicbrainz || exit
