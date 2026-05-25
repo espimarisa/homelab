@@ -4,7 +4,7 @@
 ---
 services:
   qui:
-    image: ghcr.io/autobrr/qui:v1.18
+    image: ghcr.io/autobrr/qui:v1.19
     container_name: qui
     hostname: qui
     read_only: true

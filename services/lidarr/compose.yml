@@ -28,7 +28,7 @@ services:
       - gluetun
       - internal
     volumes:
-      - ./beets:/config/beets:ro # Beets configuration mount.
+      - ./beets:/beets:ro # Beets configuration mount.
       - downloads:/downloads:rw # Completed downloads mount.
       - lidarr:/config:rw # Lidarr configuration storage.
       - media-library:/library:rw # Media library mount.
