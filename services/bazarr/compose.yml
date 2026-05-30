@@ -4,7 +4,7 @@
 ---
 services:
   bazarr:
-    image: ghcr.io/hotio/bazarr:release
+    image: ghcr.io/hotio/bazarr:release-v1.5
     container_name: bazarr
     hostname: bazarr
     restart: unless-stopped
@@ -12,21 +12,21 @@ services:
       PGID: "${PGID}"
       POSTGRES_DATABASE: "postgres"
       POSTGRES_ENABLED: "true"
-      POSTGRES_HOST: "arr-db"
-      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}"
+      POSTGRES_HOST: "media-db"
+      POSTGRES_PASSWORD: "${MEDIA_DB_PASSWORD}"
       POSTGRES_PORT: "5432"
       POSTGRES_USERNAME: "postgres"
       PUID: "${PUID}"
       TZ: "${TZ}"
       UMASK: "${UMASK}"
     expose:
-      - 6767/tcp # Web interface reverse proxied internally at bazarr.${INTERNAL_DOMAIN}.
+      - 6767/tcp
     networks:
       - external
       - internal
     volumes:
-      - media-library:/library:rw # Root media library directory.
-      - bazarr:/config:rw # Bazarr configuration and data.
+      - media-library:/library:rw
+      - bazarr:/config:rw
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -36,7 +36,7 @@ services:
       - SYS_CHROOT
       - SYS_PTRACE
     depends_on:
-      arr-db:
+      media-db:
         condition: service_healthy
         restart: true
     deploy:

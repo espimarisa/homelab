@@ -49,7 +49,7 @@ endpoints:
   - name: "'ARR Apps - PostgreSQL"
     <<: *defaults-container
     group: Databases
-    url: ${SOCKET_PROXY_URL}/arr-db/json
+    url: ${SOCKET_PROXY_URL}/media-db/json
 
   # Gatus DB.
   - name: Gatus - PostgreSQL
@@ -230,12 +230,6 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${CHHOTO_URL}
-
-  # Homarr.
-  - name: Homarr
-    <<: *defaults-http
-    group: Services
-    url: https://${HOMARR_URL}
 
   # Immich.
   - name: Immich

@@ -8,7 +8,6 @@ readonly REQUIRED_VARS=(
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
-	"HOMARR_DATA_PATH"
 	"IMMICH_UPLOADS_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_UPLOADS_PATH"
@@ -82,9 +81,9 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 # Docker volumes to create.
 readonly VOLUMES=(
 	"autobrr-volume"
-	"arr-db-backups-volume"
-	"arr-db-config-volume"
-	"arr-db-data-volume"
+	"media-db-backups-volume"
+	"media-db-config-volume"
+	"media-db-data-volume"
 	"bazarr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
@@ -239,7 +238,6 @@ $SUDO chown -R "${PUID}:${PGID}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
-	"${HOMARR_DATA_PATH}" \
 	"${IMMICH_UPLOADS_PATH}" \
 	"${OPENCLOUD_UPLOADS_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
@@ -250,7 +248,6 @@ $SUDO chmod -R 775 \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
-	"${HOMARR_DATA_PATH}" \
 	"${IMMICH_UPLOADS_PATH}" \
 	"${OPENCLOUD_UPLOADS_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"

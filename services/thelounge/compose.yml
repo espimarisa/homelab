@@ -4,21 +4,21 @@
 ---
 services:
   thelounge:
-    image: ghcr.io/thelounge/thelounge:4
+    image: ghcr.io/thelounge/thelounge:4.5.0
     container_name: thelounge
     hostname: thelounge
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     expose:
-      - 9000/tcp # Web interface; reverse proxied at thelounge.${INTERNAL_DOMAIN}.
+      - 9000/tcp
     networks:
       - external
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-      - thelounge:/var/opt/thelounge:rw # The Lounge configuration and data.
+      - /etc/localtime:/etc/localtime:ro
+      - thelounge:/var/opt/thelounge:rw
     cap_drop:
       - ALL
     deploy:

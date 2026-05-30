@@ -16,22 +16,21 @@ services:
       FANARTTV_API_KEY: "${FANARTTV_API_KEY}" # Pass Fanart.tv API key for scripts.
       LASTFM_API_KEY: "${LASTFM_API_KEY}" # Pass Last.fm API key for scripts.
       LIDARR_API_KEY: "${LIDARR_API_KEY}" # Pass Lidarr API key for scripts.
-      PGID: "${PGID}" # Group ID to run as.
-      PUID: "${PUID}" # User ID to run as.
-      TZ: "${TZ}" # Sets the timezone.
-      UMASK: "${UMASK}" # Umask to apply to newly created files.
+      PGID: "${PGID}"
+      PUID: "${PUID}"
+      TZ: "${TZ}"
+      UMASK: "${UMASK}"
     expose:
-      - 8337/tcp # Beets web interface; reverse proxied internally at beets.${INTERNAL_DOMAIN}.
-      - 8686/tcp # Web interface; reverse proxied internally at lidarr.${INTERNAL_DOMAIN}.
+      - 8686/tcp
     networks:
       - external
       - gluetun
       - internal
     volumes:
-      - ./beets:/beets:ro # Beets configuration mount.
-      - downloads:/downloads:rw # Completed downloads mount.
-      - lidarr:/config:rw # Lidarr configuration storage.
-      - media-library:/library:rw # Media library mount.
+      - ./beets:/beets:ro
+      - downloads:/downloads:rw
+      - lidarr:/config:rw
+      - media-library:/library:rw
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
@@ -41,7 +40,7 @@ services:
       - SYS_CHROOT
       - SYS_PTRACE
     depends_on:
-      arr-db:
+      media-db:
         condition: service_healthy
         restart: true
     deploy:
@@ -53,7 +52,7 @@ services:
       - "host.docker.internal:host-gateway" # Allows connecting to local HTTP services through this; used with beets.
     healthcheck:
       interval: 1m # Run on a slower interval to avoid false negatives upon bootup due to adding packages.
-      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686/api/v1/system/status?apikey=${LIDARR_API_KEY} || exit 1"
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686 || exit 1"
     security_opt:
       - no-new-privileges:true
 

@@ -4,30 +4,29 @@
 ---
 services:
   radarr:
-    image: ghcr.io/11notes/radarr:6
+    image: ghcr.io/11notes/radarr:6.1
     container_name: radarr
     hostname: radarr
     read_only: true
     restart: unless-stopped
     environment:
-      TZ: "${TZ}" # Sets the timezone.
+      TZ: "${TZ}"
     expose:
-      - 7878/tcp # Web interface; reverse proxied at radarr.${INTERNAL_DOMAIN}.
+      - 7878/tcp
     networks:
       - external
       - gluetun
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
+      - "/tmp:uid=1000,gid=1000"
     volumes:
-      - ./scripts:/radarr/scripts:ro # Local scripts.
-      - downloads:/downloads:rw # Completed downloads mount.
-      - media-library:/library:rw # Media library mount.
-      - radarr:/radarr/etc:rw # Radarr configuration storage.
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - radarr:/radarr/etc:rw
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
+      media-db:
         condition: service_healthy
         restart: true
     deploy:
@@ -35,8 +34,6 @@ services:
         limits:
           cpus: 2
           memory: 2G
-    healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7878/api/v3/system/status?apikey=${RADARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
 

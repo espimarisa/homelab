@@ -118,11 +118,6 @@
 	import cloudflare_proxy gatus:8080
 }
 
-# Homarr web interface.
-{$HOMARR_URL} {
-	import cloudflare_proxy homarr:7575
-}
-
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
 	import cloudflare_proxy vaultwarden:80
@@ -145,11 +140,6 @@ bazarr.{$INTERNAL_DOMAIN} {
 # Beszel hub web interface.
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
-}
-
-# Beets web interface
-beets.{$INTERNAL_DOMAIN} {
-	import internal_proxy lidarr:8337
 }
 
 # Dozzle web interface

@@ -4,7 +4,7 @@
 ---
 services:
   sonarr:
-    image: ghcr.io/11notes/sonarr:4
+    image: ghcr.io/11notes/sonarr:4.0
     container_name: sonarr
     hostname: sonarr
     read_only: true
@@ -12,21 +12,21 @@ services:
     environment:
       TZ: "${TZ}"
     expose:
-      - 8989/tcp # Web interface; reverse proxied at sonarr.${INTERNAL_DOMAIN}.
+      - 8989/tcp
     networks:
       - external
       - gluetun
       - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
+      - "/tmp:uid=1000,gid=1000"
     volumes:
-      - downloads:/downloads:rw # Completed downloads mount.
-      - media-library:/library:rw # Media library mount.
-      - sonarr:/sonarr/etc:rw # Sonarr configuration storage.
+      - downloads:/downloads:rw
+      - media-library:/library:rw
+      - sonarr:/sonarr/etc:rw
     cap_drop:
       - ALL
     depends_on:
-      arr-db:
+      media-db:
         condition: service_healthy
         restart: true
     deploy:
@@ -34,8 +34,6 @@ services:
         limits:
           cpus: 2
           memory: 2G
-    healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:8989/api/v3/system/status?apikey=${SONARR_API_KEY} || exit 1"
     security_opt:
       - no-new-privileges:true
 

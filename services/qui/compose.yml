@@ -15,9 +15,8 @@ services:
     networks:
       - external
       - gluetun
-      - internal
     volumes:
-      - qui:/config:rw # qui configuration storage.
+      - qui:/config:rw
     cap_drop:
       - ALL
     depends_on:
@@ -38,9 +37,6 @@ networks:
     external: true
   gluetun:
     name: gluetun-network
-    external: true
-  internal:
-    name: internal-network
     external: true
 
 volumes:

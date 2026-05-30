@@ -4,7 +4,7 @@
 ---
 services:
   unpackerr:
-    image: golift/unpackerr:0
+    image: golift/unpackerr:0.15
     container_name: unpackerr
     hostname: unpackerr
     restart: unless-stopped
@@ -12,7 +12,7 @@ services:
     networks:
       - internal
     volumes:
-      - downloads:/downloads:rw # Completed downloads mount.
+      - downloads:/downloads:rw
     environment:
       TZ: "${TZ}"
       UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}"
@@ -26,8 +26,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 1G
+          cpus: 2
+          memory: 2G
     security_opt:
       - no-new-privileges:true
 

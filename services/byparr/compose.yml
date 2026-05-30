@@ -1,5 +1,5 @@
 # Byparr: Captcha solver and session cookie scraper.
-# Used as a modern alternative to Flaresolverr.
+# Used as an alternative to Flaresolverr.
 # https://github.com/ThePhaseless/Byparr
 
 ---
@@ -7,11 +7,11 @@ services:
   byparr:
     image: ghcr.io/thephaseless/byparr:main
     container_name: byparr
-    network_mode: service:gluetun # Route all traffic through Gluetun.
+    network_mode: service:gluetun
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - /etc/localtime:/etc/localtime:ro
     cap_drop:
       - ALL
     depends_on:

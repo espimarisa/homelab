@@ -1,0 +1,100 @@
+---
+# Default environment variables.
+x-defaults-env: &defaults-env
+  POSTGRES_BACKUP_RETENTION: "7"
+  POSTGRES_BACKUP_SCHEDULE: "0 5 * * *"
+  TZ: "${TZ}"
+
+# Default PostgreSQL container options.
+x-defaults: &defaults
+  image: ghcr.io/11notes/postgres:18
+  read_only: true
+  shm_size: 512M
+  networks:
+    - internal
+  tmpfs:
+    - "/postgres/log:uid=1000,gid=1000"
+    - "/postgres/run:uid=1000,gid=1000"
+  cap_drop:
+    - ALL
+  deploy:
+    resources:
+      limits:
+        cpus: 1
+        memory: 1G
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  # gatus-db: PostgreSQL container used for Gatus.
+  gatus-db:
+    <<: *defaults
+    container_name: gatus-db
+    hostname: gatus-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}"
+    volumes:
+      - gatus-db-backups:/postgres/backup:rw
+      - gatus-db-config:/postgres/etc:rw
+      - gatus-db-data:/postgres/var:rw
+
+  # media-db: PostgreSQL container used for 'arr and media management apps.
+  media-db:
+    <<: *defaults
+    container_name: media-db
+    hostname: media-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${MEDIA_DB_PASSWORD}"
+    volumes:
+      - media-db-backups:/postgres/backup:rw
+      - media-db-config:/postgres/etc:rw
+      - media-db-data:/postgres/var:rw
+
+  # vaultwarden-db: PostgreSQL container used for Vaultwarden.
+  vaultwarden-db:
+    <<: *defaults
+    container_name: vaultwarden-db
+    hostname: vaultwarden-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}"
+    volumes:
+      - vaultwarden-db-backups:/postgres/backup:rw
+      - vaultwarden-db-config:/postgres/etc:rw
+      - vaultwarden-db-data:/postgres/var:rw
+
+networks:
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  gatus-db-backups:
+    name: gatus-db-backups-volume
+    external: true
+  gatus-db-config:
+    name: gatus-db-config-volume
+    external: true
+  gatus-db-data:
+    name: gatus-db-data-volume
+    external: true
+  media-db-backups:
+    name: media-db-backups-volume
+    external: true
+  media-db-config:
+    name: media-db-config-volume
+    external: true
+  media-db-data:
+    name: media-db-data-volume
+    external: true
+  vaultwarden-db-backups:
+    name: vaultwarden-db-backups-volume
+    external: true
+  vaultwarden-db-config:
+    name: vaultwarden-db-config-volume
+    external: true
+  vaultwarden-db-data:
+    name: vaultwarden-db-data-volume
+    external: true

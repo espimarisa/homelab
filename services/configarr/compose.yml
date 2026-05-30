@@ -15,12 +15,11 @@ services:
       TZ: "${TZ}"
     networks:
       - external
-      - internal
     tmpfs:
-      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
+      - "/tmp:uid=1000,gid=1000"
     volumes:
-      - ./config:/configarr/etc:rw # Local configuration mount.
-      - configarr:/configarr/var:rw # Git clone and cache storage.
+      - ./config:/configarr/etc:rw
+      - configarr:/configarr/var:rw
     cap_drop:
       - ALL
     depends_on:
