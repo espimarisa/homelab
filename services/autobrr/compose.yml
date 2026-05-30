@@ -39,14 +39,6 @@ services:
     security_opt:
       - no-new-privileges:true
 
-networks:
-  gluetun:
-    name: gluetun-network
-    external: true
-  internal:
-    name: internal-network
-    external: true
-
 volumes:
   autobrr:
     name: autobrr-volume
