@@ -59,7 +59,7 @@ services:
 
   immich-cache:
     <<: *defaults
-    image: ghcr.io/11notes/redis:8.6.3
+    image: ghcr.io/11notes/redis:8.8
     container_name: immich-cache
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the redis password.

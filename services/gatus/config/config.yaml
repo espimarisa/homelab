@@ -133,6 +133,12 @@ endpoints:
   # Media management.                                                         #
   #############################################################################
 
+  # Autobrr.
+  - name: Autobrr
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/autobrr/json
+
   # Bazarr.
   - name: Bazarr
     <<: *defaults-container
@@ -224,6 +230,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${CHHOTO_URL}
+
+  # Homarr.
+  - name: Homarr
+    <<: *defaults-http
+    group: Services
+    url: https://${HOMARR_URL}
 
   # Immich.
   - name: Immich

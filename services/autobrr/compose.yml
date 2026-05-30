@@ -1,0 +1,53 @@
+# Autobrr: Download automation tool and ratio manager.
+# https://autobrr.com/introduction
+
+---
+services:
+  autobrr:
+    image: ghcr.io/s0up4200/autobrr-distroless:v1.79
+    container_name: autobrr
+    network_mode: service:gluetun
+    read_only: true
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    environment:
+      AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
+      AUTOBRR__POSTGRES_DATABASE: "autobrr" # Use the autobrr database.
+      AUTOBRR__POSTGRES_HOST: "arr-db" # Connect to the database.
+      AUTOBRR__POSTGRES_PASS: "${ARR_DB_PASSWORD}" # Database password to authenticate with.
+      AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
+      AUTOBRR__POSTGRES_USER: "postgres" # Use the postgres user.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - autobrr:/config:rw
+    cap_drop:
+      - ALL
+    depends_on:
+      arr-db:
+        condition: service_healthy
+        restart: true
+      gluetun:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  gluetun:
+    name: gluetun-network
+    external: true
+  internal:
+    name: internal-network
+    external: true
+
+volumes:
+  autobrr:
+    name: autobrr-volume
+    external: true
