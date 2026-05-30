@@ -118,6 +118,11 @@
 	import cloudflare_proxy gatus:8080
 }
 
+# Homarr web interface.
+{$HOMARR_URL} {
+	import cloudflare_proxy homarr:7575
+}
+
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
 	import cloudflare_proxy vaultwarden:80
@@ -127,6 +132,10 @@
 # Accessible with a DNS rewrite (i.e *.$INTERNAL_DOMAIN -> 192.x.x.x).
 # Do not have a DNS record set for these, ever!
 
+# Autobrr web interface.
+autobrr.{$INTERNAL_DOMAIN} {
+	import internal_proxy gluetun:7474
+}
 
 # Bazarr web interface.
 bazarr.{$INTERNAL_DOMAIN} {
