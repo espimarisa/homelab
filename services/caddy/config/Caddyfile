@@ -152,7 +152,7 @@
 
 # Autobrr web interface.
 autobrr.{$INTERNAL_DOMAIN} {
-	import internal_proxy gluetun:7474
+	import internal_proxy autobrr:7474
 }
 
 # Backrest web interface.
