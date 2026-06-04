@@ -5,6 +5,7 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
+	"DOCKER_IPV6_ULA_BASE"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
@@ -177,9 +178,17 @@ create_network() {
 	local network_name="$1"
 	local ipv4_gateway="$2"
 	local ipv4_subnet="$3"
-	local internal_flag="${4:-false}"
+	local ipv6_gateway="$4"
+	local ipv6_subnet="$5"
+	local internal_flag="${6:-false}"
 
-	local network_args=("--gateway=$ipv4_gateway" "--subnet=$ipv4_subnet")
+	local network_args=(
+		"--gateway=$ipv4_gateway"
+		"--subnet=$ipv4_subnet"
+		"--ipv6"
+		"--gateway=$ipv6_gateway"
+		"--subnet=$ipv6_subnet"
+	)
 
 	# Handle Internal Flag
 	if [[ "$internal_flag" == "internal" || "$internal_flag" == "true" ]]; then
@@ -203,9 +212,9 @@ create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
 # Creates Docker networks.
 echo -e "\nCreating Docker networks..."
-create_network "external-network" "172.18.0.1" "172.18.0.0/16"
-create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16"
-create_network "internal-network" "172.20.0.1" "172.20.0.0/16" "internal"
+create_network "external-network" "172.18.0.1" "172.18.0.0/16" "${DOCKER_IPV6_ULA_BASE}:18::1" "${DOCKER_IPV6_ULA_BASE}:18::/64"
+create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16" "${DOCKER_IPV6_ULA_BASE}:19::1" "${DOCKER_IPV6_ULA_BASE}:19::/64"
+create_network "internal-network" "172.20.0.1" "172.20.0.0/16" "${DOCKER_IPV6_ULA_BASE}:20::1" "${DOCKER_IPV6_ULA_BASE}:20::/64" "internal"
 
 # Creates Docker volumes.
 echo -e "\nCreating Docker volumes..."
