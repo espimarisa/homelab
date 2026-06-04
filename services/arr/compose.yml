@@ -149,10 +149,9 @@ services:
     container_name: byparr
     network_mode: service:gluetun # Route all traffic through gluetun.
     networks: [] # Cleared to reset defaults.
+    read_only: false # Do not run in read_only mode.
     user: "${PUID}:${PGID}" # Run as non-root user.
-    tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
-      - "/var/cache:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    tmpfs: [] # Reset.
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
     depends_on:
