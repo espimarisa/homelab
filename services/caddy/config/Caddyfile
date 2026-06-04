@@ -8,12 +8,13 @@
 		provider cloudflare {$CLOUDFLARE_API_TOKEN}
 		check_interval 1h
 		versions ipv4 ipv6
-	}
+
 
 		# Domain and subdomains to automatically update DNS records for.
 		domains {
 			{$DDNS_DOMAINS}
 		}
+	}
 
 	# Configures trusted proxies for Cloudflare support.
 	servers {
