@@ -95,6 +95,8 @@ services:
       - media-library:/library:rw # Media library mount.
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686 || exit 1"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Allows connecting to local HTTP services through this; used with beets.
 
   # Prowlarr: Indexer manager for 'ARR apps. https://prowlarr.com
   prowlarr:
