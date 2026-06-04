@@ -463,6 +463,20 @@ sonarr:
             fields:
               value: "^YP-" # YayPonies releases always follow YP-
 
+      # Specific foreign language bans. GERMAN is a common annoyance!
+      - trash_id: sonarr-german
+        name: German
+        trash_description: German
+        trash_scores:
+          default: -10000
+        specifications:
+          - name: German
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: "^GERMAN" # YayPonies releases always follow YP-
+
     # Custom format scoring.
     custom_formats:
       # 2160p Remux formats.
@@ -537,6 +551,15 @@ sonarr:
         assign_scores_to:
           - name: YayPonies-1080p
             score: 10000
+
+      # German ban assignment.
+      - trash_ids:
+          - sonarr-german # Custom YayPonies format.
+        assign_scores_to:
+          - name: WEB-1080p
+            score: -10000
+          - name: WEB-2160p
+            score: -10000
 
     # Custom quality profiles.
     quality_profiles:

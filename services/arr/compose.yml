@@ -1,0 +1,248 @@
+# 'ARR application stack: Combined compose file for 'ARR apps.
+# Lidarr, Sonarr, Radarr, Prowlarr, Bazarr, Byparr, Unpackerr, and Configarr.
+# media-db is included in ../postgresql for maintainability.
+
+---
+# Default container options.
+x-defaults: &defaults
+  restart: unless-stopped
+  environment:
+    TZ: "${TZ}" # Sets the timezone.
+  networks:
+    - external
+    - gluetun
+    - internal
+  cap_drop: # Drop unnecessary permissions.
+    - AUDIT_WRITE
+    - MKNOD
+    - SETFCAP
+    - SETPCAP
+    - SYS_ADMIN
+    - SYS_CHROOT
+    - SYS_PTRACE
+  depends_on:
+    media-db:
+      condition: service_healthy
+      restart: true
+  deploy:
+    resources:
+      limits:
+        cpus: 2
+        memory: 2G
+  security_opt:
+    - no-new-privileges:true # Prevent privilege escalation.
+
+# Default read-only container options.
+x-defaults-ro: &defaults-ro
+  <<: *defaults
+  read_only: true # Prevent writing directly to the image.
+  cap_drop:
+    - ALL # Drop all unnecessary permissions.
+  tmpfs:
+    - "/tmp:uid=1000,gid=1000" # Required for read_only image.
+
+services:
+  # Bazarr: Subtitle manager. https://www.bazarr.media
+  bazarr:
+    <<: *defaults
+    image: ghcr.io/hotio/bazarr:release-v1.5
+    container_name: bazarr
+    hostname: bazarr
+    environment:
+      PGID: "${PGID}" # Group ID to run as.
+      POSTGRES_DATABASE: "bazarr" # Use the bazarr database.
+      POSTGRES_ENABLED: "true" # Enable PostgreSQL.
+      POSTGRES_HOST: "media-db" # Connect to media-db.
+      POSTGRES_PASSWORD: "${MEDIA_DB_PASSWORD}" # PostgreSQL password to use.
+      POSTGRES_PORT: "5432" # PostgreSQL port to connect to.
+      POSTGRES_USERNAME: "postgres" # PostgreSQL username to use.
+      PUID: "${PUID}" # User ID to run as.
+      TZ: "${TZ}" # Sets the timezone.
+      UMASK: "${UMASK}" # Umask to apply to newly created files.
+    expose:
+      - 6767/tcp # Bazarr web interface reverse proxied at bazarr.${INTERNAL_DOMAIN}.
+    volumes:
+      - bazarr:/config:rw # Bazarr configuration volume.
+      - media-library:/library:rw # Media library mount.
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:6767 || exit 1"
+
+  # Lidarr: Music manager, organizer, and PVR. https://lidarr.audio
+  # This also contains beets for use inside of the container.
+  lidarr:
+    <<: *defaults
+    image: lscr.io/linuxserver/lidarr:nightly # Use nightly since plugin support has been merged.
+    container_name: lidarr
+    hostname: lidarr
+    environment:
+      DOCKER_MODS: "linuxserver/mods:universal-package-install" # Add universal-package-install support.
+      GENIUS_API_KEY: "${GENIUS_API_KEY}" # Pass Genius API key for scripts.
+      INSTALL_PACKAGES: "beets chromaprint ffmpeg gettext-envsubst imagemagick py3-beautifulsoup4 py3-discogs-client py3-flask py3-langdetect py3-pyacoustid py3-pylast py3-requests" # Installs required alpine packages for beets.
+      FANARTTV_API_KEY: "${FANARTTV_API_KEY}" # Pass Fanart.tv API key for scripts.
+      LASTFM_API_KEY: "${LASTFM_API_KEY}" # Pass Last.fm API key for scripts.
+      LIDARR_API_KEY: "${LIDARR_API_KEY}" # Pass Lidarr API key for scripts.
+      PGID: "${PGID}" # Group ID to run as.
+      PUID: "${PUID}" # User ID to run as.
+      TZ: "${TZ}" # Sets the timezone.
+      UMASK: "${UMASK}" # Umask to apply to newly created files.
+    expose:
+      - 8686/tcp # Lidarr web interface reverse proxied at lidarr.${INTERNAL_DOMAIN}.
+    volumes:
+      - ./beets:/beets:ro # Beets configuration mount.
+      - ./scripts:/scripts:ro # Scripts mount.
+      - downloads:/downloads:rw # Download storage mount.
+      - lidarr:/config:rw # Lidarr configuration volume.
+      - media-library:/library:rw # Media library mount.
+    healthcheck:
+      test: "curl --fail --retry 0 --silent http://127.0.0.1:8686 || exit 1"
+
+  # Prowlarr: Indexer manager for 'ARR apps. https://prowlarr.com
+  prowlarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/prowlarr:2.3
+    container_name: prowlarr
+    network_mode: service:gluetun # Route all traffic through gluetun.
+    networks: [] # Cleared to reset defaults.
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+      media-db:
+        condition: service_healthy
+        restart: true
+
+  # Sonarr: Series manager, organizer, and PVR. https://sonarr.tv
+  sonarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/sonarr:4.0
+    container_name: sonarr
+    hostname: sonarr
+    expose:
+      - 8989/tcp # Sonarr web interface reverse proxied at sonarr.${INTERNAL_DOMAIN}.
+    volumes:
+      - downloads:/downloads:rw # Download storage mount.
+      - media-library:/library:rw # Media library mount.
+      - sonarr:/sonarr/etc:rw # Sonarr configuration volume.
+
+  # Radarr: Movie manager, organizer, and PVR. https://radarr.video
+  radarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/radarr:6.1
+    container_name: radarr
+    hostname: radarr
+    expose:
+      - 7878/tcp # Radarr web interface reverse proxied at radarr.${INTERNAL_DOMAIN}.
+    volumes:
+      - ./scripts:/scripts:ro # Scripts mount.
+      - downloads:/downloads:rw # Download storage mount.
+      - media-library:/library:rw # Media library mount.
+      - radarr:/radarr/etc:rw # Radarr configuration volume.
+
+  # Byparr: Captcha solver and session cookie scraper. https://github.com/ThePhaseless/Byparr
+  byparr:
+    <<: *defaults-ro
+    image: ghcr.io/thephaseless/byparr:main
+    container_name: byparr
+    network_mode: service:gluetun # Route all traffic through gluetun.
+    networks: [] # Cleared to reset defaults.
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+
+  # Configarr: 'ARR profile synchronization tool. https://configarr.de/docs/configuration/config-file
+  configarr:
+    <<: *defaults-ro
+    image: ghcr.io/11notes/configarr:1
+    container_name: configarr
+    hostname: configarr
+    env_file: ../../.env # Required for config parsing environment variables.
+    environment:
+      CONFIGARR_SCHEDULE: "0 5 * * *" # Synchronize every day at 5:00 AM.
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - external
+    volumes:
+      - ./configarr:/configarr/etc:rw # Local configarr configuration file.
+      - configarr:/configarr/var:rw # Configarr data and cloned repository storage.
+    depends_on:
+      lidarr:
+        condition: service_healthy
+        restart: true
+      radarr:
+        condition: service_healthy
+        restart: true
+      sonarr:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
+
+  # Unpackerr: Automatic compressed downloads handling. https://unpackerr.zip/docs/introduction
+  unpackerr:
+    <<: *defaults
+    image: golift/unpackerr:0.15
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      TZ: "${TZ}" # Sets the timezone.
+      UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}"
+      UN_LIDARR_0_URL: "http://lidarr:8686"
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
+      UN_RADARR_0_URL: "http://radarr:7878"
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}"
+      UN_SONARR_0_URL: "http://sonarr:8989"
+    cap_drop:
+      - ALL # Drop all unnecessary permissions.
+    networks:
+      - internal
+    volumes:
+      - downloads:/downloads:rw
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  bazarr:
+    name: bazarr-volume
+    external: true
+  configarr:
+    name: configarr-volume
+    external: true
+  lidarr:
+    name: lidarr-volume
+    external: true
+  prowlarr:
+    name: prowlarr-volume
+    external: true
+  radarr:
+    name: radarr-volume
+    external: true
+  sonarr:
+    name: sonarr-volume
+    external: true
+  downloads:
+    name: downloads-bind
+    driver_opts:
+      device: "${DOWNLOADS_PATH}"
+      o: bind
+      type: none
+  media-library:
+    name: media-library-bind
+    driver_opts:
+      device: "${MEDIA_LIBRARY_PATH}"
+      o: bind
+      type: none

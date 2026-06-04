@@ -8,24 +8,24 @@ services:
     container_name: gatus
     env_file: ../../.env # Required for parsing environment variables in the config.
     hostname: gatus
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}"
-      GATUS_URL: "${GATUS_URL}"
-      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/"
-      TZ: "${TZ}"
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to socket-proxy.
+      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # PostgreSQL password to use.
+      GATUS_URL: "${GATUS_URL}" # URL to use for Gatus.
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Shorthand path to the Docker API.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 8080/tcp
+      - 8080/tcp # Gatus web interface reverse proxied at ${GATUS_URL}.
     networks:
       - external
       - internal
     volumes:
-      - ./config:/config:ro
+      - ./config:/config:ro # Local configuration mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     depends_on:
       gatus-db:
         condition: service_healthy

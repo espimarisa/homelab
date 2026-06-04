@@ -18,7 +18,7 @@ x-defaults-container: &defaults-container
   alerts: *defaults-alerts
   interval: 5m
   conditions:
-    - "[BODY].State.Health.Status != unhealthy" # Not the most accurate check.
+    - "[BODY].State.Health.Status != unhealthy" # Not the most accurate check, if a service has none lol
     - "[RESPONSE_TIME] < 5" # Containers should always be within ~5ms.
     - "[STATUS] == 200" # 200 will be an OK
   ui:
@@ -41,9 +41,9 @@ ui:
   link: "/" # Fixes the header link.
 
 endpoints:
-  ###########################################################################
-  # Databases.                                                              #
-  ###########################################################################
+  #############################################################################
+  # Databases.                                                                #
+  #############################################################################
 
   # 'ARR DB.
   - name: "'ARR Apps - PostgreSQL"
@@ -63,9 +63,9 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/vaultwarden-db/json
 
-  ###########################################################################
-  # Download clients.                                                       #
-  ###########################################################################
+  #############################################################################
+  # Download clients.                                                         #
+  #############################################################################
 
   # Gluetun.
   - name: Gluetun (VPN)
@@ -91,9 +91,9 @@ endpoints:
     group: Downloads
     url: ${SOCKET_PROXY_URL}/slskd/json
 
-  ###########################################################################
-  # Infrastructure.                                                         #
-  ###########################################################################
+  #############################################################################
+  # Infrastructure.                                                           #
+  #############################################################################
 
   # Caddy.
   - name: Caddy
@@ -107,9 +107,9 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/socket-proxy/json
 
-  ###########################################################################
-  # Immich.                                                                 #
-  ###########################################################################
+  #############################################################################
+  # Immich.                                                                   #
+  #############################################################################
 
   # Immich cache.
   - name: Immich Cache
@@ -175,12 +175,6 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/radarr/json
 
-  # Seerr.
-  - name: Seerr
-    <<: *defaults-container
-    group: Services
-    url: ${SOCKET_PROXY_URL}/seerr/json
-
   # Sonarr.
   - name: Sonarr
     <<: *defaults-container
@@ -193,9 +187,9 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/unpackerr/json
 
-  ###########################################################################
-  # Monitoring.                                                             #
-  ###########################################################################
+  #############################################################################
+  # Monitoring.                                                               #
+  #############################################################################
 
   # Beszel.
   - name: Beszel
@@ -254,6 +248,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
+
+  # Seerr.
+  - name: Seerr
+    <<: *defaults-http
+    group: Services
+    url: https://${SEERR_URL}
 
   # The Lounge.
   - name: The Lounge

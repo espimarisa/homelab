@@ -7,20 +7,20 @@ services:
     image: ghcr.io/thelounge/thelounge:4.5.0
     container_name: thelounge
     hostname: thelounge
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     expose:
-      - 9000/tcp
+      - 9000/tcp # The Lounge web interface reverse proxied at thelounge.${INTERNAL_DOMAIN}.
     networks:
       - external
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - thelounge:/var/opt/thelounge:rw
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - thelounge:/var/opt/thelounge:rw # The Lounge configuration and storage volume.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     deploy:
       resources:
         limits:
@@ -29,7 +29,7 @@ services:
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:9000 || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

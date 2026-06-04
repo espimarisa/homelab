@@ -7,42 +7,59 @@ services:
     image: ghcr.io/navidrome/navidrome:0.61.2
     container_name: navidrome
     hostname: navidrome
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
+      ND_BACKUP_COUNT: "7" # Keep up to 7 backups.
+      ND_BACKUP_PATH: "/backups" # Store Navidrome backups in the backups volume.
+      ND_BACKUP_SCHEDULE: "0 5 * * *" # Backup every day at 5:00 AM.
       ND_CACHEFOLDER: "/cache" # Configures the cache path.
+      ND_COVERARTQUALITY: "100" # Maximum quality cover art.
       ND_DATAFOLDER: "/data" # Configures the data path.
       ND_DEFAULTDOWNLOADABLESHARE: "true" # Allows shares to be downloadable by default.
+      ND_DEFAULTTHEME: "Auto" # Automatically set light/dark mode by default.
       ND_ENABLEGRAVATAR: "true" # Enables Gravatar support for profile pictures.
       ND_ENABLEINSIGHTSCOLLECTOR: "false" # Opts out of telemetry.
       ND_ENABLESHARING: "true" # Enables the sharing API.
+      ND_ENABLETRANSCODINGCANCELLATION: "true" # Stop transcoding when cancelled.
       ND_LASTFM_APIKEY: "${LASTFM_API_KEY}" # https://www.last.fm/api/authentication
       ND_LASTFM_ENABLED: "true" # Enables Last.fm integrations.
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}" # https://www.last.fm/api/authentication
       ND_MUSICFOLDER: "/library/music" # Configures the music library path.
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}" # openssl rand -hex 32
+      ND_PLUGINS_AUTORELOAD: "true" # Auto reload plugins.
+      ND_PLUGINS_ENABLED: "true" # Enable plugins.
+      ND_PLUGINS_FOLDER: "/plugins" # Load plugins from the plugins volume.
+      ND_SCANNER_PURGEMISSING: "full" # Purge missing data when a full scan is ran.
       ND_SCANNER_SCHEDULE: "0 5 * * *" # Scan the library every day at 5:00 AM.
+      ND_UILOGINBACKGROUNDURL: "" # Disable login backgrounds.
+      ND_UIWELCOMEMESSAGE: "${NAVIDROME_WELCOME_MESSAGE:-}" # Sets a custom welcome message.
       SQLITE_TMPDIR: "/data" # Store SQLite migrations in /data.
       TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 4533/tcp
+      - 4533/tcp # Navidrome web interface reverse proxied at ${NAVIDROME_URL}.
     networks:
       - external
     volumes:
-      - media-library:/library:ro
-      - navidrome-cache:/cache:rw
-      - navidrome-data:/data:rw
+      - media-library:/library:ro # Media library storage bind.
+      - navidrome-backups:/backups:rw # Navidrome backups volume.
+      - navidrome-cache:/cache:rw # Navidrome cache volume.
+      - navidrome-data:/data:rw # Navidrome data volume.
+      - navidrome-plugins:/plugins:rw # Navidrome plugins volume.
     cap_drop:
       - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:
-          cpus: 2 # Allow using up to 2 CPU cores.
-          memory: 2G # Allow using up to 2GB of RAM.
+          cpus: 2
+          memory: 2G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4533/ping || exit 1"
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
 
 networks:
   external:
@@ -50,12 +67,18 @@ networks:
     name: external-network
 
 volumes:
+  navidrome-backups:
+    external: true
+    name: navidrome-backups-volume
   navidrome-cache:
     external: true
     name: navidrome-cache-volume
   navidrome-data:
     external: true
     name: navidrome-data-volume
+  navidrome-plugins:
+    external: true
+    name: navidrome-plugins-volume
   media-library:
     name: media-library-bind
     driver_opts:

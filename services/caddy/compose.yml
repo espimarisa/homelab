@@ -1,34 +1,33 @@
 # Caddy: Reverse proxy and web server.
-# Uses a custom image for extended Cloudflare support.
 # https://github.com/homeall/caddy-reverse-proxy-cloudflare
 
 ---
 services:
   caddy:
-    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2026.05.26
+    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2026.06.03
     container_name: caddy
     env_file: ../../.env # Required for Caddyfile to read environment variables.
     hostname: caddy
     restart: unless-stopped
     environment:
-      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom"
-      DOCKER_HOST: "tcp://socket-proxy:2375"
-      TZ: "${TZ}"
+      CADDY_DOCKER_CADDYFILE_PATH: "/etc/caddy/Caddyfile-custom" # Custom Caddyfile mount.
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to socket-proxy.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - external
       - gluetun
       - internal
     ports:
-      - 80:80/tcp
-      - 443:443/tcp
-      - 443:443/udp
+      - 80:80/tcp # HTTP traffic.
+      - 443:443/tcp # HTTPS traffic.
+      - 443:443/udp # HTTPS3 traffic.
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
       - caddy:/data:rw # Caddy data and certificate storage.
     cap_add:
       - NET_BIND_SERVICE # Required for binding to ports.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     depends_on:
       socket-proxy:
         condition: service_healthy
@@ -39,7 +38,7 @@ services:
           cpus: 1
           memory: 512M
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

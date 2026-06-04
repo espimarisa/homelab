@@ -7,7 +7,7 @@ services:
     image: lscr.io/linuxserver/socket-proxy:latest
     container_name: socket-proxy
     hostname: socket-proxy
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
       ALLOW_RESTARTS: "1" # Allows restarting containers.
@@ -28,7 +28,7 @@ services:
     tmpfs:
       - /run # Required for read-only image.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary privileges.
     deploy:
       resources:
         limits:

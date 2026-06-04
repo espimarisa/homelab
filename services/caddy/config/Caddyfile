@@ -118,6 +118,11 @@
 	import cloudflare_proxy gatus:8080
 }
 
+# Seerr web interface.
+{$SEERR_URL} {
+	import cloudflare_proxy seerr:5055
+}
+
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
 	import cloudflare_proxy vaultwarden:80
@@ -170,11 +175,6 @@ qui.{$INTERNAL_DOMAIN} {
 # Radarr web interface.
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
-}
-
-# Seerr web interface.
-seerr.{$INTERNAL_DOMAIN} {
-	import internal_proxy seerr:5055
 }
 
 # slskd web interface.
