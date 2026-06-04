@@ -129,6 +129,11 @@
 	import cloudflare_proxy gatus:8080
 }
 
+# Homarr web interface.
+{$GATUS_URL} {
+	import cloudflare_proxy homarr:7575
+}
+
 # Seerr web interface.
 {$SEERR_URL} {
 	import cloudflare_proxy seerr:5055
