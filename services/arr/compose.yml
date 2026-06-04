@@ -145,7 +145,7 @@ services:
   # Byparr: Captcha solver and session cookie scraper. https://github.com/ThePhaseless/Byparr
   byparr:
     <<: *defaults-ro
-    image: ghcr.io/thephaseless/byparr:main
+    image: ghcr.io/thephaseless/byparr:2.1
     container_name: byparr
     network_mode: service:gluetun # Route all traffic through gluetun.
     networks: [] # Cleared to reset defaults.
