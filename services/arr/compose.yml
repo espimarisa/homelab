@@ -112,6 +112,8 @@ services:
       arr-db:
         condition: service_healthy
         restart: true
+    volumes:
+      - prowlarr:/prowlarr/etc:rw # Prowlarr configuration volume.
 
   # Sonarr: Series manager, organizer, and PVR. https://sonarr.tv
   sonarr:
