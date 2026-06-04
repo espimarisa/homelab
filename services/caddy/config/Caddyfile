@@ -153,6 +153,11 @@ autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:7474
 }
 
+# Backrest web interface.
+backrest.{$INTERNAL_DOMAIN} {
+	import internal_proxy backrest:9898
+}
+
 # Bazarr web interface.
 bazarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy bazarr:6767

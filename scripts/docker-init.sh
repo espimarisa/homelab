@@ -5,7 +5,9 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
+	"BACKUPS_PATH"
 	"DOCKER_IPV6_ULA_BASE"
+	"DOCKER_PATH"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
@@ -82,6 +84,10 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 # Docker volumes to create.
 readonly VOLUMES=(
 	"autobrr-volume"
+	"backrest-cache-volume"
+	"backrest-config-volume"
+	"backrest-data-volume"
+	"backrest-tmp-volume"
 	"media-db-backups-volume"
 	"media-db-config-volume"
 	"media-db-data-volume"
