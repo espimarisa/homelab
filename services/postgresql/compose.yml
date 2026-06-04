@@ -39,18 +39,18 @@ services:
       - gatus-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
       - gatus-db-data:/postgres/var:rw # PostgreSQL data storage volume.
 
-  # media-db: PostgreSQL container used for 'arr and media management apps.
-  media-db:
+  # arr-db: PostgreSQL container used for 'arr and media management apps.
+  arr-db:
     <<: *defaults
-    container_name: media-db
-    hostname: media-db
+    container_name: arr-db
+    hostname: arr-db
     environment:
       <<: *defaults-env
-      POSTGRES_PASSWORD: "${MEDIA_DB_PASSWORD}" # Sets the PostgreSQL password.
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Sets the PostgreSQL password.
     volumes:
-      - media-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
-      - media-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
-      - media-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+      - arr-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
+      - arr-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
+      - arr-db-data:/postgres/var:rw # PostgreSQL data storage volume.
 
   # vaultwarden-db: PostgreSQL container used for Vaultwarden.
   vaultwarden-db:
@@ -80,14 +80,14 @@ volumes:
   gatus-db-data:
     name: gatus-db-data-volume
     external: true
-  media-db-backups:
-    name: media-db-backups-volume
+  arr-db-backups:
+    name: arr-db-backups-volume
     external: true
-  media-db-config:
-    name: media-db-config-volume
+  arr-db-config:
+    name: arr-db-config-volume
     external: true
-  media-db-data:
-    name: media-db-data-volume
+  arr-db-data:
+    name: arr-db-data-volume
     external: true
   vaultwarden-db-backups:
     name: vaultwarden-db-backups-volume

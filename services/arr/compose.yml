@@ -1,6 +1,6 @@
 # 'ARR application stack: Combined compose file for 'ARR apps.
 # Lidarr, Sonarr, Radarr, Prowlarr, Bazarr, Byparr, Unpackerr, and Configarr.
-# media-db is included in ../postgresql for maintainability.
+# arr-db is included in ../postgresql for maintainability.
 
 ---
 # Default container options.
@@ -21,7 +21,7 @@ x-defaults: &defaults
     - SYS_CHROOT
     - SYS_PTRACE
   depends_on:
-    media-db:
+    arr-db:
       condition: service_healthy
       restart: true
   deploy:
@@ -52,8 +52,8 @@ services:
       PGID: "${PGID}" # Group ID to run as.
       POSTGRES_DATABASE: "bazarr" # Use the bazarr database.
       POSTGRES_ENABLED: "true" # Enable PostgreSQL.
-      POSTGRES_HOST: "media-db" # Connect to media-db.
-      POSTGRES_PASSWORD: "${MEDIA_DB_PASSWORD}" # PostgreSQL password to use.
+      POSTGRES_HOST: "arr-db" # Connect to arr-db.
+      POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # PostgreSQL password to use.
       POSTGRES_PORT: "5432" # PostgreSQL port to connect to.
       POSTGRES_USERNAME: "postgres" # PostgreSQL username to use.
       PUID: "${PUID}" # User ID to run as.
@@ -107,7 +107,7 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
-      media-db:
+      arr-db:
         condition: service_healthy
         restart: true
 

@@ -12,8 +12,8 @@ services:
     environment:
       AUTOBRR__DATABASE_TYPE: "postgres" # Enable PostgreSQL.
       AUTOBRR__POSTGRES_DATABASE: "autobrr" # Use the autobrr database.
-      AUTOBRR__POSTGRES_HOST: "media-db" # Connect to media-db.
-      AUTOBRR__POSTGRES_PASS: "${MEDIA_DB_PASSWORD}" # PostgreSQL password to use.
+      AUTOBRR__POSTGRES_HOST: "arr-db" # Connect to arr-db.
+      AUTOBRR__POSTGRES_PASS: "${ARR_DB_PASSWORD}" # PostgreSQL password to use.
       AUTOBRR__POSTGRES_PORT: "5432" # PostgreSQL port to connect to.
       AUTOBRR__POSTGRES_USER: "postgres" # PostgreSQL username to use.
     networks:
@@ -31,7 +31,7 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
-      media-db:
+      arr-db:
         condition: service_healthy
         restart: true
     deploy:

@@ -11,10 +11,10 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      DB_HOST: "media-db" # Connect to media-db.
+      DB_HOST: "arr-db" # Connect to arr-db.
       DB_LOG_QUERIES: "false" # Do not log raw database queries.
       DB_NAME: "seerr" # Use the seerr database.
-      DB_PASS: "${MEDIA_DB_PASSWORD}" # PostgreSQL password to use.
+      DB_PASS: "${ARR_DB_PASSWORD}" # PostgreSQL password to use.
       DB_PORT: "5432" # PostgreSQL port to connect to.
       DB_TYPE: "postgres" # Enable PostgreSQL.
       DB_USE_SSL: "false" # Do not use internal SSL.
@@ -34,7 +34,7 @@ services:
     cap_drop:
       - ALL # Drop all unnecessary permissions.
     depends_on:
-      media-db:
+      arr-db:
         condition: service_healthy
         restart: true
     deploy:
