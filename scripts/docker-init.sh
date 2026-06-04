@@ -98,6 +98,7 @@ readonly VOLUMES=(
 	"caddy-volume"
 	"chhoto-volume"
 	"dozzle-volume"
+	"gatus-db-backups-volume"
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"

@@ -132,7 +132,7 @@
 }
 
 # Homarr web interface.
-{$GATUS_URL} {
+{$HOMARR_URL} {
 	import cloudflare_proxy homarr:7575
 }
 
