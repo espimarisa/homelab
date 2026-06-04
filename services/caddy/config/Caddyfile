@@ -5,7 +5,7 @@
 
 	dynamic_dns {
 		# Use Cloudflare for Dynamic DNS.
-		provider cloudflare {$CLOUDFLARE_API_TOKEN}
+		provider cloudflare {$CLOUDFLARE_TOKEN}
 		check_interval 1h
 		versions ipv4 ipv6
 
