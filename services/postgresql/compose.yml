@@ -47,6 +47,9 @@ services:
     environment:
       <<: *defaults-env
       POSTGRES_PASSWORD: "${ARR_DB_PASSWORD}" # Sets the PostgreSQL password.
+    networks:
+      - internal
+      - gluetun
     volumes:
       - arr-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
       - arr-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
@@ -66,6 +69,9 @@ services:
       - vaultwarden-db-data:/postgres/var:rw # PostgreSQL data storage volume.
 
 networks:
+  gluetun:
+    external: true
+    name: gluetun-network
   internal:
     external: true
     name: internal-network
