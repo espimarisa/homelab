@@ -7,15 +7,15 @@ services:
     image: ghcr.io/jellyfin/jellyfin:10.11
     container_name: jellyfin
     hostname: jellyfin
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     devices:
       - /dev/dri:/dev/dri:rw # Required for transcoding.
     environment:
       JELLYFIN_PublishedServerUrl: "https://${JELLYFIN_URL}" # Configures the external URL.
     expose:
-      - 8096/tcp # Web interface; reverse proxied at ${JELLYFIN_URL}.
+      - 8096/tcp # Jellyfin web interface reverse proxied at ${JELLYFIN_URL}.
     networks:
       - external
     tmpfs:
@@ -26,7 +26,7 @@ services:
       - jellyfin-config:/config:rw # Jellyfin configuration storage.
       - media-library:/library:ro # Media library mount. Read-only, don't try to write to it, doofus.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     deploy:
       resources:
         limits:
@@ -37,7 +37,7 @@ services:
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8096/health || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

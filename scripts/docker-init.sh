@@ -5,10 +5,10 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
+	"DOCKER_IPV6_ULA_BASE"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
-	"HOMARR_DATA_PATH"
 	"IMMICH_UPLOADS_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_UPLOADS_PATH"
@@ -82,9 +82,9 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 # Docker volumes to create.
 readonly VOLUMES=(
 	"autobrr-volume"
-	"arr-db-backups-volume"
-	"arr-db-config-volume"
-	"arr-db-data-volume"
+	"media-db-backups-volume"
+	"media-db-config-volume"
+	"media-db-data-volume"
 	"bazarr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
@@ -95,6 +95,7 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"
+	"homarr-volume"
 	"immich-cache-config-volume"
 	"immich-cache-data-volume"
 	"immich-db-volume"
@@ -102,8 +103,10 @@ readonly VOLUMES=(
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"lidarr-volume"
+	"navidrome-backups-volume"
 	"navidrome-cache-volume"
 	"navidrome-data-volume"
+	"navidrome-plugins-volume"
 	"opencloud-config-volume"
 	"opencloud-metadata-volume"
 	"prowlarr-volume"
@@ -129,10 +132,13 @@ readonly CHOWN_VOLUMES=(
 	"beszel-data-volume"
 	"chhoto-volume"
 	"dozzle-volume"
+	"homarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
+	"navidrome-backups-volume"
 	"navidrome-cache-volume"
 	"navidrome-data-volume"
+	"navidrome-plugins-volume"
 	"opencloud-config-volume"
 	"opencloud-metadata-volume"
 	"qui-volume"
@@ -174,9 +180,17 @@ create_network() {
 	local network_name="$1"
 	local ipv4_gateway="$2"
 	local ipv4_subnet="$3"
-	local internal_flag="${4:-false}"
+	local ipv6_gateway="$4"
+	local ipv6_subnet="$5"
+	local internal_flag="${6:-false}"
 
-	local network_args=("--gateway=$ipv4_gateway" "--subnet=$ipv4_subnet")
+	local network_args=(
+		"--gateway=$ipv4_gateway"
+		"--subnet=$ipv4_subnet"
+		"--ipv6"
+		"--gateway=$ipv6_gateway"
+		"--subnet=$ipv6_subnet"
+	)
 
 	# Handle Internal Flag
 	if [[ "$internal_flag" == "internal" || "$internal_flag" == "true" ]]; then
@@ -200,9 +214,9 @@ create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
 # Creates Docker networks.
 echo -e "\nCreating Docker networks..."
-create_network "external-network" "172.18.0.1" "172.18.0.0/16"
-create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16"
-create_network "internal-network" "172.20.0.1" "172.20.0.0/16" "internal"
+create_network "external-network" "172.18.0.1" "172.18.0.0/16" "${DOCKER_IPV6_ULA_BASE}:18::1" "${DOCKER_IPV6_ULA_BASE}:18::/64"
+create_network "gluetun-network" "172.19.0.1" "172.19.0.0/16" "${DOCKER_IPV6_ULA_BASE}:19::1" "${DOCKER_IPV6_ULA_BASE}:19::/64"
+create_network "internal-network" "172.20.0.1" "172.20.0.0/16" "${DOCKER_IPV6_ULA_BASE}:20::1" "${DOCKER_IPV6_ULA_BASE}:20::/64" "internal"
 
 # Creates Docker volumes.
 echo -e "\nCreating Docker volumes..."
@@ -239,7 +253,6 @@ $SUDO chown -R "${PUID}:${PGID}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
-	"${HOMARR_DATA_PATH}" \
 	"${IMMICH_UPLOADS_PATH}" \
 	"${OPENCLOUD_UPLOADS_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"
@@ -250,7 +263,6 @@ $SUDO chmod -R 775 \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
-	"${HOMARR_DATA_PATH}" \
 	"${IMMICH_UPLOADS_PATH}" \
 	"${OPENCLOUD_UPLOADS_PATH}" \
 	"${MEDIA_LIBRARY_PATH}"

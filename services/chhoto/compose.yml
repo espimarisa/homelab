@@ -7,26 +7,26 @@ services:
     image: ghcr.io/sintan1729/chhoto-url:7.2-alpine
     container_name: chhoto
     hostname: chhoto
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      CHHOTO_API_KEY: "${CHHOTO_API_KEY}" # Sets the API key. $ openssl rand -hex 32
-      CHHOTO_DB_URL: "/db/urls.sqlite" # SQLite database file to use. $ touch /path/to/chhoto-volume/_data/urls.sqlite
-      CHHOTO_PASSWORD: "${CHHOTO_PASSWORD}"
-      CHHOTO_SITE_URL: "https://${CHHOTO_URL}" # Sets the URL to use for forwarding.
-      CHHOTO_SLUG_STYLE: "Pair" # Use paired slug styling.
-      CHHOTO_SQLITE_ENSURE_ACID: "True" # Ensures ACID compliance.
-      CHHOTO_SQLITE_USE_WAL_MODE: "True" # Use WAL mode for SQLite.
-      TZ: "${TZ}"
+      CHHOTO_API_KEY: "${CHHOTO_API_KEY}" # API key. $ openssl rand -base64 32
+      CHHOTO_DB_URL: "/db/urls.sqlite" # SQLite database URL (file) to connect to.
+      CHHOTO_PASSWORD: "${CHHOTO_PASSWORD}" # Administrator password to set.
+      CHHOTO_SITE_URL: "https://${CHHOTO_URL}" # URL to serve redirects from.
+      CHHOTO_SLUG_STYLE: "Pair" # Use slug pairing by default.
+      CHHOTO_SQLITE_ENSURE_ACID: "True" # Use ACID-compliant DB writes.
+      CHHOTO_SQLITE_USE_WAL_MODE: "True" # Use WAL for DB writes.
+      TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 4567/tcp # Web interface; reverse proxied at ${CHHOTO_URL}.
+      - 4567/tcp # Chhoto URL web interface reverse proxied at ${CHHOTO_URL}.
     networks:
       - external
     volumes:
-      - chhoto:/db:rw # Chhoto database storage. $ touch /path/to/chhoto-volume/_data/urls.sqlite && chown -R $PUID:$PGID
+      - chhoto:/db:rw # Chhoto database mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     deploy:
       resources:
         limits:
@@ -35,7 +35,7 @@ services:
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:4567/api/whoami || exit 1"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:

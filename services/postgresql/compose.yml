@@ -1,0 +1,100 @@
+---
+# Default environment variables.
+x-defaults-env: &defaults-env
+  POSTGRES_BACKUP_RETENTION: "7" # Keep up to 7 backups.
+  POSTGRES_BACKUP_SCHEDULE: "0 5 * * *" # Backup every day at 5:00 AM.
+  TZ: "${TZ}" # Sets the timezone.
+
+# Default PostgreSQL container options.
+x-defaults: &defaults
+  image: ghcr.io/11notes/postgres:18
+  read_only: true # Prevent writing directly to the image.
+  shm_size: 512M # Raises shared memory size for better performance under heavy load.
+  networks:
+    - internal
+  tmpfs:
+    - "/postgres/log:uid=1000,gid=1000" # Required for read_only image (logs).
+    - "/postgres/run:uid=1000,gid=1000" # Required for read_only image (run).
+  cap_drop:
+    - ALL # Drop all unnecessary permissions.
+  deploy:
+    resources:
+      limits:
+        cpus: 1
+        memory: 1G
+  security_opt:
+    - no-new-privileges:true # Prevent privilege escalation.
+
+services:
+  # gatus-db: PostgreSQL container used for Gatus.
+  gatus-db:
+    <<: *defaults
+    container_name: gatus-db
+    hostname: gatus-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the PostgreSQL password.
+    volumes:
+      - gatus-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
+      - gatus-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
+      - gatus-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+
+  # media-db: PostgreSQL container used for 'arr and media management apps.
+  media-db:
+    <<: *defaults
+    container_name: media-db
+    hostname: media-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${MEDIA_DB_PASSWORD}" # Sets the PostgreSQL password.
+    volumes:
+      - media-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
+      - media-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
+      - media-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+
+  # vaultwarden-db: PostgreSQL container used for Vaultwarden.
+  vaultwarden-db:
+    <<: *defaults
+    container_name: vaultwarden-db
+    hostname: vaultwarden-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the PostgreSQL password.
+    volumes:
+      - vaultwarden-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
+      - vaultwarden-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
+      - vaultwarden-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+
+networks:
+  internal:
+    external: true
+    name: internal-network
+
+volumes:
+  gatus-db-backups:
+    name: gatus-db-backups-volume
+    external: true
+  gatus-db-config:
+    name: gatus-db-config-volume
+    external: true
+  gatus-db-data:
+    name: gatus-db-data-volume
+    external: true
+  media-db-backups:
+    name: media-db-backups-volume
+    external: true
+  media-db-config:
+    name: media-db-config-volume
+    external: true
+  media-db-data:
+    name: media-db-data-volume
+    external: true
+  vaultwarden-db-backups:
+    name: vaultwarden-db-backups-volume
+    external: true
+  vaultwarden-db-config:
+    name: vaultwarden-db-config-volume
+    external: true
+  vaultwarden-db-data:
+    name: vaultwarden-db-data-volume
+    external: true

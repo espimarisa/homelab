@@ -2,71 +2,44 @@
 # https://gatus.io
 
 ---
-# Default container options.
-x-defaults: &defaults
-  read_only: true # Prevent writing directly to the image.
-  restart: unless-stopped
-  cap_drop:
-    - ALL # Drop all unnecessary privileges.
-  security_opt:
-    - no-new-privileges:true # Prevent privilege escalation.
-
 services:
   gatus:
-    <<: *defaults
     image: ghcr.io/twin/gatus:latest
     container_name: gatus
     env_file: ../../.env # Required for parsing environment variables in the config.
     hostname: gatus
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
-      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # Database password to connect with.
-      GATUS_URL: "${GATUS_URL}" # External URL to use.
-      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Base socket URL to use for tests.
+      DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to socket-proxy.
+      GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # PostgreSQL password to use.
+      GATUS_URL: "${GATUS_URL}" # URL to use for Gatus.
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Shorthand path to the Docker API.
       TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 8080/tcp # Status page; reverse proxied at ${GATUS_URL}.
+      - 8080/tcp # Gatus web interface reverse proxied at ${GATUS_URL}.
     networks:
       - external
       - internal
     volumes:
       - ./config:/config:ro # Local configuration mount.
+    cap_drop:
+      - ALL # Drop all unnecessary permissions.
     depends_on:
       gatus-db:
-        condition: service_healthy # Requires gatus-db to be healthy before starting.
-        restart: true # Restart when gatus-db restarts.
+        condition: service_healthy
+        restart: true
       socket-proxy:
-        condition: service_healthy # Require socket-proxy to be healthy before starting.
-        restart: true # Restart when socket-proxy restarts.
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         limits:
-          cpus: 0.5 # Allow using up to 0.5 CPU cores.
-          memory: 256M # Allow using up to 256MB of RAM.
-
-  gatus-db:
-    <<: *defaults
-    image: ghcr.io/11notes/postgres:18
-    container_name: gatus-db
-    hostname: gatus-db
-    shm_size: 256MB # Increases the shared memory size.
-    environment:
-      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the database.
-      TZ: "${TZ}" # Sets the timezone.
-    networks:
-      - internal
-    tmpfs:
-      - "/postgres/log:uid=1000,gid=1000" # Required for read-only image.
-      - "/postgres/run:uid=1000,gid=1000" # Required for read-only image.
-    volumes:
-      - gatus-db-config:/postgres/etc:rw # PostgreSQL configuration storage.
-      - gatus-db-data:/postgres/var:rw # PostgreSQL database storage.
-    deploy:
-      resources:
-        limits:
-          cpus: 1 # Allow using up to 1 CPU core.
-          memory: 512M # Allow using up to 512MB of RAM.
+          cpus: 0.5
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
 
 networks:
   external:
@@ -75,11 +48,3 @@ networks:
   internal:
     external: true
     name: internal-network
-
-volumes:
-  gatus-db-config:
-    name: gatus-db-config-volume
-    external: true
-  gatus-db-data:
-    name: gatus-db-data-volume
-    external: true

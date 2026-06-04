@@ -4,25 +4,25 @@
 ---
 services:
   dozzle:
-    image: ghcr.io/amir20/dozzle:v10
+    image: ghcr.io/amir20/dozzle:v10.6
     container_name: dozzle
     hostname: dozzle
     read_only: true
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     environment:
-      DOCKER_HOST: "tcp://socket-proxy:2375" # Connect to the socket proxy.
+      DOCKER_HOST: "tcp://socket-proxy:2375"
       DOZZLE_ENABLE_ACTIONS: "true" # Enable container actions.
       DOZZLE_ENABLE_SHELL: "true" # Enable container shells.
       DOZZLE_NO_ANALYTICS: "true" # Opts out of data analytics.
     expose:
-      - 8080/tcp # Web interface; reverse proxied at dozzle.${INTERNAL_DOMAIN}.
+      - 8080/tcp
     networks:
       - external
       - internal
     volumes:
-      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-      - dozzle:/data:rw # Configuration and cache storage.
+      - /etc/localtime:/etc/localtime:ro
+      - dozzle:/data:rw
     cap_drop:
       - ALL
     depends_on:

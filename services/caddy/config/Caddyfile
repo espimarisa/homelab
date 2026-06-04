@@ -3,6 +3,17 @@
 	acme_dns cloudflare {$CLOUDFLARE_TOKEN}
 	email {$ACME_EMAIL}
 
+	dynamic_dns {
+		# Use Cloudflare for Dynamic DNS.
+		provider cloudflare {$CLOUDFLARE_API_TOKEN}
+		check_interval 1h
+		versions ipv4 ipv6
+
+		# Domain and subdomains to automatically update DNS records for.
+		domains {
+			{$DDNS_DOMAINS}
+		}
+
 	# Configures trusted proxies for Cloudflare support.
 	servers {
 		trusted_proxies cloudflare
@@ -119,8 +130,13 @@
 }
 
 # Homarr web interface.
-{$HOMARR_URL} {
+{$GATUS_URL} {
 	import cloudflare_proxy homarr:7575
+}
+
+# Seerr web interface.
+{$SEERR_URL} {
+	import cloudflare_proxy seerr:5055
 }
 
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
@@ -145,11 +161,6 @@ bazarr.{$INTERNAL_DOMAIN} {
 # Beszel hub web interface.
 beszel.{$INTERNAL_DOMAIN} {
 	import internal_proxy beszel:8090
-}
-
-# Beets web interface
-beets.{$INTERNAL_DOMAIN} {
-	import internal_proxy lidarr:8337
 }
 
 # Dozzle web interface
@@ -180,11 +191,6 @@ qui.{$INTERNAL_DOMAIN} {
 # Radarr web interface.
 radarr.{$INTERNAL_DOMAIN} {
 	import internal_proxy radarr:7878
-}
-
-# Seerr web interface.
-seerr.{$INTERNAL_DOMAIN} {
-	import internal_proxy seerr:5055
 }
 
 # slskd web interface.

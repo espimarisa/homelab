@@ -4,31 +4,34 @@
 ---
 services:
   autobrr:
-    image: ghcr.io/s0up4200/autobrr-distroless:v1.79
+    image: ghcr.io/s0up4200/autobrr-distroless:v1.80
     container_name: autobrr
-    network_mode: service:gluetun
-    read_only: true
+    read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      AUTOBRR__DATABASE_TYPE: "postgres" # Use PostgreSQL.
+      AUTOBRR__DATABASE_TYPE: "postgres" # Enable PostgreSQL.
       AUTOBRR__POSTGRES_DATABASE: "autobrr" # Use the autobrr database.
-      AUTOBRR__POSTGRES_HOST: "arr-db" # Connect to the database.
-      AUTOBRR__POSTGRES_PASS: "${ARR_DB_PASSWORD}" # Database password to authenticate with.
-      AUTOBRR__POSTGRES_PORT: "5432" # Connect to port 5432.
-      AUTOBRR__POSTGRES_USER: "postgres" # Use the postgres user.
+      AUTOBRR__POSTGRES_HOST: "media-db" # Connect to media-db.
+      AUTOBRR__POSTGRES_PASS: "${MEDIA_DB_PASSWORD}" # PostgreSQL password to use.
+      AUTOBRR__POSTGRES_PORT: "5432" # PostgreSQL port to connect to.
+      AUTOBRR__POSTGRES_USER: "postgres" # PostgreSQL username to use.
+    networks:
+      - external
+      - gluetun
+      - internal
     tmpfs:
-      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - autobrr:/config:rw
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - autobrr:/config:rw # Autobrr configuration volume.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     depends_on:
-      arr-db:
+      gluetun:
         condition: service_healthy
         restart: true
-      gluetun:
+      media-db:
         condition: service_healthy
         restart: true
     deploy:
@@ -37,7 +40,18 @@ services:
           cpus: 1
           memory: 1G
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    external: true
+    name: external-network
+  gluetun:
+    external: true
+    name: gluetun-network
+  internal:
+    external: true
+    name: internal-network
 
 volumes:
   autobrr:

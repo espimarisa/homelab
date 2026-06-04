@@ -7,27 +7,27 @@
 # Default container options.
 x-defaults: &defaults
   restart: unless-stopped
-  read_only: true
+  read_only: true # Prevent writing directly to the image.
   cap_drop:
-    - ALL
+    - ALL # Drop all unnecessary permissions.
   security_opt:
-    - no-new-privileges:true
+    - no-new-privileges:true # Prevent privilege escalation.
 
 services:
   immich:
     <<: *defaults
     image: ghcr.io/immich-app/immich-server:v2.7.5
     container_name: immich
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Redis password to authenticate with.
       DB_URL: "postgresql://postgres:${IMMICH_DB_PASSWORD}@immich-db:5432/immich" # Connect to PostgreSQL.
-      REDIS_HOSTNAME: "immich-cache"
-      MACHINE_LEARNING_HOST: "immich-ml"
+      REDIS_HOSTNAME: "immich-cache" # Connect to immich-cache for Redis.
+      MACHINE_LEARNING_HOST: "immich-ml" # Connect to immich-ml for ML.
     devices:
       - /dev/dri:/dev/dri:rw # Required for transcoding.
     expose:
-      - 2283/tcp # Web interface; externally reverse proxied at ${IMMICH_URL}.
+      - 2283/tcp # Immich web interface reverse proxied at ${IMMICH_URL}.
     networks:
       - external
       - internal
@@ -63,7 +63,7 @@ services:
     container_name: immich-cache
     environment:
       REDIS_PASSWORD: "${IMMICH_REDIS_PASSWORD}" # Sets the redis password.
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     tmpfs:
@@ -86,8 +86,8 @@ services:
       POSTGRES_DB: "immich" # Use the immich database.
       POSTGRES_INITDB_ARGS: "--data-checksums" # Enable checksums.
       POSTGRES_PASSWORD: "${IMMICH_DB_PASSWORD}" # Sets the PostgreSQL password.
-      POSTGRES_USER: "postgres"
-      TZ: "${TZ}"
+      POSTGRES_USER: "postgres" # Username to use for PostgreSQL.
+      TZ: "${TZ}" # Sets the timezone.
     networks:
       - internal
     tmpfs:
@@ -96,7 +96,7 @@ services:
       - "/tmp" # Required for read-only image.
     volumes:
       - immich-db:/var/lib/postgresql:rw # PostgreSQL database storage.
-    cap_drop:
+    cap_drop: # Drop unnecessary permissions.
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -112,10 +112,10 @@ services:
 
   immich-ml:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v2.7.5-openvino # Use OpenVino for Intel Arc, see wiki for other stuff.
+    image: ghcr.io/immich-app/immich-machine-learning:v2.7.5-openvino # Use OpenVino for Intel Arc.
     container_name: immich-ml
     hostname: immich-ml
-    read_only: false
+    read_only: false # Do not run in read_only mode.
     devices:
       - /dev/dri:/dev/dri:rw # Required for ML.
     environment:
@@ -128,7 +128,7 @@ services:
     networks:
       - internal
     volumes:
-      - /etc/localtime:/etc/localtime:ro
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - immich-model-cache:/cache:rw # Persistent storage for downloaded ML models.
     deploy:
       resources:

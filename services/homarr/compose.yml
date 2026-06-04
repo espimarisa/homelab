@@ -19,14 +19,14 @@ services:
       SECRET_ENCRYPTION_KEY: "${HOMARR_ENCRYPTION_KEY}" # Sets the encryption key.
       TZ: "${TZ}" # Sets the timezone.
     expose:
-      - 7575/tcp # Homarr web interface accessible at ${HOMARR_URL}
+      - 7575/tcp # Homarr web interface reverse proxied at ${HOMARR_URL}.
     networks:
       - external
       - gluetun
       - internal
     volumes:
-      - homarr-data:/appdata:rw # Homarr data.
-    cap_drop:
+      - homarr:/appdata:rw # Homarr data storage.
+    cap_drop: # Drop all unneccesary privileges.
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
@@ -44,8 +44,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1 # Allow using 1 CPU core.
-          memory: 1G # Allow using up to 1GB of RAM.
+          cpus: 1
+          memory: 1G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:7575 || exit 1"
     security_opt:
@@ -63,9 +63,6 @@ networks:
     name: internal-network
 
 volumes:
-  homarr-data:
-    name: homarr-data-bind
-    driver_opts:
-      device: "${HOMARR_DATA_PATH}"
-      o: bind
-      type: none
+  homarr:
+    external: true
+    name: homarr-volume

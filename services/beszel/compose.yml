@@ -4,60 +4,60 @@
 ---
 # Default container options.
 x-defaults: &defaults
-  read_only: true
+  read_only: true # Prevent writing directly to the image.
   restart: unless-stopped
   tmpfs:
-    - "/tmp:uid=${PUID},gid=${PGID}" # Required for read-only image.
+    - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
   deploy:
     resources:
       limits:
         cpus: 1
         memory: 128M
   security_opt:
-    - no-new-privileges:true
+    - no-new-privileges:true # Prevent privilege escalation.
 
 services:
   beszel:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel:0.18
+    image: ghcr.io/henrygd/beszel/beszel:0.18.7
     container_name: beszel
     hostname: beszel
-    user: "${PUID}:${PGID}"
+    user: "${PUID}:${PGID}" # Run as non-root user.
     ports:
-      - 127.0.0.1:8090:8090/tcp # Expose the hub locally so the agent can connect in network_mode: host.
+      - 127.0.0.1:8090:8090/tcp # Beszel web interface reverse proxied at beszel.${INTERNAL_DOMAIN}.
     networks:
       - external
       - internal
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-      - beszel-data:/beszel_data:rw # Beszel hub configuration and data.
+      - beszel-data:/beszel_data:rw # Beszel data storage (currently unused).
       - beszel-socket:/beszel_socket:rw # Beszel socket mount.
     cap_drop:
-      - ALL
+      - ALL # Drop all unnecessary permissions.
     healthcheck:
       interval: 1m
       test: ["CMD", "/beszel", "health --url http://127.0.0.1:8090"]
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent:0.18
+    image: ghcr.io/henrygd/beszel/beszel-agent:0.18.7-alpine
     container_name: beszel-agent
     hostname: beszel-agent
-    network_mode: host # Required for accurate network statistics.
+    network_mode: host # Required for accurate network speed analytics.
     environment:
-      HUB_URL: "http://localhost:8090" # Connect to the local Beszel hub.
-      LISTEN: "/beszel_socket/beszel.sock" # Listen on the mounted Beszel socket.
-      KEY: "${BESZEL_KEY}" # Beszel hub key to register with.
-      TOKEN: "${BESZEL_TOKEN}" # Beszel hub token to register with.
+      HUB_URL: "http://localhost:8090" # Connect to the local beszel container.
+      LISTEN: "/beszel_socket/beszel.sock" # Connect to the local beszel socket.
+      KEY: "${BESZEL_KEY}" # Beszel SSH key to register with.
+      TOKEN: "${BESZEL_TOKEN}" # Beszel token to register with.
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Connects to the Docker socket.
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket mount, required for analytics.
       - beszel-agent:/var/lib/beszel-agent:rw # Beszel agent storage.
       - beszel-socket:/beszel_socket:rw # Beszel socket mount.
     cap_add:
       - SYS_ADMIN # Required for NVME SMART data.
       - SYS_RAWIO # Required for SMART data.
-    cap_drop:
+    cap_drop: # Drop unnecessary permissions.
       - AUDIT_WRITE
       - MKNOD
       - SETFCAP
