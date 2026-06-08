@@ -12,6 +12,7 @@ services:
     container_name: gluetun
     hostname: gluetun
     restart: unless-stopped
+    dns_search: . # Use local DNS searching.
     devices:
       - /dev/net/tun:/dev/net/tun:rw # Wireguard TUN/TAP device.
     environment:
@@ -34,6 +35,7 @@ services:
       UPDATER_PERIOD: "24h" # Update server data every 24 hours.
       VPN_SERVICE_PROVIDER: "${VPN_SERVICE_PROVIDER:-airvpn}" # https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers
       VPN_TYPE: "wireguard" # Use Wireguard instead of OpenVPN.
+      WIREGUARD_MTU: "1320" # Sets the MTU.
       WIREGUARD_ADDRESSES: "${WIREGUARD_ADDRESSES}" # List of Wireguard addresses to connect to.
       WIREGUARD_ENDPOINT_PORT: "${WIREGUARD_ENDPOINT_PORT}" # Wireguard port to connect to.
       WIREGUARD_PRESHARED_KEY: "${WIREGUARD_PRESHARED_KEY}" # PresharedKey from Wireguard config file.
