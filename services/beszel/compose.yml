@@ -62,7 +62,6 @@ services:
       - MKNOD
       - SETFCAP
       - SETPCAP
-      - SYS_ADMIN
       - SYS_CHROOT
       - SYS_PTRACE
     depends_on:
