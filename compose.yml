@@ -2,14 +2,12 @@
 include:
   - ./services/arr/compose.yml
   - ./services/autobrr/compose.yml
-  - ./services/backrest/compose.yml
   - ./services/beszel/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
   - ./services/dozzle/compose.yml
   - ./services/gatus/compose.yml
   - ./services/gluetun/compose.yml
-  - ./services/homarr/compose.yml
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/navidrome/compose.yml

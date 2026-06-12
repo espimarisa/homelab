@@ -38,7 +38,7 @@ services:
       - "/usr/src/app/.config:uid=${PUID},gid=${PGID}" # Required for read-only image; cache.
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
-      - immich-data:/data:rw # Immich storage mount (user uploads).
+      - ${IMMICH_UPLOADS_PATH}:/data:rw # Immich storage mount (user uploads).
     depends_on:
       immich-cache:
         condition: service_healthy
@@ -159,9 +159,3 @@ volumes:
   immich-db:
     name: immich-db-volume
     external: true
-  immich-data:
-    name: immich-data-bind
-    driver_opts:
-      device: "${IMMICH_UPLOADS_PATH}"
-      o: bind
-      type: none

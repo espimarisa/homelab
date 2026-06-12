@@ -40,9 +40,9 @@ services:
       - "/.net:uid=${PUID},gid=${PGID},exec" # Required for read-only image; update extraction.
       - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read-only image.
     volumes:
-      - downloads:/downloads:rw # Completed downloads mount.
-      - downloads-incomplete:/downloads-incomplete:rw # Incomplete downloads mount.
-      - media-library:/library:ro # Media library mount.
+      - ${DOWNLOADS_PATH}:/downloads:rw # Completed downloads mount.
+      - ${DOWNLOADS_INCOMPLETE_PATH}:/downloads-incomplete:rw # Incomplete downloads mount.
+      - ${MEDIA_LIBRARY_PATH}:/library:ro # Media library mount.
       - slskd:/app:rw # slskd configuration and data storage.
     cap_drop:
       - ALL # Drop all unnecessary privileges.
@@ -64,21 +64,3 @@ volumes:
   slskd:
     name: slskd-volume
     external: true
-  downloads:
-    name: downloads-bind
-    driver_opts:
-      device: "${DOWNLOADS_PATH}"
-      o: bind
-      type: none
-  downloads-incomplete:
-    name: downloads-incomplete-bind
-    driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}"
-      o: bind
-      type: none
-  media-library:
-    name: media-library-bind
-    driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}"
-      o: bind
-      type: none

@@ -18,9 +18,9 @@ services:
     container_name: qbittorrent
     network_mode: service:gluetun
     volumes:
-      - downloads-incomplete:/downloads-incomplete:rw
-      - downloads-permaseed:/downloads-permaseed:rw
-      - downloads:/downloads:rw
+      - ${DOWNLOADS_INCOMPLETE_PATH}:/downloads-incomplete:rw
+      - ${DOWNLOADS_PERMASEED_PATH}:/downloads-permaseed:rw
+      - ${DOWNLOADS_PATH}:/downloads:rw
       - qbittorrent-config:/qbittorrent/etc:rw
       - qbittorrent-data:/qbittorrent/var:rw
       - qbittorrent-themes:/qbittorrent/themes:rw
@@ -79,21 +79,3 @@ volumes:
   qui:
     name: qui-volume
     external: true
-  downloads:
-    name: downloads-bind
-    driver_opts:
-      device: "${DOWNLOADS_PATH}"
-      o: bind
-      type: none
-  downloads-incomplete:
-    name: downloads-incomplete-bind
-    driver_opts:
-      device: "${DOWNLOADS_INCOMPLETE_PATH}"
-      o: bind
-      type: none
-  downloads-permaseed:
-    name: downloads-permaseed-bind
-    driver_opts:
-      device: "${DOWNLOADS_PERMASEED_PATH}"
-      o: bind
-      type: none

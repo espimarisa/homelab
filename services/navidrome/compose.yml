@@ -42,7 +42,7 @@ services:
     networks:
       - external
     volumes:
-      - media-library:/library:ro # Media library storage bind.
+      - ${MEDIA_LIBRARY_PATH}:/library:ro # Media library storage bind.
       - navidrome-backups:/backups:rw # Navidrome backups volume.
       - navidrome-cache:/cache:rw # Navidrome cache volume.
       - navidrome-data:/data:rw # Navidrome data volume.
@@ -79,9 +79,3 @@ volumes:
   navidrome-plugins:
     external: true
     name: navidrome-plugins-volume
-  media-library:
-    name: media-library-bind
-    driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}"
-      o: bind
-      type: none

@@ -131,11 +131,6 @@
 	import cloudflare_proxy gatus:8080
 }
 
-# Homarr web interface.
-{$HOMARR_URL} {
-	import cloudflare_proxy homarr:7575
-}
-
 # SearXNG web interface.
 {$SEARXNG_URL} {
 	import cloudflare_proxy searxng:8080
@@ -158,11 +153,6 @@
 # Autobrr web interface.
 autobrr.{$INTERNAL_DOMAIN} {
 	import internal_proxy autobrr:7474
-}
-
-# Backrest web interface.
-backrest.{$INTERNAL_DOMAIN} {
-	import internal_proxy backrest:9898
 }
 
 # Bazarr web interface.

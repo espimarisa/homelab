@@ -41,7 +41,7 @@ services:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - opencloud-config:/etc/opencloud:rw # OpenCloud configuration volume.
       - opencloud-metadata:/var/lib/opencloud:rw # OpenCloud metadata volume.
-      - opencloud-data:/var/lib/opencloud/storage:rw # OpenCloud uploads mount.
+      - ${OPENCLOUD_UPLOADS_PATH}:/var/lib/opencloud/storage:rw # OpenCloud uploads mount.
     cap_drop:
       - ALL # Drop all unnecessary privileges.
     deploy:
@@ -66,9 +66,3 @@ volumes:
   opencloud-metadata:
     name: opencloud-metadata-volume
     external: true
-  opencloud-data:
-    name: opencloud-data-bind
-    driver_opts:
-      device: "${OPENCLOUD_UPLOADS_PATH}"
-      o: bind
-      type: none

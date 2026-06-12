@@ -5,9 +5,7 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
-	"BACKUPS_PATH"
 	"DOCKER_IPV6_ULA_BASE"
-	"DOCKER_PATH"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
@@ -16,7 +14,6 @@ readonly REQUIRED_VARS=(
 	"OPENCLOUD_UPLOADS_PATH"
 	"PGID"
 	"PUID"
-	"STORAGE_PATH"
 	"TZ"
 	"UMASK"
 )
@@ -52,12 +49,17 @@ if [ "$(id -u)" -ne 0 ]; then
 	echo "Script not run as root. Using 'sudo' for privileged commands."
 fi
 
+# Appdata directories to create.
+readonly APPDATA_DIRECTORIES=(
+	"opencloud"
+	"immich"
+)
+
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	"soulseek"
 	"torrents/.torrent-files"
 	"torrents/lidarr"
-	"torrents/permaseed"
 	"torrents/radarr"
 	"torrents/sonarr"
 	"torrents/uncategorized"
@@ -84,10 +86,6 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 # Docker volumes to create.
 readonly VOLUMES=(
 	"autobrr-volume"
-	"backrest-cache-volume"
-	"backrest-config-volume"
-	"backrest-data-volume"
-	"backrest-tmp-volume"
 	"arr-db-backups-volume"
 	"arr-db-config-volume"
 	"arr-db-data-volume"
@@ -102,7 +100,6 @@ readonly VOLUMES=(
 	"gatus-db-config-volume"
 	"gatus-db-data-volume"
 	"gluetun-volume"
-	"homarr-volume"
 	"immich-cache-config-volume"
 	"immich-cache-data-volume"
 	"immich-db-volume"
@@ -142,7 +139,6 @@ readonly CHOWN_VOLUMES=(
 	"beszel-data-volume"
 	"chhoto-volume"
 	"dozzle-volume"
-	"homarr-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"navidrome-backups-volume"

@@ -24,7 +24,7 @@ services:
       - /etc/localtime:/etc/localtime:ro # Sets the timezone.
       - jellyfin-cache:/cache:rw # Jellyfin cache storage.
       - jellyfin-config:/config:rw # Jellyfin configuration storage.
-      - media-library:/library:ro # Media library mount. Read-only, don't try to write to it, doofus.
+      - ${MEDIA_LIBRARY_PATH}:/library:ro # Media library mount. Read-only, don't try to write to it, doofus.
     cap_drop:
       - ALL # Drop all unnecessary permissions.
     deploy:
@@ -51,9 +51,3 @@ volumes:
   jellyfin-config:
     external: true
     name: jellyfin-config-volume
-  media-library:
-    name: media-library-bind
-    driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}"
-      o: bind
-      type: none

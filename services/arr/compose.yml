@@ -63,7 +63,7 @@ services:
       - 6767/tcp # Bazarr web interface reverse proxied at bazarr.${INTERNAL_DOMAIN}.
     volumes:
       - bazarr:/config:rw # Bazarr configuration volume.
-      - media-library:/library:rw # Media library mount.
+      - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
     healthcheck:
       test: "curl --fail --retry 0 --silent http://127.0.0.1:6767 || exit 1"
 
@@ -91,10 +91,11 @@ services:
     volumes:
       - ./beets:/beets:ro # Beets configuration mount.
       - ./scripts:/scripts:ro # Scripts mount.
-      - downloads:/downloads:rw # Download storage mount.
+      - ${DOWNLOADS_PATH}:/downloads:rw # Download storage mount.
       - lidarr:/config:rw # Lidarr configuration volume.
-      - media-library:/library:rw # Media library mount.
+      - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
     healthcheck:
+      interval: 1m # Run on a slower time as we install packages.
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686 || exit 1"
     extra_hosts:
       - "host.docker.internal:host-gateway" # Allows connecting to local HTTP services through this; used with beets.
@@ -125,8 +126,8 @@ services:
     expose:
       - 8989/tcp # Sonarr web interface reverse proxied at sonarr.${INTERNAL_DOMAIN}.
     volumes:
-      - downloads:/downloads:rw # Download storage mount.
-      - media-library:/library:rw # Media library mount.
+      - ${DOWNLOADS_PATH}:/downloads:rw # Download storage mount.
+      - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
       - sonarr:/sonarr/etc:rw # Sonarr configuration volume.
 
   # Radarr: Movie manager, organizer, and PVR. https://radarr.video
@@ -139,8 +140,8 @@ services:
       - 7878/tcp # Radarr web interface reverse proxied at radarr.${INTERNAL_DOMAIN}.
     volumes:
       - ./scripts:/scripts:ro # Scripts mount.
-      - downloads:/downloads:rw # Download storage mount.
-      - media-library:/library:rw # Media library mount.
+      - ${DOWNLOADS_PATH}:/downloads:rw # Download storage mount.
+      - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
       - radarr:/radarr/etc:rw # Radarr configuration volume.
 
   # Byparr: Captcha solver and session cookie scraper. https://github.com/ThePhaseless/Byparr
@@ -211,7 +212,7 @@ services:
     networks:
       - internal
     volumes:
-      - downloads:/downloads:rw
+      - ${DOWNLOADS_PATH}:/downloads:rw
 
 networks:
   external:
@@ -243,15 +244,3 @@ volumes:
   sonarr:
     name: sonarr-volume
     external: true
-  downloads:
-    name: downloads-bind
-    driver_opts:
-      device: "${DOWNLOADS_PATH}"
-      o: bind
-      type: none
-  media-library:
-    name: media-library-bind
-    driver_opts:
-      device: "${MEDIA_LIBRARY_PATH}"
-      o: bind
-      type: none
