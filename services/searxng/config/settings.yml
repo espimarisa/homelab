@@ -19,7 +19,7 @@ search:
   safe_search: 0
   autocomplete: "google"
   autocomplete_min: 4
-  favicon_resolver: ""
+  favicon_resolver: "google"
   default_lang: "en"
   formats:
     - html
