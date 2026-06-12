@@ -22,7 +22,7 @@ services:
       ND_ENABLEGRAVATAR: "true" # Enables Gravatar support for profile pictures.
       ND_ENABLEINSIGHTSCOLLECTOR: "false" # Opts out of telemetry.
       ND_ENABLESHARING: "true" # Enables the sharing API.
-      ND_ENABLETRANSCODINGCANCELLATION: "true" # Stop transcoding when cancelled.
+      ND_TRANSCODING_ENABLECANCELLATION: "true" # Stop transcoding when cancelled.
       ND_LASTFM_APIKEY: "${LASTFM_API_KEY}" # https://www.last.fm/api/authentication
       ND_LASTFM_ENABLED: "true" # Enables Last.fm integrations.
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}" # https://www.last.fm/api/authentication
