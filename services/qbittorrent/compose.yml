@@ -58,6 +58,14 @@ services:
           cpus: 1
           memory: 512M
 
+networks:
+  external:
+    name: external-network
+    external: true
+  gluetun:
+    name: gluetun-network
+    external: true
+
 volumes:
   qbittorrent-config:
     name: qbittorrent-config-volume

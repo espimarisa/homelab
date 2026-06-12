@@ -1,0 +1,84 @@
+# SearXNG: Self-hosted metasearch engine.
+# https://docs.searxng.org/
+
+---
+x-defaults: &defaults
+  read_only: true
+  restart: unless-stopped
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  searxng:
+    <<: *defaults
+    image: ghcr.io/searxng/searxng:latest
+    env_file: ../../.env # Required for passing variables to the configuration file.
+    user: "${PUID}:${PGID}"
+    container_name: searxng
+    environment:
+      SEARXNG_BASE_URL: "${SEARXNG_URL}" # URL to use.
+      SEARXNG_SECRET: "${SEARXNG_SECRET_KEY}" # SearXNG secret key.
+      SEARXNG_VALKEY_URL: "valkey://:${SEARXNG_REDIS_PASSWORD}@searxng-cache:6379/0"
+    ports:
+      - 8080:8080/tcp # SearXNG web interface reverse proxied at ${SEARXNG_URL}.
+    networks:
+      - external
+      - internal
+    tmpfs:
+      - "/run:uid=${PUID},gid=${PGID}"
+      - "/tmp:uid=${PUID},gid=${PGID}"
+      - "/var:uid=${PUID},gid=${PGID}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Sets the timezone.
+      - ./config:/etc/searxng:ro # Local configuration mount.
+      - searxng:/var/cache/searxng:rw # Searxng data and cache.
+    depends_on:
+      searxng-cache:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1G
+
+  searxng-cache:
+    <<: *defaults
+    image: ghcr.io/11notes/redis:8.8
+    container_name: searxng-cache
+    environment:
+      REDIS_PASSWORD: "${SEARXNG_REDIS_PASSWORD}" # Sets the redis password.
+      TZ: "${TZ}" # Sets the timezone.
+    networks:
+      - internal
+    tmpfs:
+      - "/tmp:uid=1000,gid=1000" # Required for read-only image.
+    volumes:
+      - searxng-cache-config:/redis/etc:rw # Redis cache config storage.
+      - searxng-cache-data:/redis/var:rw # Redis cache storage.
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2G
+
+networks:
+  external:
+    name: external-network
+    external: true
+  internal:
+    name: internal-network
+    external: true
+
+volumes:
+  searxng:
+    external: true
+    name: searxng-volume
+  searxng-cache-config:
+    external: true
+    name: searxng-cache-config-volume
+  searxng-cache-data:
+    external: true
+    name: searxng-cache-data-volume

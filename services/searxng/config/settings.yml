@@ -1,0 +1,49 @@
+use_default_settings:
+  engines:
+    keep_only:
+      - google
+      - google images
+      - google videos
+      - google news
+      - google map
+
+general:
+  debug: false
+  instance_name: "search@marinet"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: false
+
+search:
+  safe_search: 0
+  autocomplete: "google"
+  autocomplete_min: 4
+  favicon_resolver: ""
+  default_lang: "en"
+  formats:
+    - html
+
+server:
+  bind_address: "0.0.0.0"
+  port: 8080
+  public_instance: true
+  image_proxy: true
+
+ui:
+  query_in_title: false
+  default_theme: simple
+  center_alignment: false
+  default_locale: "en"
+  theme_args:
+    simple_style: auto
+  search_on_category_select: true
+  hotkeys: default
+  url_formatting: pretty
+
+categories_as_tabs:
+  general:
+  images:
+  videos:
+  news:
+  map:

@@ -261,6 +261,12 @@ endpoints:
     group: Services
     url: https://${OPENCLOUD_URL}
 
+  # SearXNG.
+  - name: SearXNG
+    <<: *defaults-http
+    group: Services
+    url: https://${SEARXNG_URL}
+
   # Seerr.
   - name: Seerr
     <<: *defaults-http
