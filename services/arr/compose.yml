@@ -75,6 +75,7 @@ services:
     container_name: lidarr
     hostname: lidarr
     environment:
+      BEETS_DISCORD_WEBHOOK_URL: "${BEETS_DISCORD_WEBHOOK_URL}" # Pass Beets webhook URL for scripts.
       DOCKER_MODS: "linuxserver/mods:universal-package-install" # Add universal-package-install support.
       GENIUS_API_KEY: "${GENIUS_API_KEY}" # Pass Genius API key for scripts.
       INSTALL_PACKAGES: "beets chromaprint ffmpeg gettext-envsubst imagemagick py3-beautifulsoup4 py3-discogs-client py3-flask py3-langdetect py3-pyacoustid py3-pylast py3-requests" # Installs required alpine packages for beets.
