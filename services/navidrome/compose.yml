@@ -26,7 +26,6 @@ services:
       ND_LASTFM_APIKEY: "${LASTFM_API_KEY}" # https://www.last.fm/api/authentication
       ND_LASTFM_ENABLED: "true" # Enables Last.fm integrations.
       ND_LASTFM_SECRET: "${LASTFM_API_SECRET}" # https://www.last.fm/api/authentication
-      ND_MUSICFOLDER: "/library/music" # Configures the music library path.
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}" # openssl rand -hex 32
       ND_PLUGINS_AUTORELOAD: "true" # Auto reload plugins.
       ND_PLUGINS_ENABLED: "true" # Enable plugins.
@@ -42,7 +41,7 @@ services:
     networks:
       - external
     volumes:
-      - ${MEDIA_LIBRARY_PATH}:/library:ro # Media library storage bind.
+      - ${MEDIA_LIBRARY_PATH}/music:/music:ro # Music library storage bind.
       - navidrome-backups:/backups:rw # Navidrome backups volume.
       - navidrome-cache:/cache:rw # Navidrome cache volume.
       - navidrome-data:/data:rw # Navidrome data volume.
