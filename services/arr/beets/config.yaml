@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: embedart fetchart ftintitle lastgenre lyrics replaygain scrub zero # Plugins to enable.
+plugins: embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 
 # Matching/metadata options.
@@ -16,7 +16,7 @@ musicbrainz:
   host: host.docker.internal:5000
   https: no
   ratelimit: 1
-  searchlimit: 20
+  search_limit: 20
 
 # Import configuration.
 import:
