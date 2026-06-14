@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+plugins: fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 languages: "en" # Use English names preferred.
 
@@ -35,11 +35,6 @@ import:
 
 # Album art configuration.
 art_filename: cover
-embedart:
-  auto: yes # Automatically embed album art.
-  maxwidth: 1500 # Save album art up to 1500x1500.
-  remove_art_file: no # Do not remove the album art file.
-  compare_threshold: 0 # Force Beets to always use the newly fetched art instead of getting stuck on old embedded garbage.
 fetchart:
   store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
