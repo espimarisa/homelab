@@ -19,6 +19,12 @@ LOG_DIR="/config/beets-logs"
 MAIN_LOG="$LOG_DIR/beets-connect.log"
 UNPROCESSED_LOG="$LOG_DIR/beets-unprocessed.log"
 
+# HORRIBLE MONKEY PATCH SO WE CAN SELFHOST LYRICS
+# WHY IS IT HARDCODED
+# WTF AM I DOING
+BEETS_LYRICS=$(python3 -c "import beetsplug.lyrics; print(beetsplug.lyrics.__file__)")
+sed -i 's|https://lrclib.net/api|http://lrclib-rs:3300/api|g' "$BEETS_LYRICS"
+
 # Creates required directories.
 mkdir -p "$LOG_DIR"
 mkdir -p "$BEETSDIR"
