@@ -37,10 +37,10 @@ lidarr:
 
     # Custom Format definitions.
     customFormatDefinitions:
-      # 192KHz & 176.4KHz releases. High-res fallback.
+      # 192KHz & 176.4KHz releases. Penalized to prefer 16-bit.
       - trash_id: lidarr-192khz
         trash_scores:
-          default: 50
+          default: -100
         trash_description: 192 KHz
         name: 192 KHz
         includeCustomFormatWhenRenaming: false
@@ -52,10 +52,10 @@ lidarr:
             fields:
               value: '(?i)\b(192|176\.4) ?k(hz)?\b|\b24[/-]?(192|176\.4)\b|\b(192|176\.4)[/-]?24\b'
 
-      # 96KHz & 88.2KHz releases. High-res fallback.
+      # 96KHz & 88.2KHz releases. Penalized to prefer 16-bit.
       - trash_id: lidarr-96khz
         trash_scores:
-          default: 50
+          default: -100
         trash_description: 96 KHz
         name: 96 KHz
         includeCustomFormatWhenRenaming: false
@@ -67,10 +67,10 @@ lidarr:
             fields:
               value: '(?i)\b(96|88\.2) ?k(hz)?\b|\b24[/-]?(96|88\.2)\b|\b(96|88\.2)[/-]?24\b'
 
-      # 24-bit releases. High-res fallback.
+      # 24-bit releases. Penalized to prefer 16-bit.
       - trash_id: lidarr-24bit
         trash_scores:
-          default: 50
+          default: -100
         trash_description: 24 Bit
         name: 24 Bit
         includeCustomFormatWhenRenaming: false
@@ -113,7 +113,7 @@ lidarr:
             fields:
               value: '\bmono\b'
 
-      # Lossless releases. Baseline, required for TubiFarry parsing... sigh.
+      # Lossless releases. Baseline for standard 16-bit.
       - trash_id: lidarr-lossless
         trash_scores:
           default: 1000
@@ -134,10 +134,10 @@ lidarr:
             fields:
               value: '(?i)\b(Lossless)\b'
 
-      # CD releases.
+      # CD releases. Slight bump for accuracy.
       - trash_id: lidarr-cd
         trash_scores:
-          default: 500
+          default: 10
         includeCustomFormatWhenRenaming: false
         name: CD
         trash_description: CD
@@ -179,10 +179,10 @@ lidarr:
             fields:
               value: '(?i)\b(bonus|deluxe|extended|special ?edition)\b'
 
-      # Vinyl releases. Fallback only.
+      # Vinyl releases. Heavy penalty.
       - trash_id: lidarr-vinyl
         trash_scores:
-          default: 10
+          default: -200
         includeCustomFormatWhenRenaming: false
         name: Vinyl
         trash_description: Vinyl
@@ -194,10 +194,10 @@ lidarr:
             fields:
               value: '(?i)\b(Vinyl|Cassette)\b'
 
-      # WEB releases.
+      # WEB releases. Slight bump for accuracy.
       - trash_id: lidarr-web
         trash_scores:
-          default: 500
+          default: 10
         includeCustomFormatWhenRenaming: false
         name: WEB
         trash_description: WEB
@@ -266,7 +266,7 @@ lidarr:
         upgrade:
           allowed: true
           until_quality: Any FLAC
-          until_score: 1500 # Stops upgrading when it hits a standard Lossless (1000) + WEB/CD (500) release.
+          until_score: 1000 # Stops upgrading exactly at standard 16-bit Lossless.
         min_format_score: -500
         quality_sort: top
         qualities:
