@@ -37,10 +37,10 @@ lidarr:
 
     # Custom Format definitions.
     customFormatDefinitions:
-      # 192KHz & 176.4KHz releases. Negative scoring as these are usually bad upscales or Vinyl rips.
+      # 192KHz & 176.4KHz releases.
       - trash_id: lidarr-192khz
         trash_scores:
-          default: -10000
+          default: 1300
         trash_description: 192 KHz
         name: 192 KHz
         includeCustomFormatWhenRenaming: false
@@ -52,10 +52,10 @@ lidarr:
             fields:
               value: '(?i)\b(192|176\.4) ?k(hz)?\b|\b24[/-]?(192|176\.4)\b|\b(192|176\.4)[/-]?24\b'
 
-      # 96KHz & 88.2KHz releases. Slight negative scoring to prefer FLAC16-44, but FLAC24-96 is OK for things only in it.
+      # 96KHz & 88.2KHz releases.
       - trash_id: lidarr-96khz
         trash_scores:
-          default: -200
+          default: 1200
         trash_description: 96 KHz
         name: 96 KHz
         includeCustomFormatWhenRenaming: false
@@ -67,7 +67,7 @@ lidarr:
             fields:
               value: '(?i)\b(96|88\.2) ?k(hz)?\b|\b24[/-]?(96|88\.2)\b|\b(96|88\.2)[/-]?24\b'
 
-      # 24-bit releases. Slight negative scoring to prefer FLAC16-44, but FLAC24 is OK for things only in it.
+      # 24-bit releases.
       - trash_id: lidarr-24bit
         trash_scores:
           default: -200
@@ -96,27 +96,6 @@ lidarr:
             required: false
             fields:
               value: '(?i)\b(explicit)\b'
-
-      # Lossless releases. Baseline.
-      - trash_id: lidarr-lossless
-        trash_scores:
-          default: 1000
-        trash_description: Lossless
-        name: Lossless
-        includeCustomFormatWhenRenaming: false
-        specifications:
-          - name: FLAC
-            implementation: ReleaseTitleSpecification
-            negate: false
-            required: false
-            fields:
-              value: '\bFLAC\b'
-          - name: Lossless
-            implementation: ReleaseTitleSpecification
-            negate: false
-            required: false
-            fields:
-              value: '(?i)\b(Lossless)\b'
 
       # Mono releases. Never prefer.
       - trash_id: lidarr-mono
@@ -164,12 +143,10 @@ lidarr:
             fields:
               value: '(?i)\b(remix|remixes)\b'
 
-      # Deluxe / Extended releases. Slight penalty, prefer grabbing original CD releases.
-      # This scoring should work out to CD > WEB > Deluxe CD > Deluxe Web > Vinyl
-      # I like the goodies on Deluxe editions but 90% of them are found on EPs or Singles which we grab anyways.
+      # Deluxe / Extended releases.
       - trash_id: lidarr-deluxe
         trash_scores:
-          default: -200
+          default: -50 # Slight penalty to preserve preferred formats.
         trash_description: Deluxe / Extended
         name: Deluxe / Extended
         includeCustomFormatWhenRenaming: false
@@ -182,12 +159,10 @@ lidarr:
               value: '(?i)\b(bonus|deluxe|extended|special ?edition)\b'
 
       # Vinyl releases. Slight penalty, CD is preferred but allow Vinyl if nothing else is found. CD > WEB > Vinyl.
-      # I like the warmer audio of vinyl releases but it's best left as a fallback format due to how
-      # particular vinyl ripping can be. I've had many bad rips come in when I preferred it.
-      # Outright banning Vinyl has the effect of not getting certain releases that only came on vinyl.
+      # When 24-bit gets involved, Vinyl is usually preferred.
       - trash_id: lidarr-vinyl
         trash_scores:
-          default: -300 # Vinyl < Deluxe WEB < Deluxe CD < WEB < CD
+          default: -300
         includeCustomFormatWhenRenaming: false
         name: Vinyl
         trash_description: Vinyl
@@ -234,10 +209,10 @@ lidarr:
         trash_scores:
           default: 50
         includeCustomFormatWhenRenaming: false
-        name: MQA
-        trash_description: MQA
+        name: Trusted Groups
+        trash_description: Trusted Groups
         specifications:
-          - name: MQA
+          - name: Trusted Groups
             implementation: ReleaseTitleSpecification
             negate: false
             required: false
@@ -254,7 +229,6 @@ lidarr:
           - lidarr-deluxe
           - lidarr-explicit
           - lidarr-groups
-          - lidarr-lossless
           - lidarr-mono
           - lidarr-mqa
           - lidarr-remix
@@ -270,13 +244,13 @@ lidarr:
           enabled: true
         upgrade:
           allowed: true
-          until_quality: FLAC # Do not upgrade things to 24Bit.
-          until_score: 1600 # Prefer CD TODO
-        min_format_score: 10 # Requires some form of metadata.
+          until_quality: FLAC 24bit
+          until_score: 1600
+        min_format_score: -300 # Allow a standard 16-bit Vinyl only if nothing exists.
         quality_sort: top
         qualities:
+          - name: FLAC 24bit
           - name: FLAC
-          - name: FLAC 24bit # However, allow FLAC 24Bit.
 
 # Radarr configuration.
 radarr:
