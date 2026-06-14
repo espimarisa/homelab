@@ -98,6 +98,7 @@ lidarr:
               value: '(?i)\b(explicit)\b'
 
       # Mono releases. Never prefer.
+      # This may break certain older releases.
       - trash_id: lidarr-mono
         trash_scores:
           default: -10000
@@ -112,7 +113,28 @@ lidarr:
             fields:
               value: '\bmono\b'
 
-      # CD releases. 16bit CD > 16bit WEB > Vinyl.
+      # Lossless releases. Baseline, required for TubiFarry parsing... sigh.
+      - trash_id: lidarr-lossless
+        trash_scores:
+          default: 1000
+        trash_description: Lossless
+        name: Lossless
+        includeCustomFormatWhenRenaming: false
+        specifications:
+          - name: FLAC
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '\bFLAC\b'
+          - name: Lossless
+            implementation: ReleaseTitleSpecification
+            negate: false
+            required: false
+            fields:
+              value: '(?i)\b(Lossless)\b'
+
+      # CD releases.
       - trash_id: lidarr-cd
         trash_scores:
           default: 600
@@ -128,7 +150,6 @@ lidarr:
               value: '(?i)\bCD\b'
 
       # Remixes. Negative bump.
-      # Hopefully this filters out 3rd party remixes of a lot of EDM songs.
       - trash_id: lidarr-remix
         trash_scores:
           default: -100
@@ -158,8 +179,7 @@ lidarr:
             fields:
               value: '(?i)\b(bonus|deluxe|extended|special ?edition)\b'
 
-      # Vinyl releases. Slight penalty, CD is preferred but allow Vinyl if nothing else is found. CD > WEB > Vinyl.
-      # When 24-bit gets involved, Vinyl is usually preferred.
+      # Vinyl releases.
       - trash_id: lidarr-vinyl
         trash_scores:
           default: -300
@@ -229,6 +249,7 @@ lidarr:
           - lidarr-deluxe
           - lidarr-explicit
           - lidarr-groups
+          - lidarr-lossless
           - lidarr-mono
           - lidarr-mqa
           - lidarr-remix
@@ -244,13 +265,15 @@ lidarr:
           enabled: true
         upgrade:
           allowed: true
-          until_quality: FLAC 24bit
-          until_score: 1600
-        min_format_score: -300 # Allow a standard 16-bit Vinyl only if nothing exists.
+          until_quality: Any FLAC
+          until_score: 2600
+        min_format_score: -500
         quality_sort: top
         qualities:
-          - name: FLAC 24bit
-          - name: FLAC
+          - name: Any FLAC
+            qualities:
+              - FLAC 24bit
+              - FLAC
 
 # Radarr configuration.
 radarr:
