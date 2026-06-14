@@ -7,15 +7,15 @@ threaded: yes # Enable multithreading.
 match:
   preferred:
     original_year: yes # Prefer the original year instead of the reissue year.
-original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
-per_disc_numbering: yes # Enable per-disk numbering.
+  original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
+  per_disc_numbering: yes # Enable per-disk numbering.
 
 # MusicBrainz configuration.
 # Remove if you do not self-host a MusicBrainz server!
 musicbrainz:
   host: host.docker.internal:5000
   https: no
-  ratelimit: 100
+  ratelimit: 1
   searchlimit: 20
 
 # Import configuration.
