@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+plugins: embedart fetchart ftintitle lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 languages: "en" # Use English names preferred.
 
@@ -16,6 +16,7 @@ match:
 musicbrainz:
   host: host.docker.internal:5000
   https: no
+  genres: yes # Enable Genre support.
   ratelimit: 1
   search_limit: 20
   extra_tags: [alias, barcode, catalognum, country, label, media, tracks, year]
@@ -59,16 +60,6 @@ ftintitle:
   auto: yes # Automatically move featured artists to the title.
   drop: no # Do not drop them entirely.
   format: (feat. {0}) # The format appended to the track title.
-
-# Last.fm genre configuration.
-lastgenre:
-  auto: yes # Automatically fetch genre data from Last.fm.
-  separator: "; "
-  count: 1 # Fetch the most popular genres.
-  force: yes # Force setting the genre tags.
-  keep_existing: no # Do not keep pre-existing genre tags.
-  prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
-  source: album # Source the genre from the album.
 
 # Lyrics configuration.
 lyrics:
