@@ -2,6 +2,7 @@ directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
 plugins: embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
+languages: "en" # Use English names preferred.
 
 # Matching/metadata options.
 match:
@@ -17,6 +18,7 @@ musicbrainz:
   https: no
   ratelimit: 1
   search_limit: 20
+  extra_tags: [alias, barcode, catalognum, country, label, media, tracks, year]
 
 # Import configuration.
 import:
