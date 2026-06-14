@@ -22,8 +22,9 @@ UNPROCESSED_LOG="$LOG_DIR/beets-unprocessed.log"
 # HORRIBLE MONKEY PATCH SO WE CAN SELFHOST LYRICS
 # WHY IS IT HARDCODED
 # WTF AM I DOING
+# replace 100.64.0.xxx with your ip lol this is dumb
 BEETS_LYRICS=$(python3 -c "import beetsplug.lyrics; print(beetsplug.lyrics.__file__)")
-sed -i 's|https://lrclib.net/api|http://lrclib-rs:3300/api|g' "$BEETS_LYRICS"
+sed -i 's|https://lrclib.net/api|http://100.64.0.100:3300/api|g' "$BEETS_LYRICS"
 
 # Creates required directories.
 mkdir -p "$LOG_DIR"
