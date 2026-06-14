@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: autobpm chroma embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+plugins: chroma embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 languages: "en" # Use English names preferred.
 
@@ -50,11 +50,6 @@ fetchart:
   quality: 100 # Use 100% quality for downscaled images.
   minwidth: 500 # Require album art to be 500x500 or larger.
   sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
-
-# AutoBPM configuration.
-autobpm:
-  auto: yes # Automatically analyze audio and calculate BPM during import
-  force: yes # Re-analyze files.
 
 # Acoustic fingerprinting configuration.
 chroma:
