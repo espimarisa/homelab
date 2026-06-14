@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+plugins: autobpm chroma embedart fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 languages: "en" # Use English names preferred.
 
@@ -8,8 +8,10 @@ languages: "en" # Use English names preferred.
 match:
   preferred:
     original_year: yes # Prefer the original year instead of the reissue year.
-  original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
-  per_disc_numbering: yes # Enable per-disk numbering.
+    countries: ["US", "GB", "XW"] # Heavily prioritize US, UK, and Worldwide releases.
+    media: ["CD", "Digital Media|File"] # Target standard CD and high-quality digital files first.
+original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
+per_disc_numbering: yes # Enable per-disk numbering.
 
 # MusicBrainz configuration.
 # Remove if you do not self-host a MusicBrainz server!
@@ -25,7 +27,6 @@ import:
   copy: no # Do not copy files.
   hardlink: no # Do not hardlink files.
   incremental: no # Skip processed items. Set this to false if you wanna run things again.
-  log: /config/beets-logs/beet.log # Save log files.
   move: no # Do not move files.
   quiet_fallback: skip # Skip files that cannot automatically be matched.
   resume: no # Do not resume if exited.
@@ -40,21 +41,26 @@ embedart:
   remove_art_file: no # Do not remove the album art file.
   compare_threshold: 0 # Force Beets to always use the newly fetched art instead of getting stuck on old embedded garbage.
 fetchart:
+  store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
-  cover_names: cover front back art folder album # Names to store files as.
   enforce_ratio: yes # Require 1:1 images.
   fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
-  maxwidth: 1500 # Max width of 1500.
+  maxwidth: 1200 # Max width of 1200x1200.
+  quality: 100 # Use 100% quality for downscaled images.
   minwidth: 500 # Require album art to be 500x500 or larger.
-  sources: [filesystem, coverart, itunes, fanarttv, lastfm] # Sources to enable.
+  sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
+
+# AutoBPM configuration.
+autobpm:
+  auto: yes # Automatically analyze audio and calculate BPM during import
+  force: yes # Re-analyze files.
 
 # Acoustic fingerprinting configuration.
 chroma:
   auto: yes # Automatically fingerprint and match unrecognized files.
 
 # Feature in Title configuration.
-# This is usually frowned upon but I find players don't handle multi artist tags well.
 ftintitle:
   auto: yes # Automatically move featured artists to the title.
   drop: no # Do not drop them entirely.
@@ -62,14 +68,11 @@ ftintitle:
 
 # Last.fm genre configuration.
 lastgenre:
-  canonical: yes # Use canonical mapping black magic.
   auto: yes # Automatically fetch genre data from Last.fm.
-  separator: "; "
+  canonical: yes # Use canonical mapping black magic.
   count: 3 # Fetch the 3 most popular genres.
   force: yes # Force setting the genre tags.
-  keep_existing: no # Do not keep pre-existing genre tags.
   prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
-  source: album # Source the genre from the album.
 
 # Lyrics configuration.
 lyrics:

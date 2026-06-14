@@ -19,13 +19,6 @@ LOG_DIR="/config/beets-logs"
 MAIN_LOG="$LOG_DIR/beets-connect.log"
 UNPROCESSED_LOG="$LOG_DIR/beets-unprocessed.log"
 
-# HORRIBLE MONKEY PATCH SO WE CAN SELFHOST LYRICS
-# WHY IS IT HARDCODED
-# WTF AM I DOING
-# replace 100.64.0.xxx with your ip lol this is dumb
-BEETS_LYRICS=$(python3 -c "import beetsplug.lyrics; print(beetsplug.lyrics.__file__)")
-sed -i 's|https://lrclib.net/api|http://100.64.0.100:3300/api|g' "$BEETS_LYRICS"
-
 # Creates required directories.
 mkdir -p "$LOG_DIR"
 mkdir -p "$BEETSDIR"
@@ -74,7 +67,6 @@ fi
 FIRST_TRACK_DIR=$(dirname "${lidarr_addedtrackpaths%%|*}")
 
 # If Lidarr put the track in a "CD 1" or "Disc 2" subfolder, target the parent album folder instead.
-# This really shouldn't happen since subfolders for disks is not good, but lets handle it anyways.
 if echo "$FIRST_TRACK_DIR" | grep -qiE "/(cd|disc|volume)\s*[0-9]+$"; then
     LIDARR_ALBUM_PATH=$(dirname "$FIRST_TRACK_DIR")
 else
@@ -84,22 +76,28 @@ fi
 # Extracts the directory path of the album.
 ALBUM_FOLDER_NAME=$(basename "$LIDARR_ALBUM_PATH")
 
-# Creates a log file for the run.
+# Create a temporary log file for the run.
 # shellcheck disable=SC2154
-RUN_LOG="$LOG_DIR/import-${lidarr_albumrelease_mbid}-$(date +%s).log"
+TEMP_LOG="$LOG_DIR/temp-${lidarr_albumrelease_mbid}-$(date +%s).log"
 echo "Processing $ALBUM_FOLDER_NAME." >>"$MAIN_LOG"
 
-# Run Beets import; use double-verbose mode for debugging the log file.
-BEET_OUTPUT=$(beet -vv import -q "$LIDARR_ALBUM_PATH" 2>&1)
-echo "$BEET_OUTPUT" >"$RUN_LOG"
+# Run Beets import; let Beets figure out the ID on its own!
+BEET_OUTPUT=$(beet -v import -q "$LIDARR_ALBUM_PATH" 2>&1)
+echo "$BEET_OUTPUT" >"$TEMP_LOG"
 
-# Parses the results of the beets run.
+# Parses the results of the beets run and rename the log accordingly.
 if echo "$BEET_OUTPUT" | grep -qiE "skipping|no matching release"; then
-    echo "Failed importing $LIDARR_ALBUM_PATH. See $RUN_LOG" >>"$UNPROCESSED_LOG"
-    send_discord_webhook "failure" "$ALBUM_FOLDER_NAME" "$RUN_LOG"
+    FINAL_LOG="$LOG_DIR/failed-${lidarr_albumrelease_mbid}-$(date +%s).log"
+    mv "$TEMP_LOG" "$FINAL_LOG"
+
+    echo "Failed importing $LIDARR_ALBUM_PATH. See $FINAL_LOG" >>"$UNPROCESSED_LOG"
+    send_discord_webhook "failure" "$ALBUM_FOLDER_NAME" "$FINAL_LOG"
 else
-    echo "Successfully imported $LIDARR_ALBUM_PATH. See $RUN_LOG" >>"$MAIN_LOG"
-    send_discord_webhook "success" "$ALBUM_FOLDER_NAME" "$RUN_LOG"
+    FINAL_LOG="$LOG_DIR/import-${lidarr_albumrelease_mbid}-$(date +%s).log"
+    mv "$TEMP_LOG" "$FINAL_LOG"
+
+    echo "Successfully imported $LIDARR_ALBUM_PATH. See $FINAL_LOG" >>"$MAIN_LOG"
+    send_discord_webhook "success" "$ALBUM_FOLDER_NAME" "$FINAL_LOG"
 
     # Tell Lidarr's API to do a re-scan when complete.
     if [ -n "$LIDARR_API_KEY" ] && [ -n "$lidarr_album_id" ]; then
