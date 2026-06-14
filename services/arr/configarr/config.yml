@@ -37,10 +37,10 @@ lidarr:
 
     # Custom Format definitions.
     customFormatDefinitions:
-      # 192KHz & 176.4KHz releases.
+      # 192KHz & 176.4KHz releases. The highest tier of 24-bit.
       - trash_id: lidarr-192khz
         trash_scores:
-          default: 1300
+          default: 300
         trash_description: 192 KHz
         name: 192 KHz
         includeCustomFormatWhenRenaming: false
@@ -52,10 +52,10 @@ lidarr:
             fields:
               value: '(?i)\b(192|176\.4) ?k(hz)?\b|\b24[/-]?(192|176\.4)\b|\b(192|176\.4)[/-]?24\b'
 
-      # 96KHz & 88.2KHz releases.
+      # 96KHz & 88.2KHz releases. The second highest tier of 24-bit.
       - trash_id: lidarr-96khz
         trash_scores:
-          default: 1200
+          default: 200
         trash_description: 96 KHz
         name: 96 KHz
         includeCustomFormatWhenRenaming: false
@@ -70,7 +70,7 @@ lidarr:
       # 24-bit releases.
       - trash_id: lidarr-24bit
         trash_scores:
-          default: -200
+          default: 300
         trash_description: 24 Bit
         name: 24 Bit
         includeCustomFormatWhenRenaming: false
@@ -134,10 +134,10 @@ lidarr:
             fields:
               value: '(?i)\b(Lossless)\b'
 
-      # CD releases.
+      # CD releases. Slight bump above untagged 16-bit, but kept below generic 24-bit.
       - trash_id: lidarr-cd
         trash_scores:
-          default: 600
+          default: 100
         includeCustomFormatWhenRenaming: false
         name: CD
         trash_description: CD
@@ -194,10 +194,10 @@ lidarr:
             fields:
               value: '(?i)\b(Vinyl|Cassette)\b'
 
-      # WEB releases. Prefer over Vinyl, but CD is still superior.
+      # WEB releases.
       - trash_id: lidarr-web
         trash_scores:
-          default: 500
+          default: 50
         includeCustomFormatWhenRenaming: false
         name: WEB
         trash_description: WEB
@@ -266,7 +266,7 @@ lidarr:
         upgrade:
           allowed: true
           until_quality: Any FLAC
-          until_score: 2600
+          until_score: 1600 # Stops upgrading when it hits a 192kHz 24-bit release.
         min_format_score: -500
         quality_sort: top
         qualities:
