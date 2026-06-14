@@ -207,7 +207,7 @@ lidarr:
             negate: false
             required: false
             fields:
-              value: '(?i)\b(WEB|WEB(DL)?|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
+              value: '(?i)\b(WEB-?DL|WEB-?RIP|Deezer|Tidal|Qobuz|Amazon(HD)?|iTunes)\b'
 
       # MQA releases. Never prefer.
       - trash_id: lidarr-mqa
