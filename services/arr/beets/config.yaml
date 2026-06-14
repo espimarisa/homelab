@@ -6,9 +6,16 @@ threaded: yes # Enable multithreading.
 # Matching/metadata options.
 match:
   preferred:
+    countries: ["US", "JP"]
+    media: ["CD", "Digital Media"]
     original_year: yes # Prefer the original year instead of the reissue year.
   original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
   per_disc_numbering: yes # Enable per-disk numbering.
+  ignore_mismatches: [albumartist, year] # Loosens strictness.
+  strong_rec_threshold: 0.10
+  medium_rec_threshold: 0.20
+  languages: [en, ja]
+  rec_gap_threshold: 0.25
 
 # MusicBrainz configuration.
 # Remove if you do not self-host a MusicBrainz server!
@@ -17,13 +24,13 @@ musicbrainz:
   https: no
   ratelimit: 1
   searchlimit: 20
+  extra_tags: [year, catalognum, country, media, label]
 
 # Import configuration.
 import:
   copy: no # Do not copy files.
   hardlink: no # Do not hardlink files.
-  incremental: yes # Skip processed items. Set this to false if you wanna run things again.
-  languages: [en] # Prioritizes English aliases from MusicBrainz.
+  incremental: no # Skip processed items. Set this to false if you wanna run things again.
   log: /config/beets-logs/beet.log # Save log files.
   move: no # Do not move files.
   quiet_fallback: skip # Skip files that cannot automatically be matched.
