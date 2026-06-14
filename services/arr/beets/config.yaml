@@ -47,7 +47,7 @@ fetchart:
   lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   maxwidth: 1500 # Max width of 1500.
   minwidth: 500 # Require album art to be 500x500 or larger.
-  sources: [itunes, fanarttv, lastfm, filesystem] # Sources to enable.
+  sources: [filesystem, coverart, itunes, fanarttv, lastfm] # Sources to enable.
 
 # Acoustic fingerprinting configuration.
 chroma:
