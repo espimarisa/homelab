@@ -38,17 +38,13 @@ art_filename: cover
 fetchart:
   store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
-  enforce_ratio: yes # Require 1:1 images.
+  enforce_ratio: 10px # Allows a 10-pixel deviation from a perfect square.
   fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   maxwidth: 1200 # Max width of 1200x1200.
   quality: 100 # Use 100% quality for downscaled images.
   minwidth: 500 # Require album art to be 500x500 or larger.
   sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
-
-# Acoustic fingerprinting configuration.
-chroma:
-  auto: yes # Automatically fingerprint and match unrecognized files.
 
 # Feature in Title configuration.
 ftintitle:
