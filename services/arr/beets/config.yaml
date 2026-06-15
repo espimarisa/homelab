@@ -38,7 +38,7 @@ art_filename: cover
 fetchart:
   store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
-  enforce_ratio: 10px # Allows a 10-pixel deviation from a perfect square.
+  enforce_ratio: yes # Require square images.
   fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   maxwidth: 1200 # Max width of 1200x1200.
