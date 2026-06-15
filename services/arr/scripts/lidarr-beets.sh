@@ -23,6 +23,11 @@ UNPROCESSED_LOG="$LOG_DIR/beets-unprocessed.log"
 mkdir -p "$LOG_DIR"
 mkdir -p "$BEETSDIR"
 
+# HORRIBLE MONKEY PATCH SO WE CAN SELFHOST LYRICS
+# Finds the plugin and rewrites the hardcoded URL to point to the local Docker network
+BEETS_LYRICS=$(python3 -c "import beetsplug.lyrics; print(beetsplug.lyrics.__file__)")
+sed -i 's|https://lrclib.net/api|http://host.docker.internal:3300/api|g' "$BEETS_LYRICS"
+
 # Discord Webhook Function
 send_discord_webhook() {
     local status="$1"
