@@ -6,8 +6,6 @@ languages: "en" # Use English names for aliases.
 
 # Matching/metadata options.
 match:
-  distance_weights:
-    media: 5.0
   preferred:
     original_year: yes # Prefer the original year instead of the reissue year.
     countries: ["US", "GB", "XW"] # Heavily prioritize US, UK, and Worldwide releases.
