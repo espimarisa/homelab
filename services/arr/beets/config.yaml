@@ -1,11 +1,13 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+plugins: chroma fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
-languages: "en" # Use English names preferred.
+languages: "en" # Use English names for aliases.
 
 # Matching/metadata options.
 match:
+  distance_weights:
+    media: 5.0
   preferred:
     original_year: yes # Prefer the original year instead of the reissue year.
     countries: ["US", "GB", "XW"] # Heavily prioritize US, UK, and Worldwide releases.
@@ -26,7 +28,7 @@ musicbrainz:
 import:
   copy: no # Do not copy files.
   hardlink: no # Do not hardlink files.
-  incremental: yes # Skip processed items. Set this to false if you wanna run things again.
+  incremental: no # Do not skip processed items. Set this to true if you don't intend on running things again.
   move: no # Do not move files.
   quiet_fallback: skip # Skip files that cannot automatically be matched.
   resume: no # Do not resume if exited.
@@ -44,7 +46,11 @@ fetchart:
   maxwidth: 1200 # Max width of 1200x1200.
   quality: 100 # Use 100% quality for downscaled images.
   minwidth: 500 # Require album art to be 500x500 or larger.
-  sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
+  sources: [coverart, fanarttv, itunes, lastfm, filesystem] # Sources to enable.
+
+# Chromaprint configuration.
+chroma:
+  auto: yes # Enable Chromaprint.
 
 # Feature in Title configuration.
 ftintitle:

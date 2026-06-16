@@ -23,12 +23,7 @@ UNPROCESSED_LOG="$LOG_DIR/beets-unprocessed.log"
 mkdir -p "$LOG_DIR"
 mkdir -p "$BEETSDIR"
 
-# HORRIBLE MONKEY PATCH SO WE CAN SELFHOST LYRICS
-# Finds the plugin and rewrites the hardcoded URL to point to the local Docker network
-BEETS_LYRICS=$(python3 -c "import beetsplug.lyrics; print(beetsplug.lyrics.__file__)")
-sed -i 's|https://lrclib.net/api|http://host.docker.internal:3300/api|g' "$BEETS_LYRICS"
-
-# Discord Webhook Function
+# Discord Webhook Function.
 send_discord_webhook() {
     local status="$1"
     local album="$2"
@@ -36,16 +31,16 @@ send_discord_webhook() {
     local color
     local title
 
-    # Set colors and titles based on status
+    # Set colors and titles based on status.
     if [ "$status" = "success" ]; then
-        color=3066993 # Green
+        color=3066993
         title="✅ Beets Import Successful"
     else
-        color=15158332 # Red
+        color=15158332
         title="❌ Beets Import Failed"
     fi
 
-    # Only send if the webhook URL is actually set
+    # Only send if the webhook URL is actually set.
     if [ -n "$BEETS_DISCORD_WEBHOOK_URL" ]; then
         curl -s -H "Content-Type: application/json" -X POST -d "{
           \"embeds\": [{
