@@ -18,10 +18,8 @@
 	# Layer 4 configuration.
 	layer4 {
 		:8999 {
-			route {
-				tls # Caddy intercepts and terminates the TLS connection.
-				proxy syncplay:8999 # Passes raw TCP to the unencrypted container.
-			}
+			tls # Caddy intercepts and terminates the TLS connection.
+			proxy syncplay:8999 # Passes raw TCP to the unencrypted container.
 		}
 	}
 
