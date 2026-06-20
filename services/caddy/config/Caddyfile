@@ -18,12 +18,10 @@
 	# Layer 4 configuration.
 	layer4 {
 		:8999 {
-			# This triggers the TLS handshake using the certs Caddy
-			# auto-manages for the domain matching the client's SNI.
-			tls {
-				on_demand
+			route {
+				tls # Caddy intercepts and terminates the TLS connection.
+				proxy syncplay:8999 # Passes raw TCP to the unencrypted container.
 			}
-			proxy syncplay:8999
 		}
 	}
 
