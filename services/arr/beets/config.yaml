@@ -8,8 +8,6 @@ languages: "en" # Use English names for aliases.
 match:
   preferred:
     original_year: yes # Prefer the original year instead of the reissue year.
-    countries: ["US", "GB", "XW"] # Heavily prioritize US, UK, and Worldwide releases.
-    media: ["CD", "Digital Media|File"] # Target standard CD and high-quality digital files first.
 original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
 per_disc_numbering: yes # Enable per-disk numbering.
 
