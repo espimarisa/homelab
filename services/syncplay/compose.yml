@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      ENABLE_TLS: "true" # Enable TLS?
+      ENABLE_TLS: "false" # Enable TLS?
       MOTD: "${SYNCPLAY_MOTD}" # Sets the MOTD.
       PASSWORD: "${SYNCPLAY_PASSWORD}" # Sets the password.
     networks:
