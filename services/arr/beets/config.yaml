@@ -3,13 +3,26 @@ library: /config/musiclibrary.blb # Save the beets library to the volume.
 plugins: chroma fetchart lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 languages: "en" # Use English names for aliases.
+original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
+per_disc_numbering: yes # Enable per-disk numbering.
 
 # Matching/metadata options.
 match:
+  strong_rec_thresh: 0.10
+  medium_rec_thresh: 0.20
+  rec_thresh: 0.20
   preferred:
-    original_year: yes # Prefer the original year instead of the reissue year.
-original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
-per_disc_numbering: yes # Enable per-disk numbering.
+    original_year: yes
+    countries: ["US", "GB", "XW"]
+    media: ["CD", "Digital Media|File"]
+  distance_weights:
+    artist: 4.0
+    album: 3.0
+    tracks: 3.0
+    missing_tracks: 1.5
+    year: 1.0
+    media: 0.3
+    country: 0.3
 
 # MusicBrainz configuration.
 # Remove if you do not self-host a MusicBrainz server!
