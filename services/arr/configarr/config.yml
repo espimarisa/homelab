@@ -472,7 +472,7 @@ sonarr:
             negate: false
             required: false
             fields:
-              value: "^GERMAN" # YayPonies releases always follow YP-
+              value: "^GERMAN"
 
     # Custom format scoring.
     custom_formats:

@@ -1,12 +1,3 @@
-use_default_settings:
-  engines:
-    keep_only:
-      - google
-      - google images
-      - google videos
-      - google news
-      - google map
-
 general:
   debug: false
   instance_name: "search@marinet"
@@ -17,12 +8,46 @@ general:
 
 search:
   safe_search: 0
-  autocomplete: "google"
+  autocomplete: "duckduckgo"
   autocomplete_min: 4
-  favicon_resolver: "google"
+  favicon_resolver: "duckduckgo"
   default_lang: "en"
   formats:
     - html
+
+engines:
+  - name: google
+    engine: google
+    use_mobile_ui: false
+    disabled: false
+  - name: startpage
+    engine: startpage
+    shortcut: sp
+    disabled: false
+  - name: brave
+    engine: brave
+    shortcut: br
+    disabled: false
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    disabled: false
+  - name: google images
+    engine: google images
+    disabled: false
+  - name: brave images
+    engine: brave
+    shortcut: bi
+    disabled: false
+  - name: google videos
+    engine: google videos
+    disabled: false
+  - name: google news
+    engine: google news
+    disabled: false
+  - name: google map
+    engine: google map
+    disabled: false
 
 server:
   bind_address: "0.0.0.0"
@@ -40,10 +65,3 @@ ui:
   search_on_category_select: true
   hotkeys: default
   url_formatting: pretty
-
-categories_as_tabs:
-  general:
-  images:
-  videos:
-  news:
-  map:

@@ -1,0 +1,51 @@
+# Miniflux: Self-hosted RSS feed aggregator.
+# https://miniflux.app
+
+---
+services:
+  miniflux:
+    image: ghcr.io/miniflux/miniflux:2.3.1
+    container_name: miniflux
+    hostname: miniflux
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      ADMIN_PASSWORD: "${MINIFLUX_ADMIN_PASSWORD}" # Sets the admin password.
+      ADMIN_USERNAME: "admin"
+      BASE_URL: "${MINIFLUX_URL}" # Base URL to use.
+      CREATE_ADMIN: "1" # Create a default admin user.
+      DATABASE_URL: "postgres://postgres:${MINIFLUX_DB_PASSWORD}@miniflux-db/postgres?sslmode=disable" # Connect to miniflux-db.
+      RUN_MIGRATIONS: "1" # Run database migrations on startup.
+    expose:
+      - 8080/tcp # Miniflux HTTP server, reverse proxied at ${MINIFLUX_URL}.
+    networks:
+      - external
+      - internal
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    cap_drop:
+      - ALL # Drop all unnecessary privileges.
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+        restart: true
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    name: external-network
+    external: true
+  internal:
+    name: internal-network
+    external: true

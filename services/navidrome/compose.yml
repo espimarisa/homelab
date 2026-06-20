@@ -32,7 +32,7 @@ services:
       ND_PLUGINS_FOLDER: "/plugins" # Load plugins from the plugins volume.
       ND_SCANNER_PURGEMISSING: "full" # Purge missing data when a full scan is ran.
       ND_SCANNER_SCHEDULE: "0 5 * * *" # Scan the library every day at 5:00 AM.
-      ND_UILOGINBACKGROUNDURL: "" # Disable login backgrounds.
+      ND_UILOGINBACKGROUNDURL: "''" # Disable login backgrounds.
       ND_UIWELCOMEMESSAGE: "${NAVIDROME_WELCOME_MESSAGE:-}" # Sets a custom welcome message.
       SQLITE_TMPDIR: "/data" # Store SQLite migrations in /data.
       TZ: "${TZ}" # Sets the timezone.

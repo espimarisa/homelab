@@ -57,11 +57,35 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/gatus-db/json
 
+  # Immich database.
+  - name: Immich - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/immich-db/json
+
+  # Miniflux database.
+  - name: Miniflux - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/miniflux-db/json
+
   # Vaultwarden DB.
   - name: Vaultwarden - PostgreSQL
     <<: *defaults-container
     group: Databases
     url: ${SOCKET_PROXY_URL}/vaultwarden-db/json
+
+  # Immich Valkey.
+  - name: Immich - Valkey
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/immich-cache/json
+
+  # SearXNG Valkey.
+  - name: SearXNG - Valkey
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/searxng-cache/json
 
   #############################################################################
   # Download clients.                                                         #
@@ -107,27 +131,6 @@ endpoints:
     group: Infrastructure
     url: ${SOCKET_PROXY_URL}/socket-proxy/json
 
-  #############################################################################
-  # Immich.                                                                   #
-  #############################################################################
-
-  # Immich cache.
-  - name: Immich Cache
-    <<: *defaults-container
-    group: Immich
-    url: ${SOCKET_PROXY_URL}/immich-cache/json
-
-  # Immich database.
-  - name: Immich Database
-    <<: *defaults-container
-    group: Immich
-    url: ${SOCKET_PROXY_URL}/immich-db/json
-
-  # Immich server.
-  - name: Immich Server
-    <<: *defaults-container
-    group: Immich
-    url: ${SOCKET_PROXY_URL}/immich/json
 
   #############################################################################
   # Media management.                                                         #
@@ -236,6 +239,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${JELLYFIN_URL}/health
+
+  # Miniflux.
+  - name: Miniflux
+    <<: *defaults-http
+    group: Services
+    url: https://${MINIFLUX_URL}
 
   # Navidrome.
   - name: Navidrome

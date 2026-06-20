@@ -1,3 +1,0 @@
-# MusicBrainz Self-Hosting
-
-WIP

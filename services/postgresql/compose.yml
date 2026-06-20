@@ -26,19 +26,6 @@ x-defaults: &defaults
     - no-new-privileges:true # Prevent privilege escalation.
 
 services:
-  # gatus-db: PostgreSQL container used for Gatus.
-  gatus-db:
-    <<: *defaults
-    container_name: gatus-db
-    hostname: gatus-db
-    environment:
-      <<: *defaults-env
-      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the PostgreSQL password.
-    volumes:
-      - gatus-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
-      - gatus-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
-      - gatus-db-data:/postgres/var:rw # PostgreSQL data storage volume.
-
   # arr-db: PostgreSQL container used for 'arr and media management apps.
   arr-db:
     <<: *defaults
@@ -54,6 +41,34 @@ services:
       - arr-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
       - arr-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
       - arr-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+
+
+  # gatus-db: PostgreSQL container used for Gatus.
+  gatus-db:
+    <<: *defaults
+    container_name: gatus-db
+    hostname: gatus-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the PostgreSQL password.
+    volumes:
+      - gatus-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
+      - gatus-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
+      - gatus-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+
+  # miniflux-db: PostgreSQL container used for Miniflux.
+  miniflux-db:
+    <<: *defaults
+    container_name: miniflux-db
+    hostname: miniflux-db
+    environment:
+      <<: *defaults-env
+      POSTGRES_PASSWORD: "${MINIFLUX_DB_PASSWORD}" # Sets the PostgreSQL password.
+    volumes:
+      - miniflux-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
+      - miniflux-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
+      - miniflux-db-data:/postgres/var:rw # PostgreSQL data storage volume.
+
 
   # vaultwarden-db: PostgreSQL container used for Vaultwarden.
   vaultwarden-db:
@@ -77,6 +92,15 @@ networks:
     name: internal-network
 
 volumes:
+  arr-db-backups:
+    name: arr-db-backups-volume
+    external: true
+  arr-db-config:
+    name: arr-db-config-volume
+    external: true
+  arr-db-data:
+    name: arr-db-data-volume
+    external: true
   gatus-db-backups:
     name: gatus-db-backups-volume
     external: true
@@ -86,14 +110,14 @@ volumes:
   gatus-db-data:
     name: gatus-db-data-volume
     external: true
-  arr-db-backups:
-    name: arr-db-backups-volume
+  miniflux-db-backups:
+    name: miniflux-db-backups-volume
     external: true
-  arr-db-config:
-    name: arr-db-config-volume
+  miniflux-db-config:
+    name: miniflux-db-config-volume
     external: true
-  arr-db-data:
-    name: arr-db-data-volume
+  miniflux-db-data:
+    name: miniflux-db-data-volume
     external: true
   vaultwarden-db-backups:
     name: vaultwarden-db-backups-volume

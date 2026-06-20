@@ -1,3 +1,6 @@
+# Syncplay: Media playback synchronization tool for watch parties.
+# https://syncplay.pl
+
 ---
 services:
   syncplay:
@@ -8,7 +11,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      ENABLE_TLS: "false" # Disable TLS as we use a reverse proxy.
+      ENABLE_TLS: "false" # Disable TLS as Caddy handles it.
       MOTD: "${SYNCPLAY_MOTD}" # Sets the MOTD.
       PASSWORD: "${SYNCPLAY_PASSWORD}" # Sets the password.
     expose:
@@ -16,9 +19,15 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read-only image.
     volumes:
-      - syncplay:/data:rw # Syncplay data volume.
+      - syncplay-certs:/certs:rw # Syncplay certificate storage volume.
+      - syncplay-data:/data:rw # Syncplay data volume.
     cap_drop:
       - ALL # Drop all unnecessary privileges.
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 256M
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 
@@ -28,6 +37,9 @@ networks:
     name: external-network
 
 volumes:
-  syncplay:
-    name: syncplay-volume
+  syncplay-certs:
+    name: syncplay-certs-volume
+    external: true
+  syncplay-data:
+    name: syncplay-data-volume
     external: true

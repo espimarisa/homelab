@@ -150,6 +150,11 @@
 	import cloudflare_proxy gatus:8080
 }
 
+# Miniflux web interface.
+{$MINIFLUX_URL} {
+	import cloudflare_proxy miniflux:8080
+}
+
 # SearXNG web interface.
 {$SEARXNG_URL} {
 	import cloudflare_proxy searxng:8080

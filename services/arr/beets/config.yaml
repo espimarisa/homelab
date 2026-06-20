@@ -1,6 +1,6 @@
 directory: /library/music # Path to the music library.
 library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: chroma fetchart ftintitle lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+plugins: chroma fetchart lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
 threaded: yes # Enable multithreading.
 languages: "en" # Use English names for aliases.
 
@@ -33,28 +33,20 @@ import:
   timid: no # Do not run timidly; automatically tag matching releases.
   write: yes # Write changes to the files.
 
-# Album art configuration.
-art_filename: cover
+# Chromaprint configuration.
+chroma:
+  auto: yes # Enable chromaprint.
+
+# Album art configuration.art_filename: cover
 fetchart:
   store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
   enforce_ratio: yes # Require square images.
   fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
-  lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
-  maxwidth: 1200 # Max width of 1200x1200.
+  maxwidth: 3000 # Max width of 3000x3000.
   quality: 100 # Use 100% quality for downscaled images.
   minwidth: 500 # Require album art to be 500x500 or larger.
-  sources: [coverart, fanarttv, itunes, lastfm, filesystem] # Sources to enable.
-
-# Chromaprint configuration.
-chroma:
-  auto: yes # Enable Chromaprint.
-
-# Feature in Title configuration.
-ftintitle:
-  auto: yes # Automatically move featured artists to the title.
-  drop: no # Do not drop them entirely.
-  format: (feat. {0}) # The format appended to the track title.
+  sources: [itunes, fanarttv, filesystem] # Sources to enable.
 
 # Last.fm genre configuration.
 lastgenre:
@@ -82,5 +74,5 @@ replaygain:
 scrub:
   auto: yes # Automatically scrub existing tags.
 zero:
-  fields: images comments encoder # Scrub useless stuff.
+  fields: images comments encoder media script language bpm asin albumstatus country
   update_database: true # Update the database when finished.
