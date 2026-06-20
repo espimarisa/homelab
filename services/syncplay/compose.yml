@@ -19,6 +19,7 @@ services:
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read-only image.
     volumes:
+      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
       - syncplay-certs:/certs:rw # Syncplay certificate storage volume.
       - syncplay-data:/data:rw # Syncplay data volume.
     cap_drop:
