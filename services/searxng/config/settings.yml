@@ -12,6 +12,7 @@ search:
   autocomplete_min: 4
   favicon_resolver: "duckduckgo"
   default_lang: "en"
+  doi_resolver: "doi.org"
   formats:
     - html
 
@@ -33,17 +34,17 @@ engines:
     shortcut: ddg
     disabled: false
   - name: google images
-    engine: google images
+    engine: google_images
     disabled: false
   - name: brave images
-    engine: brave
+    engine: brave_images
     shortcut: bi
     disabled: false
   - name: google videos
-    engine: google videos
+    engine: google_videos
     disabled: false
   - name: google map
-    engine: google map
+    engine: google_map
     disabled: false
 
 server:
