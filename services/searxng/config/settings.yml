@@ -19,7 +19,6 @@ search:
 engines:
   - name: google
     engine: google
-    use_mobile_ui: false
     disabled: false
   - name: startpage
     engine: startpage

@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      ENABLE_TLS: "false" # Disable TLS as Caddy handles it.
+      ENABLE_TLS: "true" # Enable TLS?
       MOTD: "${SYNCPLAY_MOTD}" # Sets the MOTD.
       PASSWORD: "${SYNCPLAY_PASSWORD}" # Sets the password.
     networks:
