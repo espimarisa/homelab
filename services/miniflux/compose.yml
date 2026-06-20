@@ -13,7 +13,7 @@ services:
     environment:
       ADMIN_PASSWORD: "${MINIFLUX_ADMIN_PASSWORD}" # Sets the admin password.
       ADMIN_USERNAME: "admin"
-      BASE_URL: "${MINIFLUX_URL}" # Base URL to use.
+      BASE_URL: "https://${MINIFLUX_URL}" # Base URL to use.
       CREATE_ADMIN: "1" # Create a default admin user.
       DATABASE_URL: "postgres://postgres:${MINIFLUX_DB_PASSWORD}@miniflux-db/postgres?sslmode=disable" # Connect to miniflux-db.
       RUN_MIGRATIONS: "1" # Run database migrations on startup.
