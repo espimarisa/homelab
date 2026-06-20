@@ -15,6 +15,16 @@
 		}
 	}
 
+	# Layer 4 configuration.
+	layer4 {
+		:8999 {
+			route {
+				tls # Caddy intercepts and terminates the TLS connection.
+				proxy syncplay:8999 # Passes raw TCP to the unencrypted container.
+			}
+		}
+	}
+
 	# Configures trusted proxies for Cloudflare support.
 	servers {
 		trusted_proxies cloudflare
@@ -54,8 +64,8 @@
 	# Reverse proxy and pass the actual client IP.
 	reverse_proxy {args[0]} {
 		header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
-        header_up X-Real-IP {http.request.header.CF-Connecting-IP}
-    }
+		header_up X-Real-IP {http.request.header.CF-Connecting-IP}
+	}
 }
 
 # Snippet for reverse proxying internal services. Accessible with a DNS rewrite.
@@ -115,6 +125,15 @@
 # OpenCloud web interface.
 {$OPENCLOUD_URL} {
 	import external_proxy opencloud:9200
+}
+
+# SyncPlay server. Requires caddy-l4.
+{$SYNCPLAY_URL} {
+	log {
+		output discard
+	}
+
+	respond "Syncplay TCP proxy is active on port 8999." 200
 }
 
 # Externally accessible services (proxied with Cloudflare).

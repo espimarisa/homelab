@@ -261,6 +261,12 @@ endpoints:
     group: Services
     url: https://${SEERR_URL}
 
+  # Syncplay.
+  - name: Syncplay
+    <<: *defaults-http
+    group: Services
+    url: https://${SYNCPLAY_URL}
+
   # The Lounge.
   - name: The Lounge
     <<: *defaults-container

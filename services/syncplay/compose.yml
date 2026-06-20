@@ -1,0 +1,33 @@
+---
+services:
+  syncplay:
+    image: ghcr.io/dnomd343/syncplay:v1.7.5
+    container_name: syncplay
+    hostname: syncplay
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      ENABLE_TLS: "false" # Disable TLS as we use a reverse proxy.
+      MOTD: "${SYNCPLAY_MOTD}" # Sets the MOTD.
+      PASSWORD: "${SYNCPLAY_PASSWORD}" # Sets the password.
+    expose:
+      - 8999/tcp # Syncplay server; reverse proxied at ${SYNCPLAY_URL}.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID},exec" # Required for read-only image.
+    volumes:
+      - syncplay:/data:rw # Syncplay data volume.
+    cap_drop:
+      - ALL # Drop all unnecessary privileges.
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    external: true
+    name: external-network
+
+volumes:
+  syncplay:
+    name: syncplay-volume
+    external: true

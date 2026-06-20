@@ -49,12 +49,6 @@ if [ "$(id -u)" -ne 0 ]; then
 	echo "Script not run as root. Using 'sudo' for privileged commands."
 fi
 
-# Appdata directories to create.
-readonly APPDATA_DIRECTORIES=(
-	"opencloud"
-	"immich"
-)
-
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	"soulseek"
@@ -85,10 +79,10 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 
 # Docker volumes to create.
 readonly VOLUMES=(
-	"autobrr-volume"
 	"arr-db-backups-volume"
 	"arr-db-config-volume"
 	"arr-db-data-volume"
+	"autobrr-volume"
 	"bazarr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
@@ -119,12 +113,13 @@ readonly VOLUMES=(
 	"qbittorrent-themes-volume"
 	"qui-volume"
 	"radarr-volume"
-	"searxng-volume"
 	"searxng-cache-config-volume"
 	"searxng-cache-data-volume"
+	"searxng-volume"
 	"seerr-volume"
 	"slskd-volume"
 	"sonarr-volume"
+	"syncplay-volume"
 	"thelounge-volume"
 	"vaultwarden-db-backups-volume"
 	"vaultwarden-db-config-volume"
@@ -151,6 +146,7 @@ readonly CHOWN_VOLUMES=(
 	"searxng-volume"
 	"seerr-volume"
 	"slskd-volume"
+	"syncplay-volume"
 	"thelounge-volume"
 	"vaultwarden-volume"
 )
