@@ -81,12 +81,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/immich-cache/json
 
-  # SearXNG Valkey.
-  - name: SearXNG - Valkey
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/searxng-cache/json
-
   #############################################################################
   # Download clients.                                                         #
   #############################################################################
@@ -257,12 +251,6 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${OPENCLOUD_URL}
-
-  # SearXNG.
-  - name: SearXNG
-    <<: *defaults-http
-    group: Services
-    url: https://${SEARXNG_URL}
 
   # Seerr.
   - name: Seerr

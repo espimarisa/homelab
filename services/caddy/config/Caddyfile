@@ -15,10 +15,14 @@
 		}
 	}
 
-	# Layer 4 configuration.
+	# Layer 4 configuration for Syncplay.
 	layer4 {
 		:8999 {
-			proxy syncplay:8999 # Passes raw TCP to the unencrypted container.
+			route {
+				proxy {
+					upstream syncplay:8999
+				}
+			}
 		}
 	}
 
@@ -141,11 +145,6 @@
 # Miniflux web interface.
 {$MINIFLUX_URL} {
 	import cloudflare_proxy miniflux:8080
-}
-
-# SearXNG web interface.
-{$SEARXNG_URL} {
-	import cloudflare_proxy searxng:8080
 }
 
 # Seerr web interface.
