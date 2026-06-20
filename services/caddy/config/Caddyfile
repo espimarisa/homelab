@@ -15,17 +15,6 @@
 		}
 	}
 
-	# Layer 4 configuration for Syncplay.
-	layer4 {
-		:8999 {
-			route {
-				proxy {
-					upstream syncplay:8999
-				}
-			}
-		}
-	}
-
 	# Configures trusted proxies for Cloudflare support.
 	servers {
 		trusted_proxies cloudflare

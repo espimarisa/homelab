@@ -17,7 +17,6 @@ include:
   - ./services/qbittorrent/compose.yml
   - ./services/seerr/compose.yml
   - ./services/slskd/compose.yml
-  - ./services/syncplay/compose.yml
   - ./services/socket-proxy/compose.yml
   - ./services/thelounge/compose.yml
   - ./services/vaultwarden/compose.yml

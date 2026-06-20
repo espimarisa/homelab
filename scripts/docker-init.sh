@@ -119,8 +119,6 @@ readonly VOLUMES=(
 	"seerr-volume"
 	"slskd-volume"
 	"sonarr-volume"
-	"syncplay-certs-volume"
-	"syncplay-data-volume"
 	"thelounge-volume"
 	"vaultwarden-db-backups-volume"
 	"vaultwarden-db-config-volume"
@@ -146,8 +144,6 @@ readonly CHOWN_VOLUMES=(
 	"qui-volume"
 	"seerr-volume"
 	"slskd-volume"
-	"syncplay-certs-volume"
-	"syncplay-data-volume"
 	"thelounge-volume"
 	"vaultwarden-volume"
 )

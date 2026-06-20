@@ -21,7 +21,6 @@ services:
       - 443:443/tcp # HTTPS traffic.
       - 443:443/udp # HTTPS3 traffic.
       - 80:80/tcp # HTTP traffic.
-      - 8999:8999/tcp # Syncplay traffic.
     volumes:
       - ./config/Caddyfile:/etc/caddy/Caddyfile-custom:ro # Custom Caddyfile mount.
       - caddy:/data:rw # Caddy data and certificate storage.
