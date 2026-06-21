@@ -37,7 +37,7 @@ musicbrainz:
 import:
   copy: no # Do not copy files.
   hardlink: no # Do not hardlink files.
-  incremental: no # Do not skip processed items. Set this to true if you don't intend on running things again.
+  incremental: yes # Skip processed items. Set this to false if you intend on running things again.
   move: no # Do not move files.
   quiet_fallback: skip # Skip files that cannot automatically be matched.
   resume: no # Do not resume if exited.
