@@ -53,11 +53,12 @@ fetchart:
   store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
   enforce_ratio: yes # Require square images.
+  lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
   maxwidth: 3000 # Max width of 3000x3000.
   quality: 100 # Use 100% quality for downscaled images.
   minwidth: 500 # Require album art to be 500x500 or larger.
-  sources: [itunes, fanarttv, filesystem] # Sources to enable.
+  sources: [itunes, fanarttv, coverart, lastfm, filesystem] # Sources to enable.
 
 # Last.fm genre configuration.
 lastgenre:
