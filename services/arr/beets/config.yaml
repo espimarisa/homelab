@@ -1,90 +1,91 @@
 directory: /library/music # Path to the music library.
-library: /config/musiclibrary.blb # Save the beets library to the volume.
-plugins: chroma fetchart lastgenre lyrics musicbrainz replaygain scrub zero # Plugins to enable.
+library: /config/beets/library.db # Save the database inside of the container.
+plugins: musicbrainz chroma lastgenre lyrics replaygain fetchart embedart scrub zero
 threaded: yes # Enable multithreading.
-languages: "en" # Use English names for aliases.
-original_date: yes # In Utero (1993) instead of In Utero (30th Anniversary) (2023).
+original_date: yes # Prefer the original date over the issue date.
 per_disc_numbering: yes # Enable per-disk numbering.
-
-# Matching/metadata options.
-match:
-  strong_rec_thresh: 0.10
-  medium_rec_thresh: 0.20
-  rec_thresh: 0.20
-  preferred:
-    original_year: yes
-    countries: ["US", "GB", "XW"]
-    media: ["CD", "Digital Media|File"]
-  distance_weights:
-    artist: 4.0
-    album: 3.0
-    tracks: 3.0
-    missing_tracks: 1.5
-    year: 1.0
-    media: 0.3
-    country: 0.3
-
-# MusicBrainz configuration.
-# Remove if you do not self-host a MusicBrainz server!
-musicbrainz:
-  host: host.docker.internal:5000
-  https: no
-  ratelimit: 1
-  search_limit: 20
-  extra_tags: [alias, barcode, catalognum, country, label, media, tracks, year]
 
 # Import configuration.
 import:
-  copy: no # Do not copy files.
-  hardlink: no # Do not hardlink files.
-  incremental: yes # Skip processed items. Set this to false if you intend on running things again.
-  move: no # Do not move files.
-  quiet_fallback: skip # Skip files that cannot automatically be matched.
-  resume: no # Do not resume if exited.
-  timid: no # Do not run timidly; automatically tag matching releases.
-  write: yes # Write changes to the files.
+  copy: no # Do not copy; let Lidarr handle moving.
+  incremental: yes # Run incrementally.
+  languages: en # Use transliterated artist names.
+  link: no # Do not use hardlinks; let Lidarr handle moving.
+  move: no # Do not move; let Lidarr handle moving.
+  quiet_fallback: skip # Do not import failed items in quiet mode.
+  resume: no # Do not auto resume interrupted imports.
+  timid: no # Do not run in timid mode; enables the autotagger.
+  write: yes # Write changes in-place.
+
+# Matching configuration.
+match:
+  preferred:
+    countries: ["US", "GB|UK", "XW"] # Prefer US, GB, and Worldwide releases.
+    media: ["CD", "Digital Media|File"] # Prefer CDs and Digital Media.
+    original_year: yes # Prefer the original year.
 
 # Chromaprint configuration.
 chroma:
-  auto: yes # Enable chromaprint.
+  auto: yes # Enable fingerprint-based tagging.
 
-# Album art configuration.art_filename: cover
+# Fetched album artwork configuration.
 fetchart:
-  store_source: yes # Store the album art source. Helpful for debugging.
   auto: yes # Automatically fetch album art.
-  enforce_ratio: yes # Require square images.
-  lastfm_key: "${LASTFM_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
-  fanarttv_key: "${FANARTTV_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
-  maxwidth: 3000 # Max width of 3000x3000.
-  quality: 100 # Use 100% quality for downscaled images.
-  minwidth: 500 # Require album art to be 500x500 or larger.
-  sources: [itunes, fanarttv, coverart, lastfm, filesystem] # Sources to enable.
+  enforce_ratio: yes # Require album art to be 1:1.
+  fanarttv_key: "${FANARTTV_API_KEY}"
+  high_resolution: yes # Retrieve artwork at the highest resolution.
+  lastfm_key: "${LASTFM_API_KEY}"
+  maxwidth: 1200 # Downscale album art to 1200x1200.
+  minwidth: 250 # Require album art to be 250x250 or larger.
+  quality: 100 # Fetch maximum quality album art.
+  store_source: yes # Store the Album Art source.
+  sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
 
-# Last.fm genre configuration.
+# Embedded album artwork configuration.
+embedart:
+  auto: yes # Automatically embed album art.
+  maxwidth: 1200 # Embed art up to 1200x1200.
+  quality: 100 # Embed maximum-quality artwork.
+  remove_art_file: no # Do not remove the album art file.
+
+# Last.fm genre fetching configuration.
 lastgenre:
-  auto: yes # Automatically fetch genre data from Last.fm.
-  canonical: yes # Use canonical mapping black magic.
+  auto: yes # Automatically fetch genre data.
+  canonical: yes # Use a canonicalization tree.
   count: 3 # Fetch the 3 most popular genres.
-  force: yes # Force setting the genre tags.
-  prefer_specific: true # Prefer setting specific tags (i.e Grunge instead of Rock) as the primary tag.
+  fallback: "" # Reset genres if no data is found.
+  force: yes # Always rewrite genre data.
+  keep_existing: no # Do not keep existing genre data.
+  prefer_specific: no # Use the most popular genre as the primary one.
+  source: track # Use track genre data for more specific tags.
+  title_case: yes # Convert genre tags to TitleCase.
 
-# Lyrics configuration.
+# Lyric fetching configuration.
 lyrics:
   auto: yes # Automatically fetch lyrics.
-  fallback: "" # Wipe existing lyrics if none are found.
-  genius_api_key: "${GENIUS_API_KEY}" # Automatically replaced by envsubstr since Beets doesn't support this.
-  sources: [lrclib, genius] # Sources to enable.
+  fallback: "" # Reset lyrics if no match is found.
+  force: yes # Always fetch lyrics.
+  genius_api_key: "${GENIUS_API_KEY}"
+  keep_synced: yes # Do not re-write synced lyrics if they already exist.
+  sources: [lrclib, genius]
   synced: yes # Prefer synced lyrics.
+
+# MusicBrainz configuration. Remove host and https if not self-hosting.
+musicbrainz:
+  extra_tags: [alias, barcode, catalognum, country, label, media, tracks, year] # Extra tags to return.
+  host: host.docker.internal:5000 # Connect to internal self-hosted MusicBrainz server.
+  https: no # Change this if reverse proxying MusicBrainz.
 
 # ReplayGain configuration.
 replaygain:
-  auto: yes # Automatically analyze and write tags during import.
-  backend: ffmpeg # Use ffmpeg.
-  overwrite: yes # Overwrite existing replaygain data.
+  auto: yes # Enable replaygain tagging.
+  backend: ffmpeg # Use ffmpeg as the backend.
+  overwrite: yes # Replace existing ReplayGain data.
 
-# Tag scrubbing configuration.
+# Scrubbing configuration.
 scrub:
-  auto: yes # Automatically scrub existing tags.
+  auto: yes # Automatically scrub non-beets provided tags.
 zero:
-  fields: images comments encoder media script language bpm asin albumstatus country
+  auto: yes # Automatically zero fields on import.
+  fields: comments # Remove comments.
   update_database: true # Update the database when finished.
