@@ -19,10 +19,17 @@ import:
 
 # Matching configuration.
 match:
+  distance_weights:
+    country: 0.2 # Lower country mismatch penalty.
+  max_rec:
+    missing_tracks: medium # Require interaction for missing tracks.
+    unmatched_tracks: medium # Require interaction for unmatched tracks.
   preferred:
-    countries: ["US", "GB|UK", "XW"] # Prefer US, GB, and Worldwide releases.
+    countries: ["US", "GB|UK", "CA", "AU", "XW"] # Prefer US, GB, CA, AU, and Worldwide releases.
     media: ["CD", "Digital Media|File"] # Prefer CDs and Digital Media.
     original_year: yes # Prefer the original year.
+  rec_gap_thresh: 0.25 # Default medium match of 85%.
+  strong_rec_thresh: 0.10 # Match items with a 90% match or above.
 
 # Chromaprint configuration.
 chroma:
@@ -38,7 +45,7 @@ fetchart:
   maxwidth: 1200 # Downscale album art to 1200x1200.
   minwidth: 250 # Require album art to be 250x250 or larger.
   quality: 100 # Fetch maximum quality album art.
-  store_source: yes # Store the Album Art source.
+  store_source: yes # Store the Album Art source in the database.
   sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
 
 # Embedded album artwork configuration.
@@ -56,7 +63,7 @@ lastgenre:
   fallback: "" # Reset genres if no data is found.
   force: yes # Always rewrite genre data.
   keep_existing: no # Do not keep existing genre data.
-  prefer_specific: yes # Use the most specific genre as the primary one.
+  prefer_specific: no # Use the most popular genre as the primary one.
   source: album # Use album genre data.
   title_case: yes # Convert genre tags to TitleCase.
 
