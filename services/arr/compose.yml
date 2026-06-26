@@ -94,6 +94,11 @@ services:
       - ${DOWNLOADS_PATH}:/downloads:rw # Download storage mount.
       - lidarr:/config:rw # Lidarr configuration volume.
       - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
+    deploy:
+      resources:
+        limits:
+          cpus: 4
+          memory: 4G
     healthcheck:
       interval: 1m # Run on a slower time as we install packages.
       test: "curl --fail --retry 0 --silent http://127.0.0.1:8686 || exit 1"
