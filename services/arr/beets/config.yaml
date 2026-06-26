@@ -21,6 +21,7 @@ import:
 match:
   distance_weights:
     country: 0.2 # Lower country mismatch penalty.
+    data_source: 0.0 # Disable data source penalty. Fixes self-hosted shit.
   max_rec:
     missing_tracks: medium # Require interaction for missing tracks.
     unmatched_tracks: medium # Require interaction for unmatched tracks.
