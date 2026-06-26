@@ -56,8 +56,8 @@ lastgenre:
   fallback: "" # Reset genres if no data is found.
   force: yes # Always rewrite genre data.
   keep_existing: no # Do not keep existing genre data.
-  prefer_specific: no # Use the most popular genre as the primary one.
-  source: track # Use track genre data for more specific tags.
+  prefer_specific: yes # Use the most specific genre as the primary one.
+  source: album # Use album genre data.
   title_case: yes # Convert genre tags to TitleCase.
 
 # Lyric fetching configuration.
