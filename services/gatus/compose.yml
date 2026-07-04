@@ -15,7 +15,7 @@ services:
       DOCKER_HOST: "tcp://socket-proxy:2375" # Connects to socket-proxy.
       GATUS_DB_PASSWORD: "${GATUS_DB_PASSWORD}" # PostgreSQL password to use.
       GATUS_URL: "${GATUS_URL}" # URL to use for Gatus.
-      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.51/containers/" # Shorthand path to the Docker API.
+      SOCKET_PROXY_URL: "http://socket-proxy:2375/v1.45/containers/" # Shorthand path to the Docker API.
       TZ: "${TZ}" # Sets the timezone.
     expose:
       - 8080/tcp # Gatus web interface reverse proxied at ${GATUS_URL}.
