@@ -5,6 +5,8 @@ set -euo pipefail
 
 # List of required environment variables.
 readonly REQUIRED_VARS=(
+	"APPDATA_PATH"
+	"BACKUPS_PATH"
 	"DOCKER_IPV6_ULA_BASE"
 	"DOWNLOADS_INCOMPLETE_PATH"
 	"DOWNLOADS_PATH"
@@ -49,6 +51,9 @@ if [ "$(id -u)" -ne 0 ]; then
 	echo "Script not run as root. Using 'sudo' for privileged commands."
 fi
 
+# Fetches submodules.
+git submodule update --init --recursive
+
 # Download directories to create.
 readonly DOWNLOADS_DIRECTORIES=(
 	"soulseek"
@@ -77,6 +82,12 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 	"tv-shows"
 )
 
+# Appdata directories to create.
+readonly APPDATA_DIRECTORIES=(
+	"immich"
+	"opencloud"
+)
+
 # Docker volumes to create.
 readonly VOLUMES=(
 	"arr-db-backups-volume"
@@ -101,6 +112,7 @@ readonly VOLUMES=(
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
 	"lidarr-volume"
+	"lrclib-volume"
 	"miniflux-db-backups-volume"
 	"miniflux-db-config-volume"
 	"miniflux-db-data-volume"
@@ -134,6 +146,7 @@ readonly CHOWN_VOLUMES=(
 	"dozzle-volume"
 	"jellyfin-cache-volume"
 	"jellyfin-config-volume"
+	"lrclib-volume"
 	"navidrome-backups-volume"
 	"navidrome-cache-volume"
 	"navidrome-data-volume"
@@ -208,6 +221,7 @@ echo -e "\nCreating bind mount directories..."
 create_dirs "$DOWNLOADS_PATH" "${DOWNLOADS_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_INCOMPLETE_PATH" "${DOWNLOADS_INCOMPLETE_DIRECTORIES[@]}"
 create_dirs "$DOWNLOADS_PERMASEED_PATH"
+create_dirs "$APPDATA_PATH" "${APPDATA_DIRECTORIES[@]}"
 create_dirs "$MEDIA_LIBRARY_PATH" "${MEDIA_LIBRARY_DIRECTORIES[@]}"
 
 # Creates Docker networks.
@@ -248,6 +262,8 @@ echo -e "\nSetting bind mount permissions..."
 echo "Setting ownership for host directories..."
 
 $SUDO chown -R "${PUID}:${PGID}" \
+	"${APPDATA_PATH}" \
+	"${BACKUPS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \
@@ -258,6 +274,8 @@ $SUDO chown -R "${PUID}:${PGID}" \
 # Set permissions of the main bind mount directories on the host.
 echo "Setting permissions for host directories..."
 $SUDO chmod -R 775 \
+	"${APPDATA_PATH}" \
+	"${BACKUPS_PATH}" \
 	"${DOWNLOADS_INCOMPLETE_PATH}" \
 	"${DOWNLOADS_PATH}" \
 	"${DOWNLOADS_PERMASEED_PATH}" \

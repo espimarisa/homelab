@@ -45,7 +45,7 @@ services:
   # Bazarr: Subtitle manager. https://www.bazarr.media
   bazarr:
     <<: *defaults
-    image: ghcr.io/hotio/bazarr:release-v1.5
+    image: ghcr.io/hotio/bazarr:release-v1.6
     container_name: bazarr
     hostname: bazarr
     environment:

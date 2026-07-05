@@ -19,3 +19,6 @@ include:
   - ./services/socket-proxy/compose.yml
   - ./services/thelounge/compose.yml
   - ./services/vaultwarden/compose.yml
+
+  # Comment the following line out if you do not self-host lrclib:
+  - ./services/lrclib/compose.yml

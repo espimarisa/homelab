@@ -1,0 +1,3 @@
+[submodule "services/lrclib/src"]
+	path = services/lrclib/src
+	url = https://github.com/tranxuanthang/lrclib.git

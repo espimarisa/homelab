@@ -1,0 +1,40 @@
+# lrclib: Self-hosted lrclib-rs server.
+# https://github.com/tranxuanthang/lrclib
+
+---
+services:
+  lrclib:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: lrclib-rs
+    hostname: lrclib
+    read_only: true # Prevent writing directly to the image.
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      LRCLIB_LOG: "info" # Log in the info level.
+    expose:
+      - 3300/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # Local timezone mount.
+      - lrclib:/data:rw # lrclib database storage.
+    tmpfs:
+      - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
+    cap_drop:
+      - ALL # Drop all unnecessary privileges.
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2G
+
+networks:
+  external:
+    external: true
+    name: external-network
+
+volumes:
+  lrclib:
+    external: true
+    name: lrclib-volume
