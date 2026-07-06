@@ -16,6 +16,8 @@ services:
       LRCLIB_LOG: "info" # Log in the info level.
     expose:
       - 3300/tcp
+    networks:
+      - external
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
       - lrclib:/data:rw # lrclib database storage.
