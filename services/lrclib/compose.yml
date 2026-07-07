@@ -28,8 +28,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 2G
+          cpus: 4
+          memory: 8G
 
 networks:
   external:
