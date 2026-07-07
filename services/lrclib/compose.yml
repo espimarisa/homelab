@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
-      LRCLIB_LOG: "info" # Log in the info level.
+      LRCLIB_LOG: "debug" # Log in the debug level.
     ports:
       - 127.0.0.1:3300:3300/tcp
     networks:
