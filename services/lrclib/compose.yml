@@ -30,7 +30,9 @@ services:
         limits:
           cpus: 4
           memory: 8G
-
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:3300/api/get/1 || exit 1" # rudimentary
+      
 networks:
   external:
     external: true
