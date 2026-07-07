@@ -19,7 +19,7 @@ x-defaults-container: &defaults-container
   interval: 5m
   conditions:
     - "[BODY].State.Health.Status != unhealthy" # Not the most accurate check, if a service has none lol
-    - "[RESPONSE_TIME] < 5" # Containers should always be within ~5ms.
+    - "[RESPONSE_TIME] < 10" # Containers should always be within ~10ms.
     - "[STATUS] == 200" # 200 will be an OK
   ui:
     hide-hostname: true # no reason to show container hostnames
