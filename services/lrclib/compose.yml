@@ -7,15 +7,15 @@ services:
     build:
       context: ./src
       dockerfile: Dockerfile
-    container_name: lrclib-rs
+    container_name: lrclib
     hostname: lrclib
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
       LRCLIB_LOG: "info" # Log in the info level.
-    expose:
-      - 3300/tcp
+    ports:
+      - 127.0.0.1:3300/3300/tcp
     networks:
       - external
     volumes:
