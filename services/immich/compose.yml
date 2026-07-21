@@ -16,7 +16,7 @@ x-defaults: &defaults
 services:
   immich:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-server:v3.0.1
+    image: ghcr.io/immich-app/immich-server:v3.0.3
     container_name: immich
     user: "${PUID}:${PGID}" # Run as non-root user.
     environment:
@@ -79,7 +79,7 @@ services:
 
   immich-db:
     <<: *defaults
-    image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3
+    image: ghcr.io/immich-app/postgres:18-vectorchord1.1.1
     container_name: immich-db
     shm_size: 512MB # Increases the shared memory size.
     environment:
@@ -112,7 +112,7 @@ services:
 
   immich-ml:
     <<: *defaults
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.1-openvino # Use OpenVino for Intel Arc.
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3-openvino # Use OpenVino for Intel Arc.
     container_name: immich-ml
     hostname: immich-ml
     read_only: false # Do not run in read_only mode.

@@ -4,7 +4,7 @@
 ---
 services:
   thelounge:
-    image: ghcr.io/thelounge/thelounge:4.5.0
+    image: ghcr.io/thelounge/thelounge:4.5.2
     container_name: thelounge
     hostname: thelounge
     read_only: true # Prevent writing directly to the image.
