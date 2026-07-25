@@ -4,7 +4,7 @@
 ---
 services:
   miniflux:
-    image: ghcr.io/miniflux/miniflux:2.3.2
+    image: ghcr.io/miniflux/miniflux:2.3.3
     container_name: miniflux
     hostname: miniflux
     read_only: true # Prevent writing directly to the image.
