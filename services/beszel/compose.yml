@@ -46,7 +46,7 @@ services:
     pid: host # For Xe / Intel Arc, add pid: host to enable GPU utilization through nvtop:
     network_mode: host # Required for accurate network speed analytics.
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128 # Required for GPU monitoring.
+      - /dev/dri:/dev/dri # Required for GPU monitoring.
     environment:
       HUB_URL: "http://localhost:8090" # Connect to the local beszel container.
       GPU_COLLECTOR: "nvtop" # Use nvtop (for Intel Arc).
@@ -59,6 +59,7 @@ services:
       - beszel-agent:/var/lib/beszel-agent:rw # Beszel agent storage.
       - beszel-socket:/beszel_socket:rw # Beszel socket mount.
     cap_add:
+      - PERFMON # Required for GPU monitoring.
       - SYS_ADMIN # Required for NVME SMART data.
       - SYS_RAWIO # Required for SMART data.
     cap_drop: # Drop unnecessary permissions.
