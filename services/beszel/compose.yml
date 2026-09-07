@@ -40,7 +40,7 @@ services:
 
   beszel-agent:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.19.8
+    image: ghcr.io/henrygd/beszel/beszel-agent-intel:0.19.0
     container_name: beszel-agent
     hostname: beszel-agent
     pid: host # For Xe / Intel Arc, add pid: host to enable GPU utilization through nvtop:
