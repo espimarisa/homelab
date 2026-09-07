@@ -19,7 +19,7 @@ x-defaults: &defaults
 services:
   beszel:
     <<: *defaults
-    image: ghcr.io/henrygd/beszel/beszel:0.19.8
+    image: ghcr.io/henrygd/beszel/beszel:0.19.0
     container_name: beszel
     hostname: beszel
     user: "${PUID}:${PGID}" # Run as non-root user.
