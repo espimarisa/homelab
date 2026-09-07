@@ -37,7 +37,7 @@ services:
   # qui: qBittorrent management web interface. https://github.com/autobrr/qui
   qui:
     <<: *defaults
-    image: ghcr.io/autobrr/qui:v1.26
+    image: ghcr.io/autobrr/qui:v1.28
     container_name: qui
     hostname: qui
     user: "${PUID}:${PGID}"
