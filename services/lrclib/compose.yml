@@ -12,8 +12,6 @@ services:
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
-    environment:
-      LRCLIB_LOG: "debug" # Log in the debug level.
     ports:
       - 127.0.0.1:3300:3300/tcp
     networks:
@@ -32,7 +30,7 @@ services:
           memory: 8G
     healthcheck:
       test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:3300/api/get/1 || exit 1" # rudimentary
-      
+
 networks:
   external:
     external: true
