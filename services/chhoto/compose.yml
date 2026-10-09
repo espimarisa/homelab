@@ -4,7 +4,7 @@
 ---
 services:
   chhoto:
-    image: ghcr.io/sintan1729/chhoto-url:7.6-alpine
+    image: ghcr.io/sintan1729/chhoto-url:7.8-alpine
     container_name: chhoto
     hostname: chhoto
     read_only: true # Prevent writing directly to the image.

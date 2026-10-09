@@ -4,7 +4,7 @@
 ---
 services:
   vaultwarden:
-    image: ghcr.io/dani-garcia/vaultwarden:1.37.3-alpine
+    image: ghcr.io/dani-garcia/vaultwarden:1.37.4-alpine
     container_name: vaultwarden
     hostname: vaultwarden
     read_only: true # Prevent writing directly to the image.
@@ -19,7 +19,6 @@ services:
       EMAIL_CHANGE_ALLOWED: "true" # Allow users to change emails.
       EMERGENCY_ACCESS_ALLOWED: "true" # Allow emergency access.
       ENABLE_DB_WAL: "true" # Enable WAL writes for the database.
-      EXPERIMENTAL_CLIENT_FEATURE_FLAGS: "pm-26340-linux-biometrics-v2,ssh-agent-v2,ssh-key-vault-item,pm-25373-windows-biometrics-v2" # https://github.com/dani-garcia/vaultwarden/blob/main/.env.template#L374
       IP_HEADER: "X-Forwarded-For" # Use the X-Forwarded-For header for reverse proxying.
       PUSH_ENABLED: "true" # Enables push notification support. Requires the following two options:
       PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_INSTALLATION_ID}" # https://bitwarden.com/host

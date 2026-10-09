@@ -108,7 +108,7 @@ services:
   # Prowlarr: Indexer manager for 'ARR apps. https://prowlarr.com
   prowlarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/prowlarr:2.5
+    image: ghcr.io/11notes/prowlarr:2.6
     container_name: prowlarr
     network_mode: service:gluetun # Route all traffic through gluetun.
     networks: [] # Cleared to reset defaults.
@@ -138,7 +138,7 @@ services:
   # Radarr: Movie manager, organizer, and PVR. https://radarr.video
   radarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/radarr:6.3
+    image: ghcr.io/11notes/radarr:6.4
     container_name: radarr
     hostname: radarr
     expose:
