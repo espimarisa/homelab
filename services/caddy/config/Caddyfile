@@ -162,7 +162,15 @@ beszel.{$INTERNAL_DOMAIN} {
 
 # Dozzle web interface
 dozzle.{$INTERNAL_DOMAIN} {
-	import internal_proxy dozzle:8080
+	import common_options
+
+	@denied not remote_ip private_ranges 100.64.0.0/10 fd7a:115c:a1e0::/48
+	abort @denied
+
+	# Required for Dozzle.
+	reverse_proxy dozzle:8080 {
+		flush_interval -1
+	}
 }
 
 # Lidarr web interface.
