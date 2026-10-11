@@ -10,6 +10,7 @@ services:
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     environment:
+      ALLOW_LOGS: "1" # Allows streaming logs.
       ALLOW_RESTARTS: "1" # Allows restarting containers.
       ALLOW_START: "1" # Allows starting containers.
       ALLOW_STOP: "1" # Allows stopping containers.
