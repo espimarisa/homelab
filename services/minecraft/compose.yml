@@ -1,0 +1,77 @@
+# minecraft: Minecraft Java Edition Fabric server.
+# https://docker-minecraft-server.readthedocs.io/en/latest/
+
+---
+services:
+  minecraft:
+    image: ghcr.io/itzg/minecraft-server:java25
+    container_name: minecraft
+    hostname: minecraft
+    restart: unless-stopped
+    environment:
+      DIFFICULTY: "${MINECRAFT_SERVER_DIFFICULTY:-normal}" # Sets the difficulty level.
+      ENABLE_WHITELIST: "${MINECRAFT_SERVER_WHITELIST_ENABLED}" # Toggles whitelist support.
+      EULA: "TRUE" # Accept the EULA.
+      GID: "${PGID}" # Group ID to run as.
+      MEMORY: "4G" # Use a 4GB heap size.
+      MODRINTH_ALLOWED_VERSION_TYPE: "alpha"
+      MOTD: "${MINECRAFT_SERVER_MOTD}" # Sets the MOTD.
+      OPS: "${MINECRAFT_SERVER_OPS}" # OPs.
+      SPAWN_PROTECTION: "0" # Disables spawn protection.
+      TYPE: "FABRIC" # Use a Fabric server.
+      TZ: "${TZ}" # Sets the timezone.
+      UID: "${PUID}" # User ID to run as.
+      USE_MEOWICE_FLAGS: "TRUE" # Use optimal Java flags.
+      VERSION: "${MINECRAFT_SERVER_VERSION}" # Sets the Minecraft version.
+      WHITELIST: "${MINECRAFT_SERVER_WHITELISTED_USERS}" # List of whitelisted users.
+      MODRINTH_PROJECTS: |
+        VSNURh3q
+        fALzjamp
+        Wnxd13zP
+        e0M1UDsY
+        6VdDUivB
+        P7dR8mSH
+        uXXizFIs
+        ohNO6lps
+        YPhu4Fxr
+        nvQzSEkH
+        fQEb0iXm
+        gvQqBUqZ
+        TjSm1wrD
+        qQyHxfxd
+        AtOSAunf
+        dUaXeoyM
+        rlloIFEV
+        abooMhox
+        NcUtCpym
+        1bokaNcj
+    networks:
+      - external
+    volumes:
+      - minecraft-server:/data:rw # Minecraft server data volume.
+    ports:
+      - 127.0.0.1:25565:25565 # Minecraft server port.
+    cap_drop: # Drop unnecessary permissions.
+      - AUDIT_WRITE
+      - MKNOD
+      - SETFCAP
+      - SETPCAP
+      - SYS_CHROOT
+      - SYS_PTRACE
+    deploy:
+      resources:
+        limits:
+          cpus: 8
+          memory: 8G
+    security_opt:
+      - no-new-privileges:true # Prevent privilege escalation.
+
+networks:
+  external:
+    external: true
+    name: external-network
+
+volumes:
+  minecraft-server:
+    external: true
+    name: minecraft-server-volume

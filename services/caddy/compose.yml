@@ -4,7 +4,7 @@
 ---
 services:
   caddy:
-    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2026.10.06
+    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2026.10.20
     container_name: caddy
     env_file: ../../.env # Required for Caddyfile to read environment variables.
     hostname: caddy
