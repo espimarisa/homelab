@@ -50,7 +50,7 @@ services:
     volumes:
       - minecraft-server:/data:rw # Minecraft server data volume.
     ports:
-      - 127.0.0.1:25565:25565 # Minecraft server port.
+      - 25565:25565 # Minecraft server port.
     cap_drop: # Drop unnecessary permissions.
       - AUDIT_WRITE
       - MKNOD
