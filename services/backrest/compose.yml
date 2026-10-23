@@ -26,7 +26,6 @@ services:
       - ${DOCKER_VOLUMES_PATH}:/mnt/docker-volumes:ro # Docker volumes mount.
       - ${IMMICH_UPLOADS_PATH}:/mnt/immich-uploads:ro # Immich uploads storage directory.
       - ${OPENCLOUD_UPLOADS_PATH}:/mnt/opencloud-uploads:ro # OpenCloud uploads storage directory.
-      - ${STORAGE_PATH}:/mnt/storage:ro # Root storage directory.
       - backrest-cache:/cache:rw # Backrest cache.
       - backrest-config:/config:rw # Backrest configuration.
       - backrest-data:/data:rw # Backrest data.
