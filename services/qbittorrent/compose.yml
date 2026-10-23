@@ -14,7 +14,7 @@ services:
   # qBittorrent: BitTorrent client. https://github.com/qbittorrent/qBittorrent/wiki
   qbittorrent:
     <<: *defaults
-    image: ghcr.io/11notes/qbittorrent:5.2
+    image: ghcr.io/11notes/qbittorrent:5.3
     container_name: qbittorrent
     network_mode: service:gluetun
     volumes:

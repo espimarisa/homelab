@@ -4,7 +4,7 @@
 ---
 services:
   autobrr:
-    image: ghcr.io/s0up4200/autobrr-distroless:v1.88
+    image: ghcr.io/s0up4200/autobrr-distroless:v1.89
     container_name: autobrr
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped

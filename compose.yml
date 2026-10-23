@@ -2,6 +2,7 @@
 include:
   - ./services/arr/compose.yml
   - ./services/autobrr/compose.yml
+  - ./services/backrest/compose.yml
   - ./services/beszel/compose.yml
   - ./services/caddy/compose.yml
   - ./services/chhoto/compose.yml
