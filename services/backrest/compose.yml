@@ -18,7 +18,6 @@ services:
     expose:
       - 9898/tcp # Backrest web interface reverse proxied at backrest.${INTERNAL_DOMAIN}.
     networks:
-      - external
       - internal
     volumes:
       - ./scripts:/scripts:rw # Custom scripts.
@@ -45,9 +44,6 @@ services:
       - no-new-privileges:true # Prevents privelege escalation.
 
 networks:
-  external:
-    external: true
-    name: external-network
   internal:
     external: true
     name: internal-network

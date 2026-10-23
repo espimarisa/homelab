@@ -151,7 +151,7 @@ autobrr.{$INTERNAL_DOMAIN} {
 }
 
 # Backrest web interface.
-bazarr.{$INTERNAL_DOMAIN} {
+backrest.{$INTERNAL_DOMAIN} {
 	import internal_proxy backrest:9898
 }
 
