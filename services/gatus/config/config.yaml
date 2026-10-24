@@ -8,6 +8,13 @@ x-defaults-alerts: &defaults-alerts
 x-defaults-http: &defaults-http
   alerts: *defaults-alerts
   interval: 5m
+  maintenance-windows:
+    - start: "05:00"
+      duration: 1h30m
+      timezone: "America/New_York"
+    - start: "06:30"
+      duration: 30m
+      timezone: "America/New_York"
   conditions:
     - "[CERTIFICATE_EXPIRATION] > 240h" # Ensures certificates are up-to-date.
     - "[RESPONSE_TIME] < 5000" # External services shouldn't take more than 5s to resolve.
@@ -17,6 +24,13 @@ x-defaults-http: &defaults-http
 x-defaults-container: &defaults-container
   alerts: *defaults-alerts
   interval: 5m
+  maintenance-windows:
+    - start: "05:00"
+      duration: 1h30m
+      timezone: "America/New_York"
+    - start: "06:30"
+      duration: 30m
+      timezone: "America/New_York"
   conditions:
     - "[BODY].State.Health.Status != unhealthy" # Not the most accurate check, if a service has none lol
     - "[RESPONSE_TIME] < 10" # Containers should always be within ~10ms.
@@ -57,12 +71,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/gatus-db/json
 
-  # Immich database.
-  - name: Immich - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/immich-db/json
-
   # Miniflux database.
   - name: Miniflux - PostgreSQL
     <<: *defaults-container
@@ -74,6 +82,18 @@ endpoints:
     <<: *defaults-container
     group: Databases
     url: ${SOCKET_PROXY_URL}/vaultwarden-db/json
+
+  # Immich database.
+  - name: Immich - PostgreSQL
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/immich-db/json
+
+  # Immich ML.
+  - name: Immich - ML
+    <<: *defaults-container
+    group: Databases
+    url: ${SOCKET_PROXY_URL}/immich-ml/json
 
   # Immich Valkey.
   - name: Immich - Valkey
@@ -159,6 +179,12 @@ endpoints:
     group: Media Management
     url: ${SOCKET_PROXY_URL}/lidarr/json
 
+  # Lrclib.
+  - name: lrclib
+    <<: *defaults-container
+    group: Media Management
+    url: ${SOCKET_PROXY_URL}/lrclib/json
+
   # Prowlarr.
   - name: Prowlarr
     <<: *defaults-container
@@ -232,6 +258,12 @@ endpoints:
     <<: *defaults-http
     group: Services
     url: https://${JELLYFIN_URL}/health
+
+  # Minecraft.
+  - name: Minecraft
+    <<: *defaults-container
+    group: Services
+    url: ${SOCKET_PROXY_URL}/minecraft/json
 
   # Miniflux.
   - name: Miniflux
