@@ -90,7 +90,7 @@ services:
       - 8686/tcp # Lidarr web interface reverse proxied at lidarr.${INTERNAL_DOMAIN}.
     volumes:
       - ./beets:/beets:ro # Beets configuration mount.
-      - ./custom-cont-init.d:/custom-cont-init.d:ro # Runs custom init scripts after mods install.
+      - ./scripts/custom-cont-init.d:/custom-cont-init.d:ro # Runs custom init scripts after mods install.
       - ./scripts:/scripts:ro # Scripts mount.
       - ${DOWNLOADS_PATH}:/downloads:rw # Download storage mount.
       - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
