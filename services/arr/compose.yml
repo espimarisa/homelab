@@ -220,7 +220,7 @@ services:
     networks:
       - internal
     volumes:
-      - unpackerr-volume:/config:rw
+      - unpackerr:/config:rw
       - ${DOWNLOADS_PATH}:/downloads:rw
 
 networks:
