@@ -208,12 +208,17 @@ slskd.{$INTERNAL_DOMAIN} {
 	import internal_proxy gluetun:5030
 }
 
+# Sonarr web interface.
+sonarr.{$INTERNAL_DOMAIN} {
+	import internal_proxy sonarr:8989
+}
+
 # The Lounge web interface.
 thelounge.{$INTERNAL_DOMAIN} {
 	import internal_proxy thelounge:9000
 }
 
-# Sonarr web interface.
-sonarr.{$INTERNAL_DOMAIN} {
-	import internal_proxy sonarr:8989
+# Unpackerr.
+unpackerr.{$INTERNAL_DOMAIN} {
+	import internal_proxy unpackerr:5656
 }

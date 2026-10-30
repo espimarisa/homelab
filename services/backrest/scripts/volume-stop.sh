@@ -11,6 +11,7 @@ ignore_containers=$(docker ps --quiet \
 	--filter "name=lrclib" \
 	--filter "name=gatus" \
 	--filter "name=gatus-db" \
+	--filter "name=gluetun" \
 	--filter "name=dozzle" \
 	--filter "name=socket-proxy" \
 	--filter "name=unpackerr" | sort)
@@ -21,5 +22,9 @@ echo "Stopping docker containers..."
 
 if [ -n "$pending_containers" ]; then
 	echo "$pending_containers" >/tmp/stopped_containers.txt
-	docker stop "$pending_containers"
+
+	# shellcheck disable=SC2086
+	docker stop $pending_containers || true
 fi
+
+exit 0

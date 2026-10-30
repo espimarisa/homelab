@@ -137,6 +137,7 @@ readonly VOLUMES=(
 	"slskd-volume"
 	"sonarr-volume"
 	"thelounge-volume"
+	"unpackerr-volume"
 	"vaultwarden-db-backups-volume"
 	"vaultwarden-db-config-volume"
 	"vaultwarden-db-data-volume"
@@ -163,6 +164,7 @@ readonly CHOWN_VOLUMES=(
 	"qui-volume"
 	"slskd-volume"
 	"thelounge-volume"
+	"unpackerr-volume"
 	"vaultwarden-volume"
 )
 

@@ -4,8 +4,10 @@ if [ -f /tmp/stopped_containers.txt ]; then
 
 	if [ -n "$stopped_containers" ]; then
 		# shellcheck disable=SC2086
-		docker start $stopped_containers
+		docker start $stopped_containers || true
 	fi
 
 	rm /tmp/stopped_containers.txt
 fi
+
+exit 0

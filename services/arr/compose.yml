@@ -90,10 +90,11 @@ services:
       - 8686/tcp # Lidarr web interface reverse proxied at lidarr.${INTERNAL_DOMAIN}.
     volumes:
       - ./beets:/beets:ro # Beets configuration mount.
+      - ./custom-cont-init.d:/custom-cont-init.d:ro # Runs custom init scripts after mods install.
       - ./scripts:/scripts:ro # Scripts mount.
       - ${DOWNLOADS_PATH}:/downloads:rw # Download storage mount.
-      - lidarr:/config:rw # Lidarr configuration volume.
       - ${MEDIA_LIBRARY_PATH}:/library:rw # Media library mount.
+      - lidarr:/config:rw # Lidarr configuration volume.
     deploy:
       resources:
         limits:
@@ -108,7 +109,7 @@ services:
   # Prowlarr: Indexer manager for 'ARR apps. https://prowlarr.com
   prowlarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/prowlarr:2.6
+    image: ghcr.io/11notes/prowlarr:2.7
     container_name: prowlarr
     network_mode: service:gluetun # Route all traffic through gluetun.
     networks: [] # Cleared to reset defaults.
@@ -200,10 +201,12 @@ services:
   # Unpackerr: Automatic compressed downloads handling. https://unpackerr.zip/docs/introduction
   unpackerr:
     <<: *defaults
-    image: golift/unpackerr:0.16.1
+    image: golift/unpackerr:v1.0.1
     container_name: unpackerr
     hostname: unpackerr
     user: "${PUID}:${PGID}" # Run as non-root user.
+    expose:
+      - 5656/tcp # Unpackerr web interface, accessible at unpackerr.${INTERNAL_DOMAIN}.
     environment:
       TZ: "${TZ}" # Sets the timezone.
       UN_LIDARR_0_API_KEY: "${LIDARR_API_KEY}"
@@ -217,6 +220,7 @@ services:
     networks:
       - internal
     volumes:
+      - unpackerr-volume:/config:rw
       - ${DOWNLOADS_PATH}:/downloads:rw
 
 networks:
@@ -248,4 +252,7 @@ volumes:
     external: true
   sonarr:
     name: sonarr-volume
+    external: true
+  unpackerr:
+    name: unpackerr-volume
     external: true
