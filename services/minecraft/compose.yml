@@ -26,7 +26,7 @@ services:
       WHITELIST: "${MINECRAFT_SERVER_WHITELISTED_USERS}" # List of whitelisted users.
       MODRINTH_PROJECTS: |
         VSNURh3q
-        fALzjamp
+        uCdwusMi
         Wnxd13zP
         e0M1UDsY
         6VdDUivB
@@ -41,7 +41,6 @@ services:
         qQyHxfxd
         AtOSAunf
         dUaXeoyM
-        rlloIFEV
         abooMhox
         KG3gDWV3
         MBAkmtvl
