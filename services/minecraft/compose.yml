@@ -68,7 +68,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 8
+          cpus: 12
           memory: 12G
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
