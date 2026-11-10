@@ -38,6 +38,7 @@ services:
         forge-config-api-port
         graves-mod
         jade
+        jei
         krypton
         ledger
         lithium
