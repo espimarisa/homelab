@@ -17,7 +17,7 @@ services:
       MODRINTH_ALLOWED_VERSION_TYPE: "alpha"
       MOTD: "${MINECRAFT_SERVER_MOTD}" # Sets the MOTD.
       OPS: "${MINECRAFT_SERVER_OPS}" # OPs.
-      SPAWN_PROTECTION: "0" # Disables spawn protection.
+      SPAWN_PROTECTION: "1" # 1 chunk of spawn protection.
       TYPE: "FABRIC" # Use a Fabric server.
       TZ: "${TZ}" # Sets the timezone.
       UID: "${PUID}" # User ID to run as.
@@ -25,32 +25,35 @@ services:
       VERSION: "${MINECRAFT_SERVER_VERSION}" # Sets the Minecraft version.
       WHITELIST: "${MINECRAFT_SERVER_WHITELISTED_USERS}" # List of whitelisted users.
       MODRINTH_PROJECTS: |
-        VSNURh3q
-        uCdwusMi
-        Wnxd13zP
-        e0M1UDsY
-        6VdDUivB
-        P7dR8mSH
-        uXXizFIs
-        ohNO6lps
-        YPhu4Fxr
-        nvQzSEkH
-        fQEb0iXm
-        gvQqBUqZ
-        TjSm1wrD
-        qQyHxfxd
-        AtOSAunf
-        dUaXeoyM
-        abooMhox
-        KG3gDWV3
-        MBAkmtvl
-        nPZr02ET
+        balm
+        c2me-fabric
+        clumps
+        collective
+        distanthorizons
+        essential-commands
+        fabric-api
+        fabric-language-kotlin
+        fair-play-for-xaeros-maps
+        ferrite-core
+        forge-config-api-port
+        graves-mod
+        jade
+        krypton
+        ledger
+        lithium
+        modernfix-mvus
+        netherportalfix
+        no-chat-reports
+        silkier-touch
+        simple-voice-chat
+        tree-harvester
     networks:
       - external
     volumes:
       - minecraft-server:/data:rw # Minecraft server data volume.
     ports:
       - 25565:25565 # Minecraft server port.
+      - 24454:24454/udp # Minecraft server voice chat mod port.
     cap_drop: # Drop unnecessary permissions.
       - AUDIT_WRITE
       - MKNOD
