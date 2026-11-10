@@ -13,7 +13,7 @@ services:
       ENABLE_WHITELIST: "${MINECRAFT_SERVER_WHITELIST_ENABLED}" # Toggles whitelist support.
       EULA: "TRUE" # Accept the EULA.
       GID: "${PGID}" # Group ID to run as.
-      MEMORY: "4G" # Use a 4GB heap size.
+      MEMORY: "12G" # Use a 4GB heap size.
       MODRINTH_ALLOWED_VERSION_TYPE: "alpha"
       MOTD: "${MINECRAFT_SERVER_MOTD}" # Sets the MOTD.
       OPS: "${MINECRAFT_SERVER_OPS}" # OPs.
@@ -69,7 +69,7 @@ services:
       resources:
         limits:
           cpus: 8
-          memory: 8G
+          memory: 12G
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 
