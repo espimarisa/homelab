@@ -201,7 +201,7 @@ services:
   # Unpackerr: Automatic compressed downloads handling. https://unpackerr.zip/docs/introduction
   unpackerr:
     <<: *defaults
-    image: golift/unpackerr:v1.0.1
+    image: ghcr.io/unpackerr/unpackerr:v1.0.1
     container_name: unpackerr
     hostname: unpackerr
     user: "${PUID}:${PGID}" # Run as non-root user.
