@@ -45,6 +45,7 @@ services:
         modernfix-mvus
         netherportalfix
         no-chat-reports
+        private-chests
         silkier-touch
         simple-voice-chat
         tree-harvester
