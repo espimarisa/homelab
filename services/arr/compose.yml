@@ -3,6 +3,16 @@
 # arr-db is included in ../postgresql for maintainability.
 
 ---
+# Images, hoisted for ease of updating.
+x-bazarr-image: &bazarr-image "ghcr.io/hotio/bazarr:release-v1.6"
+x-byparr-image: &byparr-image "ghcr.io/thephaseless/byparr:latest"
+x-configarr-image: &configarr-image "ghcr.io/11notes/configarr:1"
+x-lidarr-image: &lidarr-image "lscr.io/linuxserver/lidarr:nightly"
+x-prowlarr-image: &prowlarr-image "ghcr.io/11notes/prowlarr:3.0"
+x-radarr-image: &radarr-image "ghcr.io/11notes/radarr:7.0"
+x-sonarr-image: &sonarr-image "ghcr.io/11notes/sonarr:4.0"
+x-unpackerr-image: &unpackerr-image "ghcr.io/unpackerr/unpackerr:v1.0.1"
+
 # Default container options.
 x-defaults: &defaults
   restart: unless-stopped
@@ -45,7 +55,7 @@ services:
   # Bazarr: Subtitle manager. https://www.bazarr.media
   bazarr:
     <<: *defaults
-    image: ghcr.io/hotio/bazarr:release-v1.6
+    image: *bazarr-image
     container_name: bazarr
     hostname: bazarr
     environment:
@@ -71,7 +81,7 @@ services:
   # This also contains beets for use inside of the container.
   lidarr:
     <<: *defaults
-    image: lscr.io/linuxserver/lidarr:nightly # Use nightly since plugin support has been merged.
+    image: *lidarr-image
     container_name: lidarr
     hostname: lidarr
     environment:
@@ -109,7 +119,7 @@ services:
   # Prowlarr: Indexer manager for 'ARR apps. https://prowlarr.com
   prowlarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/prowlarr:2.7
+    image: *prowlarr-image
     container_name: prowlarr
     network_mode: service:gluetun # Route all traffic through gluetun.
     networks: [] # Cleared to reset defaults.
@@ -126,7 +136,7 @@ services:
   # Sonarr: Series manager, organizer, and PVR. https://sonarr.tv
   sonarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/sonarr:4.0
+    image: *sonarr-image
     container_name: sonarr
     hostname: sonarr
     expose:
@@ -139,7 +149,7 @@ services:
   # Radarr: Movie manager, organizer, and PVR. https://radarr.video
   radarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/radarr:6.4
+    image: *radarr-image
     container_name: radarr
     hostname: radarr
     expose:
@@ -153,7 +163,7 @@ services:
   # Byparr: Captcha solver and session cookie scraper. https://github.com/ThePhaseless/Byparr
   byparr:
     <<: *defaults-ro
-    image: ghcr.io/thephaseless/byparr:latest
+    image: *byparr-image
     container_name: byparr
     network_mode: service:gluetun # Route all traffic through gluetun.
     networks: [] # Cleared to reset defaults.
@@ -170,7 +180,7 @@ services:
   # Configarr: 'ARR profile synchronization tool. https://configarr.de/docs/configuration/config-file
   configarr:
     <<: *defaults-ro
-    image: ghcr.io/11notes/configarr:1
+    image: *configarr-image
     container_name: configarr
     hostname: configarr
     env_file: ../../.env # Required for config parsing environment variables.
@@ -201,7 +211,7 @@ services:
   # Unpackerr: Automatic compressed downloads handling. https://unpackerr.zip/docs/introduction
   unpackerr:
     <<: *defaults
-    image: ghcr.io/unpackerr/unpackerr:v1.0.1
+    image: *unpackerr-image
     container_name: unpackerr
     hostname: unpackerr
     user: "${PUID}:${PGID}" # Run as non-root user.
