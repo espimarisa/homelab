@@ -13,7 +13,7 @@ services:
       ENABLE_WHITELIST: "${MINECRAFT_SERVER_WHITELIST_ENABLED}" # Toggles whitelist support.
       EULA: "TRUE" # Accept the EULA.
       GID: "${PGID}" # Group ID to run as.
-      MEMORY: "12G" # Use a 4GB heap size.
+      MEMORY: "8G" # Use an 8GB heap size.
       MODRINTH_ALLOWED_VERSION_TYPE: "alpha"
       MOTD: "${MINECRAFT_SERVER_MOTD}" # Sets the MOTD.
       OPS: "${MINECRAFT_SERVER_OPS}" # OPs.
@@ -39,6 +39,9 @@ services:
         graves-mod
         jade
         jei
+        journeymap
+        just-mob-heads
+        just-player-heads
         krypton
         ledger
         lithium
@@ -46,9 +49,9 @@ services:
         netherportalfix
         no-chat-reports
         private-chests
-        silkier-touch
         simple-voice-chat
         tree-harvester
+        veinminer
         zconfig
         zfastnoise
     networks:
@@ -68,8 +71,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 12
-          memory: 12G
+          cpus: 8
+          memory: 8G
     security_opt:
       - no-new-privileges:true # Prevent privilege escalation.
 
