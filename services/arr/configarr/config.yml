@@ -134,10 +134,10 @@ lidarr:
             fields:
               value: '(?i)\b(Lossless)\b'
 
-      # CD releases. Slight bump for accuracy.
+      # CD releases. No bump, evens things out at 1000 (blame Tubifarry).
       - trash_id: lidarr-cd
         trash_scores:
-          default: 10
+          default: 0
         includeCustomFormatWhenRenaming: false
         name: CD
         trash_description: CD
@@ -167,7 +167,7 @@ lidarr:
       # Deluxe / Extended releases.
       - trash_id: lidarr-deluxe
         trash_scores:
-          default: -50 # Slight penalty to preserve preferred formats.
+          default: 10
         trash_description: Deluxe / Extended
         name: Deluxe / Extended
         includeCustomFormatWhenRenaming: false
@@ -266,7 +266,7 @@ lidarr:
         upgrade:
           allowed: true
           until_quality: Any FLAC
-          until_score: 1000 # Stops upgrading exactly at standard 16-bit Lossless.
+          until_score: 1010
         min_format_score: -500
         quality_sort: top
         qualities:
