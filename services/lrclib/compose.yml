@@ -12,6 +12,8 @@ services:
     read_only: true # Prevent writing directly to the image.
     restart: unless-stopped
     user: "${PUID}:${PGID}" # Run as non-root user.
+    environment:
+      LRCLIB_LOG: "debug"
     ports:
       - 127.0.0.1:3300:3300/tcp
     networks:
