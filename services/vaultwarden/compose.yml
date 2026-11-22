@@ -34,7 +34,7 @@ services:
       SMTP_SECURITY: "${SMTP_SECURITY}" # External SMTP server security method.
       SMTP_USERNAME: "${SMTP_USERNAME}" # External SMTP server username.
       TRASH_AUTO_DELETE_DAYS: "30" # Wait 30 days before deleting items in the trash.
-      TZ: "${TZ}"
+      TZ: "${TZ}" # Sets the timezone.
       YUBICO_CLIENT_ID: "${YUBICO_CLIENT_ID}" # https://upgrade.yubico.com/getapikey/
       YUBICO_SECRET_KEY: "${YUBICO_SECRET_KEY}" # https://upgrade.yubico.com/getapikey/
     expose:

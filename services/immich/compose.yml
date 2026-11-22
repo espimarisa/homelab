@@ -5,10 +5,10 @@
 
 ---
 # Images, hoisted for ease-of-updating.
-x-immich-image: &immich-image "ghcr.io/immich-app/immich-server:v3.4.1"
+x-immich-image: &immich-image "ghcr.io/immich-app/immich-server:v3.4.2"
 x-immich-cache-image: &immich-cache-image "ghcr.io/11notes/redis:8.10"
 x-immich-db-image: &immich-db-image "ghcr.io/immich-app/postgres:18-vectorchord1.1.1"
-x-immich-ml-image: &immich-ml-image "ghcr.io/immich-app/immich-machine-learning:v3.4.1-openvino" # OpenVino for Intel.
+x-immich-ml-image: &immich-ml-image "ghcr.io/immich-app/immich-machine-learning:v3.4.2-openvino" # OpenVino for Intel.
 
 # Default container options.
 x-defaults: &defaults

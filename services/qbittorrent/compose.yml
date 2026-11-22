@@ -1,7 +1,7 @@
 ---
 # Images, hoisted for ease-of-updating.
 x-qbittorrent-image: &qbittorrent-image "ghcr.io/11notes/qbittorrent:5.3"
-x-qui-image: &qui-image "ghcr.io/autobrr/qui:v1.35"
+x-qui-image: &qui-image "ghcr.io/autobrr/qui:v1.36"
 
 # Default container options.
 x-defaults: &defaults

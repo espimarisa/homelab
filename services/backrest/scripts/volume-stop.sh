@@ -13,8 +13,7 @@ ignore_containers=$(docker ps --quiet \
 	--filter "name=gatus-db" \
 	--filter "name=gluetun" \
 	--filter "name=dozzle" \
-	--filter "name=socket-proxy" \
-	--filter "name=unpackerr" | sort)
+	--filter "name=socket-proxy" | sort)
 
 pending_containers=$(comm -23 <(echo "$all_containers") <(echo "$ignore_containers"))
 

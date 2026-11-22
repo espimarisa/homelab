@@ -13,6 +13,7 @@ readonly REQUIRED_VARS=(
 	"DOWNLOADS_PATH"
 	"DOWNLOADS_PERMASEED_PATH"
 	"IMMICH_UPLOADS_PATH"
+	"LRCLIB_DATA_PATH"
 	"MEDIA_LIBRARY_PATH"
 	"OPENCLOUD_UPLOADS_PATH"
 	"PGID"
@@ -86,6 +87,7 @@ readonly MEDIA_LIBRARY_DIRECTORIES=(
 # Appdata directories to create.
 readonly APPDATA_DIRECTORIES=(
 	"immich"
+	"lrclib"
 	"opencloud"
 )
 

@@ -18,7 +18,7 @@ services:
       - external
     volumes:
       - /etc/localtime:/etc/localtime:ro # Local timezone mount.
-      - lrclib:/data:rw # lrclib database storage.
+      - ${LRCLIB_DATA_PATH}:/data:rw # lrclib database storage.
     tmpfs:
       - "/tmp:uid=${PUID},gid=${PGID}" # Required for read_only image.
     cap_drop:
@@ -35,8 +35,3 @@ networks:
   external:
     external: true
     name: external-network
-
-volumes:
-  lrclib:
-    external: true
-    name: lrclib-volume
