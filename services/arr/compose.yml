@@ -7,7 +7,7 @@
 x-bazarr-image: &bazarr-image "ghcr.io/hotio/bazarr:release-v1.6"
 x-byparr-image: &byparr-image "ghcr.io/thephaseless/byparr:latest"
 x-configarr-image: &configarr-image "ghcr.io/11notes/configarr:1"
-x-lidarr-image: &lidarr-image "lscr.io/linuxserver/lidarr:nightly"
+x-lidarr-image: &lidarr-image "lscr.io/linuxserver/lidarr:3.2.1-develop"
 x-prowlarr-image: &prowlarr-image "ghcr.io/11notes/prowlarr:3.0"
 x-radarr-image: &radarr-image "ghcr.io/11notes/radarr:7.0"
 x-sonarr-image: &sonarr-image "ghcr.io/11notes/sonarr:4.0"
