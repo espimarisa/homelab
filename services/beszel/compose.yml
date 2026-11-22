@@ -62,6 +62,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket mount, required for analytics.
       - beszel-agent:/var/lib/beszel-agent:rw # Beszel agent storage.
       - beszel-socket:/beszel_socket:rw # Beszel socket mount.
+      - ${STORAGE_PATH}/.beszel:/extra-filesystems/storage:ro # Uhhh, maybe?
+      - ${APPDATA_PATH}/.bezel:/extra-filesystems/appdata:ro # Ermmm, maybe?
     cap_add:
       - PERFMON # Required for GPU monitoring.
       - SYS_ADMIN # Required for NVME SMART data.

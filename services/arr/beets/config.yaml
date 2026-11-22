@@ -42,12 +42,11 @@ fetchart:
   enforce_ratio: yes # Require album art to be 1:1.
   fanarttv_key: "${FANARTTV_API_KEY}"
   high_resolution: yes # Retrieve artwork at the highest resolution.
-  lastfm_key: "${LASTFM_API_KEY}"
   maxwidth: 1200 # Downscale album art to 1200x1200.
   minwidth: 250 # Require album art to be 250x250 or larger.
   quality: 100 # Fetch maximum quality album art.
   store_source: yes # Store the Album Art source in the database.
-  sources: [coverart, itunes, fanarttv, lastfm, filesystem] # Sources to enable.
+  sources: [coverart, itunes, fanarttv, filesystem] # Sources to enable.
 
 # Embedded album artwork configuration.
 embedart:

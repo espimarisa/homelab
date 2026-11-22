@@ -23,9 +23,6 @@ services:
       ND_ENABLEINSIGHTSCOLLECTOR: "false" # Opts out of telemetry.
       ND_ENABLESHARING: "true" # Enables the sharing API.
       ND_TRANSCODING_ENABLECANCELLATION: "true" # Stop transcoding when cancelled.
-      ND_LASTFM_APIKEY: "${LASTFM_API_KEY}" # https://www.last.fm/api/authentication
-      ND_LASTFM_ENABLED: "true" # Enables Last.fm integrations.
-      ND_LASTFM_SECRET: "${LASTFM_API_SECRET}" # https://www.last.fm/api/authentication
       ND_PASSWORDENCRYPTIONKEY: "${NAVIDROME_ENCRYPTION_KEY}" # openssl rand -hex 32
       ND_PLUGINS_AUTORELOAD: "true" # Auto reload plugins.
       ND_PLUGINS_ENABLED: "true" # Enable plugins.
