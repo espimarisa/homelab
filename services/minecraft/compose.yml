@@ -40,8 +40,6 @@ services:
         jade
         jei
         journeymap
-        just-mob-heads
-        just-player-heads
         krypton
         ledger
         lithium
@@ -50,8 +48,6 @@ services:
         no-chat-reports
         private-chests
         simple-voice-chat
-        tree-harvester
-        veinminer
         zconfig
         zfastnoise
     networks:
