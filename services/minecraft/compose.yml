@@ -43,6 +43,7 @@ services:
         krypton
         ledger
         lithium
+        mezzconfig
         modernfix-mvus
         netherportalfix
         no-chat-reports
