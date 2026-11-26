@@ -149,12 +149,6 @@ endpoints:
   # Media management.                                                         #
   #############################################################################
 
-  # Autobrr.
-  - name: Autobrr
-    <<: *defaults-container
-    group: Media Management
-    url: ${SOCKET_PROXY_URL}/autobrr/json
-
   # Bazarr.
   - name: Bazarr
     <<: *defaults-container

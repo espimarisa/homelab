@@ -96,7 +96,6 @@ readonly VOLUMES=(
 	"arr-db-backups-volume"
 	"arr-db-config-volume"
 	"arr-db-data-volume"
-	"autobrr-volume"
 	"backrest-cache-volume"
 	"backrest-config-volume"
 	"backrest-data-volume"
@@ -148,7 +147,6 @@ readonly VOLUMES=(
 
 # Docker volumes to take PUID/PGID ownership of.
 readonly CHOWN_VOLUMES=(
-	"autobrr-volume"
 	"beszel-agent-volume"
 	"beszel-data-volume"
 	"chhoto-volume"
