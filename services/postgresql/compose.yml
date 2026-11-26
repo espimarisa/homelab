@@ -1,8 +1,6 @@
 ---
 # Default environment variables.
 x-defaults-env: &defaults-env
-  POSTGRES_BACKUP_RETENTION: "7" # Keep up to 7 backups.
-  POSTGRES_BACKUP_SCHEDULE: "0 5 * * *" # Backup every day at 5:00 AM.
   TZ: "${TZ}" # Sets the timezone.
 
 # Default PostgreSQL container options.
@@ -38,10 +36,8 @@ services:
       - internal
       - gluetun
     volumes:
-      - arr-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
       - arr-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
       - arr-db-data:/postgres/var:rw # PostgreSQL data storage volume.
-
 
   # gatus-db: PostgreSQL container used for Gatus.
   gatus-db:
@@ -52,23 +48,8 @@ services:
       <<: *defaults-env
       POSTGRES_PASSWORD: "${GATUS_DB_PASSWORD}" # Sets the PostgreSQL password.
     volumes:
-      - gatus-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
       - gatus-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
       - gatus-db-data:/postgres/var:rw # PostgreSQL data storage volume.
-
-  # miniflux-db: PostgreSQL container used for Miniflux.
-  miniflux-db:
-    <<: *defaults
-    container_name: miniflux-db
-    hostname: miniflux-db
-    environment:
-      <<: *defaults-env
-      POSTGRES_PASSWORD: "${MINIFLUX_DB_PASSWORD}" # Sets the PostgreSQL password.
-    volumes:
-      - miniflux-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
-      - miniflux-db-config:/postgres/etc:rw # PostgreSQL configuration storage volume.
-      - miniflux-db-data:/postgres/var:rw # PostgreSQL data storage volume.
-
 
   # vaultwarden-db: PostgreSQL container used for Vaultwarden.
   vaultwarden-db:
@@ -77,6 +58,8 @@ services:
     hostname: vaultwarden-db
     environment:
       <<: *defaults-env
+      POSTGRES_BACKUP_RETENTION: "7" # Keep up to 7 backups.
+      POSTGRES_BACKUP_SCHEDULE: "0 5 * * *" # Backup every day at 5:00 AM.
       POSTGRES_PASSWORD: "${VAULTWARDEN_DB_PASSWORD}" # Sets the PostgreSQL password.
     volumes:
       - vaultwarden-db-backups:/postgres/backup:rw # PostgreSQL backup storage volume.
@@ -92,32 +75,17 @@ networks:
     name: internal-network
 
 volumes:
-  arr-db-backups:
-    name: arr-db-backups-volume
-    external: true
   arr-db-config:
     name: arr-db-config-volume
     external: true
   arr-db-data:
     name: arr-db-data-volume
     external: true
-  gatus-db-backups:
-    name: gatus-db-backups-volume
-    external: true
   gatus-db-config:
     name: gatus-db-config-volume
     external: true
   gatus-db-data:
     name: gatus-db-data-volume
-    external: true
-  miniflux-db-backups:
-    name: miniflux-db-backups-volume
-    external: true
-  miniflux-db-config:
-    name: miniflux-db-config-volume
-    external: true
-  miniflux-db-data:
-    name: miniflux-db-data-volume
     external: true
   vaultwarden-db-backups:
     name: vaultwarden-db-backups-volume

@@ -11,7 +11,6 @@ include:
   - ./services/immich/compose.yml
   - ./services/jellyfin/compose.yml
   - ./services/minecraft/compose.yml
-  - ./services/miniflux/compose.yml
   - ./services/navidrome/compose.yml
   - ./services/opencloud/compose.yml
   - ./services/postgresql/compose.yml

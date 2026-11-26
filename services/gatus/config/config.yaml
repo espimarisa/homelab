@@ -71,12 +71,6 @@ endpoints:
     group: Databases
     url: ${SOCKET_PROXY_URL}/gatus-db/json
 
-  # Miniflux database.
-  - name: Miniflux - PostgreSQL
-    <<: *defaults-container
-    group: Databases
-    url: ${SOCKET_PROXY_URL}/miniflux-db/json
-
   # Vaultwarden DB.
   - name: Vaultwarden - PostgreSQL
     <<: *defaults-container
@@ -258,12 +252,6 @@ endpoints:
     <<: *defaults-container
     group: Services
     url: ${SOCKET_PROXY_URL}/minecraft/json
-
-  # Miniflux.
-  - name: Miniflux
-    <<: *defaults-http
-    group: Services
-    url: https://${MINIFLUX_URL}
 
   # Navidrome.
   - name: Navidrome

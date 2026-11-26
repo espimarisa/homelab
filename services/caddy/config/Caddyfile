@@ -131,10 +131,6 @@
 	import cloudflare_proxy gatus:8080
 }
 
-# Miniflux web interface.
-{$MINIFLUX_URL} {
-	import cloudflare_proxy miniflux:8080
-}
 
 # Vaultwarden web interface; admin page is $VAULTWARDEN_URL/admin.
 {$VAULTWARDEN_URL} {
